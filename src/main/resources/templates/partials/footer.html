@@ -1,0 +1,16 @@
+<footer class="footer" th:fragment="footer">
+    <div class="container">
+        <div class="header__logo" style="font-size: 2.5rem; margin-bottom: 24px;"><span>{</span> code_blog <span>}</span></div>
+        <p>
+            A dedicated space for technical deep dives, software architecture, and the art of clean code.
+        </p>
+        <div class="footer-socials">
+            <a href="#"><i class="bi bi-twitter"></i></a>
+            <a href="#"><i class="bi bi-github"></i></a>
+            <a href="#"><i class="bi bi-discord"></i></a>
+        </div>
+        <div style="font-size: 0.8rem; opacity: 0.4; margin-top: 40px; letter-spacing: 0.1em; text-transform: uppercase; font-family: var(--font-mono);">
+            &copy; <span th:text="${#dates.year(#dates.createNow())}">2024</span> CodeBlog.dev. All processes terminated.
+        </div>
+    </div>
+</footer>

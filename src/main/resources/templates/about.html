@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/main}">
+<head>
+    <title>About</title>
+</head>
+<body>
+    <div layout:fragment="content">
+        <section class="about-hero">
+            <h1 class="author__heading">/dev/about</h1>
+            <p class="author__body" style="max-width: 100%; margin-top: 20px;">
+                This blog is a digital workbench where complex ideas are deconstructed into manageable components. We focus on modern software engineering, robust architectures, and the continuous evolution of the web.
+            </p>
+        </section>
+
+        <section class="card-glass" style="margin-bottom: 60px;">
+            <h3 style="font-family: var(--font-mono); font-size: 1.5rem; margin-bottom: 24px; color: var(--accent-blue);">
+                <i class="bi bi-terminal"></i> system.init()
+            </h3>
+            <p style="font-size: 1.1rem; line-height: 1.8; color: var(--text-dim);">
+                CodeBlog was built with a simple goal: to document the journey of building software that lasts. We believe in transparency, technical excellence, and the power of shared knowledge.
+            </p>
+            
+            <div class="about-grid">
+                <div class="card-glass" style="padding: 24px;">
+                    <div style="font-family: var(--font-mono); font-size: 1.1rem; font-weight: 700; color: var(--accent-green);">
+                        <i class="bi bi-cpu"></i> 01. COMPILE
+                    </div>
+                    <div style="color: var(--text-dim); margin-top: 12px; font-size: 0.9rem;">
+                        Turning abstract concepts into functional, optimized code.
+                    </div>
+                </div>
+                <div class="card-glass" style="padding: 24px;">
+                    <div style="font-family: var(--font-mono); font-size: 1.1rem; font-weight: 700; color: var(--accent-blue);">
+                        <i class="bi bi-rocket-takeoff"></i> 02. EXECUTE
+                    </div>
+                    <div style="color: var(--text-dim); margin-top: 12px; font-size: 0.9rem;">
+                        Deploying scalable and high-performance solutions.
+                    </div>
+                </div>
+                <div class="card-glass" style="padding: 24px;">
+                    <div style="font-family: var(--font-mono); font-size: 1.1rem; font-weight: 700; color: var(--accent-purple);">
+                        <i class="bi bi-bug"></i> 03. DEBUG
+                    </div>
+                    <div style="color: var(--text-dim); margin-top: 12px; font-size: 0.9rem;">
+                        Constant iteration, testing, and continuous improvement.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section style="text-align: center; margin-top: 80px;">
+            <h2 style="font-family: var(--font-mono); font-size: 1.2rem; color: var(--text-dim); margin-bottom: 32px;">Connect with the developer</h2>
+            <div class="footer-socials">
+                <a href="#"><i class="bi bi-github"></i> github.com/admin</a>
+                <a href="#" style="margin-left: 32px;"><i class="bi bi-twitter-x"></i> @code_blog</a>
+            </div>
+        </section>
+    </div>
+</body>
+</html>

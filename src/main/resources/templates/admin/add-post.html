@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/main}">
+<head>
+    <title>Add New Post</title>
+    <link rel="stylesheet" href="https://unpkg.com/easymde/dist/easymde.min.css">
+    <style>
+        .EasyMDEContainer { background: var(--bg-dark); border-radius: var(--radius); margin-top: 8px; }
+        .editor-toolbar { border-color: var(--border-subtle) !important; background: var(--bg-surface) !important; border-radius: var(--radius) var(--radius) 0 0 !important; }
+        .editor-toolbar button { color: var(--text-main) !important; }
+        .editor-toolbar button:hover, .editor-toolbar button.active { background: var(--bg-dark) !important; border-color: var(--border-active) !important; }
+        .CodeMirror { background: var(--bg-dark) !important; color: var(--text-main) !important; border-color: var(--border-subtle) !important; border-radius: 0 0 var(--radius) var(--radius) !important; font-family: var(--font-mono) !important; }
+        .editor-preview-active { background: var(--bg-dark) !important; color: var(--text-main) !important; }
+        .editor-statusbar { color: var(--text-dim) !important; }
+    </style>
+</head>
+<body>
+    <div layout:fragment="content">
+        <div class="admin-header" style="margin-bottom: 40px; display: flex; justify-content: space-between; align-items: center;">
+            <h1 class="author__heading" style="font-size: 1.8rem; margin: 0;">new_post.sh</h1>
+            <a th:href="@{/admin/dashboard}" class="btn btn-outline" style="color: var(--accent-orange); border-color: var(--accent-orange);">
+                <i class="bi bi-x-lg"></i> abort()
+            </a>
+        </div>
+        
+        <div class="card-glass" style="padding: 40px;">
+            <form th:action="@{/admin/add-post}" method="POST" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label for="title" class="form-label">// STRING: title</label>
+                    <input type="text" id="title" name="title" placeholder="Entry title..." class="form-control" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="image" class="form-label" style="color: var(--accent-orange);">// FILE: image</label>
+                    <input type="file" id="image" name="image" accept="image/*" class="form-control">
+                </div>
+
+                <div class="form-group">
+                    <label for="body" class="form-label" style="color: var(--accent-purple);">// TEXT: body (markdown)</label>
+                    <textarea id="body" name="body" rows="15" placeholder="System.out.println('Your content here...');" class="form-control"></textarea>
+                </div>
+
+                <div style="margin-top: 32px;">
+                    <button type="submit" class="btn btn-primary" style="width: 100%; height: 56px; font-size: 1.1rem; font-weight: 600;">
+                        <i class="bi bi-terminal"></i> commit_to_main()
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <th:block layout:fragment="scripts">
+        <script src="https://unpkg.com/easymde/dist/easymde.min.js"></script>
+        <script>
+            const easyMDE = new EasyMDE({
+                element: document.getElementById('body'),
+                spellChecker: false,
+                status: false,
+                minHeight: "400px",
+                placeholder: "System.out.println('Write your markdown here...');",
+                toolbar: ["bold", "italic", "heading", "|", "quote", "unordered-list", "ordered-list", "|", "link", "image", "|", "preview", "side-by-side", "fullscreen", "|", "guide"]
+            });
+        </script>
+    </th:block>
+</body>
+</html>

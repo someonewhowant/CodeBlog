@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/main}">
+<head>
+    <title th:text="${title}">Home</title>
+</head>
+<body>
+
+    <div layout:fragment="content">
+        <section class="author card-glass" style="border-width: 0 0 1px 0; border-radius: 0; background: transparent; box-shadow: none; margin-bottom: 60px; padding: 40px 0;">
+            <h1 class="author__heading" style="font-size: 3rem;">Hello World_</h1>
+            <p class="author__body" style="font-size: 1.2rem; opacity: 0.8;">A blog about code, architecture, and the pursuit of elegant solutions.</p>
+        </section>
+
+        <section class="articles">
+            <h2 style="font-family: var(--font-mono); margin-bottom: 32px; display: flex; align-items: center; gap: 12px;">
+                <i class="bi bi-git" style="color: var(--accent-orange);"></i> recent_commits
+            </h2>
+
+            <ul class="article-grid">
+                <li th:each="post : ${data}" class="card-glass" style="padding: 0;">
+                    <a th:href="@{/post/{id}(id=${post.id})}" style="display: block; text-decoration: none;">
+                        <div th:if="${post.imageUrl}" style="height: 180px; overflow: hidden; border-bottom: 1px solid var(--border-subtle);">
+                            <img th:src="${post.imageUrl}" th:alt="${post.title}" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s;">
+                        </div>
+                        <div style="padding: 24px;">
+                            <span class="article-list__date" th:text="${#temporals.format(post.createdAt, 'MMMM dd, yyyy')}">Date</span>
+                            <span th:text="${post.title}" style="display: block; font-size: 1.25rem; font-weight: 700; color: var(--text-main); margin-bottom: 12px; font-family: var(--font-mono);">Post Title</span>
+                            <p th:text="${#strings.abbreviate(post.body, 100)}" style="color: var(--text-dim); font-size: 0.9rem; margin: 0;"></p>
+                        </div>
+                    </a>
+                </li>
+            </ul>
+
+            <div class="pagination">
+                <a th:if="${currentPage > 1}" 
+                   th:href="@{/(page=${currentPage - 1})}" 
+                   class="pagination-btn">&larr; Newer Posts</a>
+                   
+                <a th:if="${currentPage < totalPages}" 
+                   th:href="@{/(page=${currentPage + 1})}" 
+                   class="pagination-btn">Older Posts &rarr;</a>
+            </div>
+        </section>
+    </div>
+
+</body>
+</html>

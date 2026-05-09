@@ -1,0 +1,31 @@
+<header class="header" th:fragment="header">
+    <div class="container">
+        <a th:href="@{/}" class="header__logo"><span>{</span> code_blog <span>}</span></a>
+        
+        <nav class="header__nav">
+            <ul>
+                <li><a th:href="@{/}" class="active">/home</a></li>
+                <li><a th:href="@{/about}">/about</a></li>
+                <li><a th:href="@{/admin/dashboard}">/admin</a></li>
+            </ul>
+        </nav>
+
+        <div class="header__button">
+            <button class="searchBtn" aria-expanded="false">
+                <i class="bi bi-search"></i>
+                <span>Search</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Search Bar Slide-down -->
+    <div class="searchBar">
+        <div class="container">
+            <i class="bi bi-search" style="color: white; font-size: 1.8rem; opacity: 0.5;"></i>
+            <form th:action="@{/search}" method="GET" role="search" style="flex-grow: 1;">
+                <input type="search" name="searchTerm" id="searchInput" placeholder="Search for insights..." autocomplete="off">
+            </form>
+            <div id="searchClose" style="font-weight: 800; cursor: pointer; color: white; opacity: 0.5; font-size: 0.8rem; letter-spacing: 0.1em;">CLOSE (ESC)</div>
+        </div>
+    </div>
+</header>
