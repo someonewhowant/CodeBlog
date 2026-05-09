@@ -1,46 +1,83 @@
 document.addEventListener('DOMContentLoaded', function() {
     
+    // --- Theme Toggle logic ---
+    const initTheme = () => {
+        const themeToggle = document.getElementById('themeToggle');
+        const htmlElement = document.documentElement;
+        
+        const applyTheme = (theme) => {
+            if (theme === 'light-theme') {
+                htmlElement.classList.add('light-theme');
+            } else {
+                htmlElement.classList.remove('light-theme');
+            }
+        };
+
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme) {
+            applyTheme(savedTheme);
+        }
+
+        if (themeToggle) {
+            themeToggle.addEventListener('click', () => {
+                const isLight = htmlElement.classList.contains('light-theme');
+                const newTheme = isLight ? '' : 'light-theme';
+                applyTheme(newTheme);
+                localStorage.setItem('theme', newTheme);
+            });
+        }
+    };
+
+    try {
+        initTheme();
+    } catch (e) {
+        console.error('Theme toggle init failed', e);
+    }
+
+    // --- Search functionality ---
     const allSearchBtns = document.querySelectorAll('.searchBtn');
     const searchBar = document.querySelector('.searchBar');
     const searchInput = document.getElementById('searchInput');
     const searchClose = document.getElementById('searchClose');
 
-    const openSearch = () => {
-        searchBar.classList.add('open');
-        allSearchBtns.forEach(btn => btn.setAttribute('aria-expanded', 'true'));
-        setTimeout(() => searchInput.focus(), 100);
-    };
+    if (searchBar && allSearchBtns.length > 0) {
+        const openSearch = () => {
+            searchBar.classList.add('open');
+            allSearchBtns.forEach(btn => btn.setAttribute('aria-expanded', 'true'));
+            setTimeout(() => searchInput.focus(), 100);
+        };
 
-    const closeSearch = () => {
-        searchBar.classList.remove('open');
-        allSearchBtns.forEach(btn => btn.setAttribute('aria-expanded', 'false'));
-    };
+        const closeSearch = () => {
+            searchBar.classList.remove('open');
+            allSearchBtns.forEach(btn => btn.setAttribute('aria-expanded', 'false'));
+        };
 
-    allSearchBtns.forEach(btn => {
-        btn.addEventListener('click', openSearch);
-    });
+        allSearchBtns.forEach(btn => {
+            btn.addEventListener('click', openSearch);
+        });
 
-    searchClose.addEventListener('click', closeSearch);
-
-    // Close on ESC key
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && searchBar.classList.contains('open')) {
-            closeSearch();
+        if (searchClose) {
+            searchClose.addEventListener('click', closeSearch);
         }
-    });
+
+        // Close on ESC key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && searchBar.classList.contains('open')) {
+                closeSearch();
+            }
+        });
+    }
 
     // --- Code Blocks Enhancement ---
     const enhanceCodeBlocks = () => {
         const codeBlocks = document.querySelectorAll('pre');
         
         codeBlocks.forEach(block => {
-            // Avoid double wrapping
             if (block.parentElement.classList.contains('code-window')) return;
             
             const codeTag = block.querySelector('code');
             if (!codeTag) return;
 
-            // Extract language from code class (e.g., language-java)
             let language = 'code';
             const classes = Array.from(codeTag.classList);
             const langClass = classes.find(c => c.startsWith('language-'));
@@ -49,14 +86,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 language = langClass.replace('language-', '');
             }
 
-            // Add Prism's line-numbers class to pre
             block.classList.add('line-numbers');
             
-            // Create wrapper
             const wrapper = document.createElement('div');
             wrapper.className = 'code-window';
             
-            // Create header
             const header = document.createElement('div');
             header.className = 'code-header';
             
@@ -75,12 +109,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 </div>
             `;
             
-            // Wrap the block
             block.parentNode.insertBefore(wrapper, block);
             wrapper.appendChild(header);
             wrapper.appendChild(block);
             
-            // Copy functionality
             const copyBtn = header.querySelector('.code-copy');
             copyBtn.addEventListener('click', () => {
                 const code = codeTag.innerText;
@@ -98,15 +130,11 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
 
-        // Tell Prism to highlight the new structure if it hasn't already
         if (typeof Prism !== 'undefined') {
             Prism.highlightAll();
         }
     };
 
-    // Run enhancement
     enhanceCodeBlocks();
-    
-    // Also run after a short delay to account for Prism's async highlighting if any
     setTimeout(enhanceCodeBlocks, 500);
 });
