@@ -34,18 +34,23 @@ document.addEventListener('DOMContentLoaded', function() {
         const codeBlocks = document.querySelectorAll('pre');
         
         codeBlocks.forEach(block => {
+            // Avoid double wrapping
             if (block.parentElement.classList.contains('code-window')) return;
             
             const codeTag = block.querySelector('code');
             if (!codeTag) return;
+
+            // Extract language from code class (e.g., language-java)
+            let language = 'code';
+            const classes = Array.from(codeTag.classList);
+            const langClass = classes.find(c => c.startsWith('language-'));
             
-            // Extract language
-            const langClass = Array.from(codeTag.classList).find(c => c.startsWith('language-')) || 
-                              Array.from(block.classList).find(c => c.startsWith('language-'));
-            
-            if (!langClass) return;
-            
-            const language = langClass.replace('language-', '');
+            if (langClass) {
+                language = langClass.replace('language-', '');
+            }
+
+            // Add Prism's line-numbers class to pre
+            block.classList.add('line-numbers');
             
             // Create wrapper
             const wrapper = document.createElement('div');
@@ -92,6 +97,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
             });
         });
+
+        // Tell Prism to highlight the new structure if it hasn't already
+        if (typeof Prism !== 'undefined') {
+            Prism.highlightAll();
+        }
     };
 
     // Run enhancement

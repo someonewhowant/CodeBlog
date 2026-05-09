@@ -19,15 +19,34 @@
             </h2>
 
             <ul class="article-grid">
-                <li th:each="post : ${data}" class="card-glass" style="padding: 0;">
-                    <a th:href="@{/post/{id}(id=${post.id})}" style="display: block; text-decoration: none;">
-                        <div th:if="${post.imageUrl}" style="height: 180px; overflow: hidden; border-bottom: 1px solid var(--border-subtle);">
-                            <img th:src="${post.imageUrl}" th:alt="${post.title}" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s;">
+                <li th:each="post : ${data}" class="card-glass">
+                    <a th:href="@{/post/{id}(id=${post.id})}">
+                        <div class="article-card__image-container">
+                            <img th:if="${post.imageUrl}" 
+                                 th:src="${post.imageUrl}" 
+                                 th:alt="${post.title}" 
+                                 class="article-card__image"
+                                 loading="lazy"
+                                 decoding="async">
+                            <div th:unless="${post.imageUrl}" class="article-card__placeholder"></div>
                         </div>
-                        <div style="padding: 24px;">
-                            <span class="article-list__date" th:text="${#temporals.format(post.createdAt, 'MMMM dd, yyyy')}">Date</span>
-                            <span th:text="${post.title}" style="display: block; font-size: 1.25rem; font-weight: 700; color: var(--text-main); margin-bottom: 12px; font-family: var(--font-mono);">Post Title</span>
-                            <p th:text="${#strings.abbreviate(post.body, 100)}" style="color: var(--text-dim); font-size: 0.9rem; margin: 0;"></p>
+                        <div class="article-card__content">
+                            <div class="article-card__meta">
+                                <span class="article-list__date" th:text="${#temporals.format(post.createdAt, 'MMMM dd, yyyy')}">Date</span>
+                                <span th:if="${post.category}" style="color: var(--text-dim); opacity: 0.5;">|</span>
+                                <a th:if="${post.category}" 
+                                   th:href="@{/category/{slug}(slug=${post.category.slug})}" 
+                                   th:text="${post.category.name}"
+                                   class="article-card__category">Category</a>
+                            </div>
+                            <span class="article-card__title" th:text="${post.title}">Post Title</span>
+                            <p th:text="${#strings.abbreviate(post.body, 100)}"></p>
+                            <div th:if="${not #lists.isEmpty(post.tags)}" class="article-card__tags">
+                                <a th:each="tag : ${post.tags}" 
+                                   th:href="@{/tag/{slug}(slug=${tag.slug})}" 
+                                   th:text="'#' + ${tag.name}"
+                                   class="badge-tag">#tag</a>
+                            </div>
                         </div>
                     </a>
                 </li>

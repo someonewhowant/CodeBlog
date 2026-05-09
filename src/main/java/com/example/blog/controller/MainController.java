@@ -27,24 +27,7 @@ public class MainController {
     @GetMapping("")
     public String index(@RequestParam(defaultValue = "1") int page, Model model) {
         Page<Post> postPage = postService.getAllPosts(page);
-        
-        List<Post> posts = postPage.getContent().stream().map(post -> 
-            Post.builder()
-                .id(post.getId())
-                .title(post.getTitle())
-                .body(markdownService.convertToHtml(post.getBody()).replaceAll("<[^>]*>", ""))
-                .imageUrl(post.getImageUrl())
-                .createdAt(post.getCreatedAt())
-                .build()
-        ).collect(Collectors.toList());
-
-        model.addAttribute("data", posts);
-        model.addAttribute("currentPage", page);
-        model.addAttribute("totalPages", postPage.getTotalPages());
-        model.addAttribute("title", "CodeBlog");
-        model.addAttribute("description", "A modern blog platform built with Spring Boot 3.");
-        
-        return "index";
+        return populateModelAndReturn(postPage, page, "CodeBlog", "A modern blog platform built with Spring Boot 3.", model, "index");
     }
 
     /**
@@ -61,12 +44,36 @@ public class MainController {
                 .body(htmlBody)
                 .imageUrl(post.getImageUrl())
                 .createdAt(post.getCreatedAt())
+                .category(post.getCategory())
+                .tags(post.getTags())
                 .build();
 
         model.addAttribute("post", displayPost);
         model.addAttribute("title", post.getTitle());
         
         return "post";
+    }
+
+    /**
+     * Фильтрация по категории.
+     */
+    @GetMapping("/category/{slug}")
+    public String category(@PathVariable String slug, 
+                           @RequestParam(defaultValue = "1") int page, 
+                           Model model) {
+        Page<Post> postPage = postService.getPostsByCategory(slug, page);
+        return populateModelAndReturn(postPage, page, "Category: " + slug, null, model, "index");
+    }
+
+    /**
+     * Фильтрация по тегу.
+     */
+    @GetMapping("/tag/{slug}")
+    public String tag(@PathVariable String slug, 
+                      @RequestParam(defaultValue = "1") int page, 
+                      Model model) {
+        Page<Post> postPage = postService.getPostsByTag(slug, page);
+        return populateModelAndReturn(postPage, page, "Tag: " + slug, null, model, "index");
     }
 
     /**
@@ -78,21 +85,39 @@ public class MainController {
                          Model model) {
         Page<Post> searchResults = postService.searchPosts(searchTerm, page);
         
-        List<Post> posts = searchResults.getContent().stream().map(post -> 
-            Post.builder()
-                .id(post.getId())
-                .title(post.getTitle())
-                .body(markdownService.convertToHtml(post.getBody()).replaceAll("<[^>]*>", ""))
-                .imageUrl(post.getImageUrl())
-                .createdAt(post.getCreatedAt())
-                .build()
-        ).collect(Collectors.toList());
+        List<Post> posts = searchResults.getContent().stream().map(this::mapPostForDisplay).collect(Collectors.toList());
 
         model.addAttribute("data", posts);
         model.addAttribute("searchTerm", searchTerm);
         model.addAttribute("title", "Search Results");
         
         return "search";
+    }
+
+    private String populateModelAndReturn(Page<Post> postPage, int page, String title, String description, Model model, String view) {
+        List<Post> posts = postPage.getContent().stream().map(this::mapPostForDisplay).collect(Collectors.toList());
+
+        model.addAttribute("data", posts);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", postPage.getTotalPages());
+        model.addAttribute("title", title);
+        if (description != null) {
+            model.addAttribute("description", description);
+        }
+        
+        return view;
+    }
+
+    private Post mapPostForDisplay(Post post) {
+        return Post.builder()
+                .id(post.getId())
+                .title(post.getTitle())
+                .body(markdownService.convertToHtml(post.getBody()).replaceAll("<[^>]*>", ""))
+                .imageUrl(post.getImageUrl())
+                .createdAt(post.getCreatedAt())
+                .category(post.getCategory())
+                .tags(post.getTags())
+                .build();
     }
 
     /**

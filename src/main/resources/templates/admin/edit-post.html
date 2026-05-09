@@ -42,6 +42,28 @@
                 </div>
 
                 <div class="form-group">
+                    <label for="category" class="form-label">// SELECT: category</label>
+                    <select id="category" name="category.id" class="form-control">
+                        <option value="">-- No Category --</option>
+                        <option th:each="cat : ${categories}" 
+                                th:value="${cat.id}" 
+                                th:text="${cat.name}"
+                                th:selected="${post.category != null and post.category.id == cat.id}"></option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">// MULTI_SELECT: tags</label>
+                    <div style="display: flex; gap: 16px; flex-wrap: wrap; background: var(--bg-dark); padding: 16px; border-radius: var(--radius); border: 1px solid var(--border-subtle);">
+                        <div th:each="tag : ${tags}" style="display: flex; align-items: center; gap: 8px;">
+                            <input type="checkbox" name="tagIds" th:value="${tag.id}" th:id="'tag-' + ${tag.id}"
+                                   th:checked="${#sets.contains(post.tags.![id], tag.id)}">
+                            <label th:for="'tag-' + ${tag.id}" th:text="${tag.name}" style="font-family: var(--font-mono); font-size: 0.85rem; cursor: pointer;"></label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
                     <label for="body" class="form-label" style="color: var(--accent-purple);">// TEXT: body (markdown)</label>
                     <textarea id="body" name="body" th:text="${post.body}" rows="15" placeholder="Content..." class="form-control"></textarea>
                 </div>

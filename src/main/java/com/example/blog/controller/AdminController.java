@@ -46,6 +46,8 @@ public class AdminController {
     @GetMapping("/add-post")
     public String addPostForm(Model model) {
         model.addAttribute("title", "Add Post");
+        model.addAttribute("categories", postService.getAllCategories());
+        model.addAttribute("tags", postService.getAllTags());
         return "admin/add-post";
     }
 
@@ -53,11 +55,20 @@ public class AdminController {
      * Обработка создания нового поста.
      */
     @PostMapping("/add-post")
-    public String addPost(@ModelAttribute Post post, @RequestParam("image") MultipartFile image) {
+    public String addPost(@ModelAttribute Post post, 
+                          @RequestParam("image") MultipartFile image,
+                          @RequestParam(value = "tagIds", required = false) List<Long> tagIds) {
         if (!image.isEmpty()) {
             String imageUrl = fileStorageService.storeFile(image);
             post.setImageUrl(imageUrl);
         }
+        
+        if (tagIds != null) {
+            post.setTags(new java.util.HashSet<>(postService.getAllTags().stream()
+                    .filter(t -> tagIds.contains(t.getId()))
+                    .collect(java.util.stream.Collectors.toList())));
+        }
+        
         postService.createPost(post);
         return "redirect:/admin/dashboard";
     }
@@ -69,6 +80,8 @@ public class AdminController {
     public String editPostForm(@PathVariable Long id, Model model) {
         Post post = postService.getPostById(id);
         model.addAttribute("post", post);
+        model.addAttribute("categories", postService.getAllCategories());
+        model.addAttribute("tags", postService.getAllTags());
         model.addAttribute("title", "Edit Post");
         return "admin/edit-post";
     }
@@ -77,11 +90,23 @@ public class AdminController {
      * Обработка обновления поста.
      */
     @PostMapping("/edit-post/{id}")
-    public String updatePost(@PathVariable Long id, @ModelAttribute Post post, @RequestParam("image") MultipartFile image) {
+    public String updatePost(@PathVariable Long id, 
+                             @ModelAttribute Post post, 
+                             @RequestParam("image") MultipartFile image,
+                             @RequestParam(value = "tagIds", required = false) List<Long> tagIds) {
         if (!image.isEmpty()) {
             String imageUrl = fileStorageService.storeFile(image);
             post.setImageUrl(imageUrl);
         }
+
+        if (tagIds != null) {
+            post.setTags(new java.util.HashSet<>(postService.getAllTags().stream()
+                    .filter(t -> tagIds.contains(t.getId()))
+                    .collect(java.util.stream.Collectors.toList())));
+        } else {
+            post.setTags(new java.util.HashSet<>());
+        }
+        
         postService.updatePost(id, post);
         return "redirect:/admin/dashboard";
     }

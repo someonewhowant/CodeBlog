@@ -9,20 +9,36 @@
     <div layout:fragment="content">
         <article class="post">
             <header class="post-header" style="text-align: center; margin-bottom: 60px;">
-                <span class="article-list__date" th:text="${#temporals.format(post.createdAt, 'MMMM dd, yyyy')}">Date</span>
+                <div style="margin-bottom: 16px;">
+                    <a th:if="${post.category}" 
+                       th:href="@{/category/{slug}(slug=${post.category.slug})}" 
+                       th:text="${post.category.name}"
+                       class="post-category">CATEGORY</a>
+                </div>
                 <h1 class="post-title" th:text="${post.title}" style="font-size: 3rem; margin: 16px 0;">Title</h1>
-                <div class="post-meta" style="justify-content: center; display: flex; gap: 24px;">
+                <div class="post-meta" style="justify-content: center; display: flex; gap: 24px; align-items: center;">
+                    <span class="article-list__date" th:text="${#temporals.format(post.createdAt, 'MMMM dd, yyyy')}">Date</span>
+                    <span style="color: var(--text-dim); opacity: 0.3;">|</span>
                     <span><i class="bi bi-person"></i> code_admin</span>
-                    <span><i class="bi bi-code-square"></i> v1.0.4</span>
                 </div>
             </header>
 
-            <div th:if="${post.imageUrl}" class="card-glass" style="margin-bottom: 60px; padding: 0; overflow: hidden;">
-                <img th:src="${post.imageUrl}" th:alt="${post.title}" style="width: 100%; height: auto; max-height: 500px; object-fit: cover; display: block;">
+            <div th:if="${post.imageUrl}" class="post-cover fade-in">
+                <img th:src="${post.imageUrl}" th:alt="${post.title}" decoding="async">
             </div>
             
             <div class="post-content" th:utext="${post.body}">
                 Content
+            </div>
+
+            <div th:if="${not #lists.isEmpty(post.tags)}" class="post-content" style="margin-top: 40px; padding-top: 24px; border-top: 1px solid var(--border-subtle);">
+                <div style="display: flex; gap: 12px; flex-wrap: wrap; align-items: center;">
+                    <span style="font-family: var(--font-mono); color: var(--text-dim); font-size: 0.9rem;"><i class="bi bi-tags"></i> tags:</span>
+                    <a th:each="tag : ${post.tags}" 
+                       th:href="@{/tag/{slug}(slug=${tag.slug})}" 
+                       th:text="'#' + ${tag.name}"
+                       class="badge-tag" style="padding: 4px 12px; font-size: 0.9rem;">#tag</a>
+                </div>
             </div>
             
             <footer style="margin-top: 100px; border-top: 1px solid var(--border-subtle); padding-top: 48px; display: flex; justify-content: space-between; align-items: center;">

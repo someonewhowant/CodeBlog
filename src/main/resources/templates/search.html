@@ -14,9 +14,33 @@
         <ul class="article-grid" th:if="${not #lists.isEmpty(data)}">
             <li th:each="post : ${data}">
                 <a th:href="@{/post/{id}(id=${post.id})}">
-                    <span class="article-list__date" th:text="${#temporals.format(post.createdAt, 'yyyy-MM-dd')}">Date</span>
-                    <span th:text="${post.title}">Post Title</span>
-                    <p th:text="${#strings.abbreviate(post.body, 120)}"></p>
+                    <div class="article-card__image-container">
+                        <img th:if="${post.imageUrl}" 
+                             th:src="${post.imageUrl}" 
+                             th:alt="${post.title}" 
+                             class="article-card__image"
+                             loading="lazy"
+                             decoding="async">
+                        <div th:unless="${post.imageUrl}" class="article-card__placeholder"></div>
+                    </div>
+                    <div class="article-card__content">
+                        <div class="article-card__meta">
+                            <span class="article-list__date" th:text="${#temporals.format(post.createdAt, 'MMMM dd, yyyy')}">Date</span>
+                            <span th:if="${post.category}" style="color: var(--text-dim); opacity: 0.5;">|</span>
+                            <a th:if="${post.category}" 
+                               th:href="@{/category/{slug}(slug=${post.category.slug})}" 
+                               th:text="${post.category.name}"
+                               class="article-card__category">Category</a>
+                        </div>
+                        <span class="article-card__title" th:text="${post.title}">Post Title</span>
+                        <p th:text="${#strings.abbreviate(post.body, 120)}"></p>
+                        <div th:if="${not #lists.isEmpty(post.tags)}" class="article-card__tags">
+                            <a th:each="tag : ${post.tags}" 
+                               th:href="@{/tag/{slug}(slug=${tag.slug})}" 
+                               th:text="'#' + ${tag.name}"
+                               class="badge-tag">#tag</a>
+                        </div>
+                    </div>
                 </a>
             </li>
         </ul>

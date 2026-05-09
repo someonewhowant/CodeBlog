@@ -26,6 +26,7 @@
                 <thead style="background: rgba(255, 255, 255, 0.02);">
                     <tr>
                         <th style="padding-left: 24px;">ENTRY_TITLE</th>
+                        <th>CATEGORY</th>
                         <th>CREATED_AT</th>
                         <th style="text-align: right; padding-right: 24px;">ACTIONS</th>
                     </tr>
@@ -33,6 +34,12 @@
                 <tbody>
                     <tr th:each="post : ${data}" style="transition: background 0.2s;">
                         <td style="font-weight: 600; color: var(--text-main); padding-left: 24px;" th:text="${post.title}">Title</td>
+                        <td>
+                            <span th:if="${post.category}" 
+                                  th:text="${post.category.name}" 
+                                  style="font-family: var(--font-mono); font-size: 0.75rem; color: var(--accent-green); background: rgba(63, 185, 80, 0.1); padding: 2px 8px; border-radius: 4px; border: 1px solid rgba(63, 185, 80, 0.2);">Category</span>
+                            <span th:unless="${post.category}" style="color: var(--text-dim); font-size: 0.75rem; font-family: var(--font-mono);">none</span>
+                        </td>
                         <td style="font-family: var(--font-mono); font-size: 0.85rem; color: var(--text-dim);" th:text="${#temporals.format(post.createdAt, 'yyyy-MM-dd HH:mm')}">Date</td>
                         <td style="text-align: right; padding-right: 24px;">
                             <div style="display: flex; gap: 8px; justify-content: flex-end;">
