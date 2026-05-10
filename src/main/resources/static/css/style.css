@@ -509,32 +509,162 @@ a:hover {
   align-items: center;
 }
 
+/* --- Login Page --- */
+.login-subtitle {
+  font-family: var(--font-mono);
+  font-size: 1rem;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.alert {
+  padding: 14px;
+  border-radius: var(--radius);
+  margin-bottom: 32px;
+  font-size: 0.85rem;
+  font-family: var(--font-mono);
+  text-align: center;
+  border: 1px solid transparent;
+}
+
+.alert-error {
+  background: rgba(210, 153, 34, 0.1);
+  color: var(--accent-orange);
+  border-color: rgba(210, 153, 34, 0.2);
+}
+
+/* --- Buttons --- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 24px;
+  border-radius: var(--radius);
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: var(--transition);
+  border: 1px solid transparent;
+  text-decoration: none !important;
+}
+
+.btn-primary {
+  background: var(--accent-blue);
+  color: #fff;
+  border-color: var(--accent-blue);
+}
+
+.btn-primary:hover {
+  background: #4a9eff;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(88, 166, 255, 0.4);
+}
+
+.btn-outline {
+  background: transparent;
+  border-color: var(--border-subtle);
+  color: var(--text-dim);
+}
+
+.btn-outline:hover {
+  border-color: var(--border-active);
+  color: var(--text-main);
+  background: var(--bg-surface);
+}
+
 /* --- Forms --- */
+.form-group {
+  margin-bottom: 24px;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 8px;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
 .form-control {
+  width: 100%;
   background: var(--bg-surface);
   border: 1px solid var(--border-subtle);
   color: var(--text-main);
-  padding: 14px;
+  padding: 12px 16px;
   border-radius: var(--radius);
-  font-size: 1rem;
-  outline: none;
+  font-family: var(--font-sans);
   transition: var(--transition);
-  width: 100%;
 }
 
 .form-control:focus {
+  outline: none;
   border-color: var(--border-active);
+  box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.1);
 }
 
-/* --- Scrollbar --- */
-::-webkit-scrollbar { width: 10px; }
-::-webkit-scrollbar-track { background: var(--bg-dark); }
-::-webkit-scrollbar-thumb { 
-  background: var(--border-subtle); 
-  border-radius: 5px; 
+/* --- Admin Table --- */
+.admin-table-wrapper {
+  background: var(--glass);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow);
 }
 
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.admin-table th {
+  background: rgba(255, 255, 255, 0.03);
+  padding: 16px 24px;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.admin-table td {
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border-subtle);
+  vertical-align: middle;
+}
+
+.admin-table tr:last-child td {
+  border-bottom: none;
+}
+
+.admin-table tr:hover td {
+  background: rgba(255, 255, 255, 0.01);
+}
+
+.admin-table .badge {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-weight: 500;
+}
+
+.badge-success {
+  background: rgba(63, 185, 80, 0.1);
+  color: var(--accent-green);
+  border: 1px solid rgba(63, 185, 80, 0.2);
+}
+
+/* --- Responsive Adjustments --- */
 @media (max-width: 768px) {
-  .author__heading { font-size: 1.8rem; }
-  .header .container { flex-direction: column; gap: 12px; }
+  .admin-table th:nth-child(2),
+  .admin-table td:nth-child(2) {
+    display: none;
+  }
 }
