@@ -62,6 +62,7 @@ public class MainController {
                            @RequestParam(defaultValue = "1") int page, 
                            Model model) {
         Page<Post> postPage = postService.getPostsByCategory(slug, page);
+        model.addAttribute("currentCategory", slug);
         return populateModelAndReturn(postPage, page, "Category: " + slug, null, model, "index");
     }
 
@@ -101,6 +102,7 @@ public class MainController {
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", postPage.getTotalPages());
         model.addAttribute("title", title);
+        model.addAttribute("categories", postService.getAllCategories());
         if (description != null) {
             model.addAttribute("description", description);
         }

@@ -15,6 +15,36 @@
         </section>
 
         <section class="articles">
+            <nav class="category-nav">
+                <ul class="category-list">
+                    <li>
+                        <a th:href="@{/}" 
+                           class="category-link" 
+                           th:classappend="${currentCategory == null} ? 'active'">
+                            <i class="bi bi-house-door"></i>
+                            <span>Все</span>
+                        </a>
+                    </li>
+                    <li th:each="cat : ${categories}">
+                        <a th:href="@{/category/{slug}(slug=${cat.slug})}" 
+                           class="category-link" 
+                           th:classappend="${currentCategory == cat.slug} ? 'active'">
+                            <i class="bi" th:classappend="${
+                                cat.slug == 'java' ? 'bi-cup-hot' :
+                                (cat.slug == 'javascript' ? 'bi-filetype-js' :
+                                (cat.slug == 'docker' ? 'bi-box-seam' :
+                                (cat.slug == 'aws' ? 'bi-cloud' :
+                                (cat.slug == 'spring' ? 'bi-bootstrap' : 
+                                (cat.slug == 'database' ? 'bi-database' :
+                                (cat.slug == 'architecture' ? 'bi-diagram-3' : 'bi-tag'))))))
+                            }"></i>
+                            <span th:text="${cat.name}">Category</span>
+                            <span class="category-count" th:text="${cat.posts.size()}">0</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+
             <h2 class="section-title">
                 <i class="bi bi-git"></i> recent_commits
             </h2>
