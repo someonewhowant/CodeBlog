@@ -9,6 +9,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 @Controller
@@ -57,10 +59,16 @@ public class AdminController {
     @PostMapping("/add-post")
     public String addPost(@ModelAttribute Post post, 
                           @RequestParam("image") MultipartFile image,
-                          @RequestParam(value = "tagIds", required = false) List<Long> tagIds) {
+                          @RequestParam(value = "markdownFile", required = false) MultipartFile markdownFile,
+                          @RequestParam(value = "tagIds", required = false) List<Long> tagIds) throws IOException {
         if (!image.isEmpty()) {
             String imageUrl = fileStorageService.storeFile(image);
             post.setImageUrl(imageUrl);
+        }
+
+        if (markdownFile != null && !markdownFile.isEmpty()) {
+            String content = new String(markdownFile.getBytes(), StandardCharsets.UTF_8);
+            post.setBody(content);
         }
         
         if (tagIds != null) {
@@ -93,10 +101,16 @@ public class AdminController {
     public String updatePost(@PathVariable Long id, 
                              @ModelAttribute Post post, 
                              @RequestParam("image") MultipartFile image,
-                             @RequestParam(value = "tagIds", required = false) List<Long> tagIds) {
+                             @RequestParam(value = "markdownFile", required = false) MultipartFile markdownFile,
+                             @RequestParam(value = "tagIds", required = false) List<Long> tagIds) throws IOException {
         if (!image.isEmpty()) {
             String imageUrl = fileStorageService.storeFile(image);
             post.setImageUrl(imageUrl);
+        }
+
+        if (markdownFile != null && !markdownFile.isEmpty()) {
+            String content = new String(markdownFile.getBytes(), StandardCharsets.UTF_8);
+            post.setBody(content);
         }
 
         if (tagIds != null) {

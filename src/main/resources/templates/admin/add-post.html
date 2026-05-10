@@ -37,6 +37,11 @@
                 </div>
 
                 <div class="form-group">
+                    <label for="markdownFile" class="form-label" style="color: var(--accent-blue);">// FILE: markdown_import (.md)</label>
+                    <input type="file" id="markdownFile" name="markdownFile" accept=".md" class="form-control">
+                </div>
+
+                <div class="form-group">
                     <label for="category" class="form-label">// SELECT: category</label>
                     <select id="category" name="category.id" class="form-control">
                         <option value="">-- No Category --</option>
@@ -78,6 +83,19 @@
                 minHeight: "400px",
                 placeholder: "System.out.println('Write your markdown here...');",
                 toolbar: ["bold", "italic", "heading", "|", "quote", "unordered-list", "ordered-list", "|", "link", "image", "|", "preview", "side-by-side", "fullscreen", "|", "guide"]
+            });
+
+            // Markdown File Import
+            document.getElementById('markdownFile').addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (!file) return;
+
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const content = e.target.result;
+                    easyMDE.value(content);
+                };
+                reader.readAsText(file);
             });
         </script>
     </th:block>

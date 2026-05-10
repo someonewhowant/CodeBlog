@@ -41,6 +41,7 @@ Thumbs.db
 
 # Uploads
 uploads/
+data/
 
 # Environment variables
 .env
