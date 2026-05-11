@@ -31,6 +31,15 @@ public class MainController {
     }
 
     /**
+     * Все статьи блога с пагинацией.
+     */
+    @GetMapping("/articles")
+    public String articles(@RequestParam(defaultValue = "1") int page, Model model) {
+        Page<Post> postPage = postService.getAllPosts(page);
+        return populateModelAndReturn(postPage, page, "Articles", "Explore all insights from our blog.", model, "articles");
+    }
+
+    /**
      * Просмотр конкретного поста по ID.
      */
     @GetMapping("/post/{id}")

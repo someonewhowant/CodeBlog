@@ -4,9 +4,10 @@
         
         <nav class="header__nav">
             <ul>
-                <li><a th:href="@{/}" class="active">/home</a></li>
-                <li><a th:href="@{/about}">/about</a></li>
-                <li><a th:href="@{/admin/dashboard}">/admin</a></li>
+                <li><a th:href="@{/}" th:classappend="${currentUri == '/' or currentUri == ''} ? 'active'">/home</a></li>
+                <li><a th:href="@{/articles}" th:classappend="${currentUri != null and currentUri.startsWith('/articles')} ? 'active'">/articles</a></li>
+                <li><a th:href="@{/about}" th:classappend="${currentUri == '/about'} ? 'active'">/about</a></li>
+                <li><a th:href="@{/admin/dashboard}" th:classappend="${currentUri != null and currentUri.startsWith('/admin')} ? 'active'">/admin</a></li>
             </ul>
         </nav>
 

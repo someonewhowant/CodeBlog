@@ -3,22 +3,20 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layouts/main}">
 <head>
-    <title th:text="${title}">Home</title>
+    <title th:text="${title}">Articles</title>
 </head>
 <body>
 
     <div layout:fragment="content">
-        <section class="hero-minimal">
-            <span class="hero-label">/dev/null/intro</span>
-            <h1 class="author__heading">Hello World</h1>
-            <p class="author__body">A blog about code, architecture, and the pursuit of elegant solutions.</p>
-        </section>
+        <section class="main">
+            <h2 class="section-title">
+                <i class="bi bi-journal-text"></i> all_articles
+            </h2>
 
-        <section class="articles">
-            <nav class="category-nav">
+            <nav class="category-nav" style="margin-bottom: 40px;">
                 <ul class="category-list">
                     <li>
-                        <a th:href="@{/}" 
+                        <a th:href="@{/articles}" 
                            class="category-link" 
                            th:classappend="${currentCategory == null} ? 'active'">
                             <i class="bi bi-house-door"></i>
@@ -27,31 +25,16 @@
                     </li>
                     <li th:each="cat : ${categories}">
                         <a th:href="@{/category/{slug}(slug=${cat.slug})}" 
-                           class="category-link" 
-                           th:classappend="${currentCategory == cat.slug} ? 'active'">
-                            <i class="bi" th:classappend="${
-                                cat.slug == 'java' ? 'bi-cup-hot' :
-                                (cat.slug == 'javascript' ? 'bi-filetype-js' :
-                                (cat.slug == 'docker' ? 'bi-box-seam' :
-                                (cat.slug == 'aws' ? 'bi-cloud' :
-                                (cat.slug == 'spring' ? 'bi-bootstrap' : 
-                                (cat.slug == 'database' ? 'bi-database' :
-                                (cat.slug == 'architecture' ? 'bi-diagram-3' : 'bi-tag'))))))
-                            }"></i>
+                           class="category-link">
+                            <i class="bi bi-tag"></i>
                             <span th:text="${cat.name}">Category</span>
-                            <span class="category-count" th:text="${cat.posts.size()}">0</span>
                         </a>
                     </li>
                 </ul>
             </nav>
 
-            <h2 class="section-title">
-                <i class="bi bi-git"></i> recent_commits
-            </h2>
-
             <ul class="article-grid">
                 <li th:each="post : ${data}" class="article-card">
-                    <!-- ... existing card logic ... -->
                     <div class="article-card__image-container">
                         <img th:if="${post.imageUrl}" 
                              th:src="${post.imageUrl}" 
@@ -71,19 +54,23 @@
                         <h3 class="article-card__title">
                             <a th:href="@{/post/{id}(id=${post.id})}" th:text="${post.title}" class="stretched-link">Post Title</a>
                         </h3>
-                        <p class="article-card__excerpt" th:text="${#strings.abbreviate(post.body, 120)}"></p>
+                        <p class="article-card__excerpt" th:text="${#strings.abbreviate(post.body, 150)}"></p>
                         
                         <div class="article-card__footer">
-                            <span class="read-more">read_insight <i class="bi bi-arrow-right"></i></span>
+                            <span class="read-more">read_more <i class="bi bi-arrow-right"></i></span>
                         </div>
                     </div>
                 </li>
             </ul>
 
-            <div style="margin-top: 40px; text-align: center;">
-                <a th:href="@{/articles}" class="btn btn-outline">
-                    <i class="bi bi-archive"></i> view_all_articles()
-                </a>
+            <div class="pagination">
+                <a th:if="${currentPage > 1}" 
+                   th:href="@{/articles(page=${currentPage - 1})}" 
+                   class="pagination-btn">&larr; Newer</a>
+                   
+                <a th:if="${currentPage < totalPages}" 
+                   th:href="@{/articles(page=${currentPage + 1})}" 
+                   class="pagination-btn">Older &rarr;</a>
             </div>
         </section>
     </div>
