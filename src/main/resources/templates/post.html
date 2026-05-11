@@ -7,18 +7,18 @@
 </head>
 <body>
     <div layout:fragment="content">
-        <article class="post">
-            <header class="post-header" style="text-align: center; margin-bottom: 60px;">
-                <div style="margin-bottom: 16px;">
+        <article class="post reading-container">
+            <header class="post-header">
+                <div>
                     <a th:if="${post.category}" 
                        th:href="@{/category/{slug}(slug=${post.category.slug})}" 
                        th:text="${post.category.name}"
                        class="post-category">CATEGORY</a>
                 </div>
-                <h1 class="post-title" th:text="${post.title}" style="font-size: 3rem; margin: 16px 0;">Title</h1>
-                <div class="post-meta" style="justify-content: center; display: flex; gap: 24px; align-items: center;">
-                    <span class="article-list__date" th:text="${#temporals.format(post.createdAt, 'MMMM dd, yyyy')}">Date</span>
-                    <span style="color: var(--text-dim); opacity: 0.3;">|</span>
+                <h1 class="post-title" th:text="${post.title}">Title</h1>
+                <div class="post-meta">
+                    <span><i class="bi bi-calendar3"></i> <span th:text="${#temporals.format(post.createdAt, 'MMMM dd, yyyy')}">Date</span></span>
+                    <span class="meta-sep">|</span>
                     <span><i class="bi bi-person"></i> code_admin</span>
                 </div>
             </header>
@@ -31,23 +31,21 @@
                 Content
             </div>
 
-            <div th:if="${not #lists.isEmpty(post.tags)}" class="post-content" style="margin-top: 40px; padding-top: 24px; border-top: 1px solid var(--border-subtle);">
-                <div style="display: flex; gap: 12px; flex-wrap: wrap; align-items: center;">
-                    <span style="font-family: var(--font-mono); color: var(--text-dim); font-size: 0.9rem;"><i class="bi bi-tags"></i> tags:</span>
-                    <a th:each="tag : ${post.tags}" 
-                       th:href="@{/tag/{slug}(slug=${tag.slug})}" 
-                       th:text="'#' + ${tag.name}"
-                       class="badge-tag" style="padding: 4px 12px; font-size: 0.9rem;">#tag</a>
-                </div>
+            <div th:if="${not #lists.isEmpty(post.tags)}" class="post-tags">
+                <span class="post-tags__label"><i class="bi bi-tags"></i> tags:</span>
+                <a th:each="tag : ${post.tags}" 
+                   th:href="@{/tag/{slug}(slug=${tag.slug})}" 
+                   th:text="'#' + ${tag.name}"
+                   class="badge-tag">#tag</a>
             </div>
             
-            <footer style="margin-top: 100px; border-top: 1px solid var(--border-subtle); padding-top: 48px; display: flex; justify-content: space-between; align-items: center;">
+            <footer class="post-footer">
                 <a th:href="@{/}" class="btn btn-outline">
                     <i class="bi bi-chevron-left"></i> cd ..
                 </a>
                 <div class="footer-socials">
-                    <a href="#" style="font-size: 1.4rem;"><i class="bi bi-github"></i></a>
-                    <a href="#" style="margin-left: 24px; font-size: 1.4rem;"><i class="bi bi-twitter-x"></i></a>
+                    <a href="#" class="social-link"><i class="bi bi-github"></i></a>
+                    <a href="#" class="social-link" style="margin-left: 24px;"><i class="bi bi-twitter-x"></i></a>
                 </div>
             </footer>
         </article>

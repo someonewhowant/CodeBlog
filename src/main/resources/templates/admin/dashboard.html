@@ -7,13 +7,13 @@
 </head>
 <body>
     <div layout:fragment="content">
-        <div class="admin-header" style="margin-bottom: 40px; display: flex; justify-content: space-between; align-items: center;">
-            <h1 class="author__heading" style="font-size: 1.8rem; margin: 0;">root@admin:~/posts$</h1>
-            <div style="display: flex; gap: 16px;">
+        <div class="admin-header">
+            <h1>root@admin:~/posts$</h1>
+            <div class="admin-actions">
                 <a th:href="@{/admin/add-post}" class="btn btn-primary">
                     <i class="bi bi-plus-lg"></i> new_post()
                 </a>
-                <form th:action="@{/admin/logout}" method="POST" style="margin: 0;">
+                <form th:action="@{/admin/logout}" method="POST">
                     <button type="submit" class="btn btn-outline" style="color: var(--accent-orange); border-color: var(--accent-orange);">
                         <i class="bi bi-power"></i> exit()
                     </button>
@@ -33,16 +33,16 @@
                 </thead>
                 <tbody>
                     <tr th:each="post : ${data}">
-                        <td style="font-weight: 600; color: var(--text-main);" th:text="${post.title}">Title</td>
+                        <td th:text="${post.title}">Title</td>
                         <td>
                             <span th:if="${post.category}" 
                                   th:text="${post.category.name}" 
                                   class="badge badge-success">Category</span>
                             <span th:unless="${post.category}" class="text-dim" style="font-family: var(--font-mono); font-size: 0.75rem;">none</span>
                         </td>
-                        <td style="font-family: var(--font-mono); font-size: 0.85rem; color: var(--text-dim);" th:text="${#temporals.format(post.createdAt, 'yyyy-MM-dd HH:mm')}">Date</td>
-                        <td style="text-align: right;">
-                            <div style="display: flex; gap: 8px; justify-content: flex-end;">
+                        <td th:text="${#temporals.format(post.createdAt, 'yyyy-MM-dd HH:mm')}">Date</td>
+                        <td>
+                            <div class="admin-actions" style="justify-content: flex-end;">
                                 <a th:href="@{/admin/edit-post/{id}(id=${post.id})}" class="btn btn-outline" style="padding: 6px 12px; font-size: 0.8rem;">
                                     <i class="bi bi-pencil"></i> EDIT
                                 </a>

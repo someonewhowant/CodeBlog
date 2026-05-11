@@ -68,6 +68,55 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
+    // --- Scroll Progress Bar ---
+    const progressBar = document.createElement('div');
+    progressBar.className = 'scroll-progress';
+    document.body.appendChild(progressBar);
+
+    window.addEventListener('scroll', () => {
+        const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+        const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+        const scrolled = (winScroll / height) * 100;
+        progressBar.style.width = scrolled + "%";
+
+        // Header Scrolled State
+        const header = document.querySelector('.header');
+        if (header) {
+            if (window.scrollY > 20) {
+                header.classList.add('header--scrolled');
+            } else {
+                header.classList.remove('header--scrolled');
+            }
+        }
+    });
+
+    // --- Intersection Observer for Animations ---
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    };
+
+    const scrollObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('revealed');
+                scrollObserver.unobserve(entry.target);
+            }
+        });
+    }, observerOptions);
+
+    const initScrollAnimations = () => {
+        const revealElements = document.querySelectorAll('.article-card, .hero-minimal, .section-title, .category-nav, .post-header, .post-content > *, .reveal-on-scroll');
+        revealElements.forEach(el => {
+            if (!el.classList.contains('reveal-on-scroll')) {
+                el.classList.add('reveal-on-scroll');
+            }
+            scrollObserver.observe(el);
+        });
+    };
+
+    initScrollAnimations();
+
     // --- Code Blocks Enhancement ---
     const enhanceCodeBlocks = () => {
         const codeBlocks = document.querySelectorAll('pre');

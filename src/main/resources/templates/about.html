@@ -7,54 +7,88 @@
 </head>
 <body>
     <div layout:fragment="content">
-        <section class="about-hero">
+        <section class="about-hero fade-in">
             <h1 class="author__heading">/dev/about</h1>
-            <p class="author__body" style="max-width: 100%; margin-top: 20px;">
+            <p class="author__body">
                 This blog is a digital workbench where complex ideas are deconstructed into manageable components. We focus on modern software engineering, robust architectures, and the continuous evolution of the web.
             </p>
         </section>
 
-        <section class="card-glass" style="margin-bottom: 60px;">
-            <h3 style="font-family: var(--font-mono); font-size: 1.5rem; margin-bottom: 24px; color: var(--accent-blue);">
-                <i class="bi bi-terminal"></i> system.init()
+        <section class="card-glass reveal-on-scroll" style="margin-bottom: 60px; padding: 40px;">
+            <h3 class="section-title" style="margin-top: 0;">
+                <i class="bi bi-terminal" style="color: var(--accent-blue);"></i> system.init()
             </h3>
-            <p style="font-size: 1.1rem; line-height: 1.8; color: var(--text-dim);">
+            <p style="font-size: 1.1rem; line-height: 1.8; color: var(--text-dim); margin-bottom: 40px;">
                 CodeBlog was built with a simple goal: to document the journey of building software that lasts. We believe in transparency, technical excellence, and the power of shared knowledge.
             </p>
             
             <div class="about-grid">
-                <div class="card-glass" style="padding: 24px;">
-                    <div style="font-family: var(--font-mono); font-size: 1.1rem; font-weight: 700; color: var(--accent-green);">
-                        <i class="bi bi-cpu"></i> 01. COMPILE
-                    </div>
-                    <div style="color: var(--text-dim); margin-top: 12px; font-size: 0.9rem;">
+                <div class="card-glass about-card">
+                    <i class="bi bi-cpu about-card__icon" style="color: var(--accent-green);"></i>
+                    <div class="about-card__title" style="color: var(--accent-green);">01. COMPILE</div>
+                    <div class="about-card__text">
                         Turning abstract concepts into functional, optimized code.
                     </div>
                 </div>
-                <div class="card-glass" style="padding: 24px;">
-                    <div style="font-family: var(--font-mono); font-size: 1.1rem; font-weight: 700; color: var(--accent-blue);">
-                        <i class="bi bi-rocket-takeoff"></i> 02. EXECUTE
-                    </div>
-                    <div style="color: var(--text-dim); margin-top: 12px; font-size: 0.9rem;">
+                <div class="card-glass about-card">
+                    <i class="bi bi-rocket-takeoff about-card__icon" style="color: var(--accent-blue);"></i>
+                    <div class="about-card__title" style="color: var(--accent-blue);">02. EXECUTE</div>
+                    <div class="about-card__text">
                         Deploying scalable and high-performance solutions.
                     </div>
                 </div>
-                <div class="card-glass" style="padding: 24px;">
-                    <div style="font-family: var(--font-mono); font-size: 1.1rem; font-weight: 700; color: var(--accent-purple);">
-                        <i class="bi bi-bug"></i> 03. DEBUG
-                    </div>
-                    <div style="color: var(--text-dim); margin-top: 12px; font-size: 0.9rem;">
+                <div class="card-glass about-card">
+                    <i class="bi bi-bug about-card__icon" style="color: var(--accent-purple);"></i>
+                    <div class="about-card__title" style="color: var(--accent-purple);">03. DEBUG</div>
+                    <div class="about-card__text">
                         Constant iteration, testing, and continuous improvement.
                     </div>
                 </div>
             </div>
         </section>
 
-        <section style="text-align: center; margin-top: 80px;">
-            <h2 style="font-family: var(--font-mono); font-size: 1.2rem; color: var(--text-dim); margin-bottom: 32px;">Connect with the developer</h2>
-            <div class="footer-socials">
-                <a href="#"><i class="bi bi-github"></i> github.com/admin</a>
-                <a href="#" style="margin-left: 32px;"><i class="bi bi-twitter-x"></i> @code_blog</a>
+        <section class="tech-stack reveal-on-scroll">
+            <h2 class="section-title">
+                <i class="bi bi-layers"></i> The Stack
+            </h2>
+            <p style="color: var(--text-dim); max-width: 600px;">
+                Our core architectural pillars and tools used for building modern applications.
+            </p>
+            <div class="tech-grid">
+                <div class="tech-item">
+                    <i class="bi bi-cup-hot"></i>
+                    <span>Java / Spring</span>
+                </div>
+                <div class="tech-item">
+                    <i class="bi bi-database"></i>
+                    <span>PostgreSQL</span>
+                </div>
+                <div class="tech-item">
+                    <i class="bi bi-code-slash"></i>
+                    <span>TypeScript</span>
+                </div>
+                <div class="tech-item">
+                    <i class="bi bi-box-seam"></i>
+                    <span>Docker</span>
+                </div>
+                <div class="tech-item">
+                    <i class="bi bi-cloud-arrow-up"></i>
+                    <span>AWS / Cloud</span>
+                </div>
+                <div class="tech-item">
+                    <i class="bi bi-git"></i>
+                    <span>Git Ops</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="reveal-on-scroll" style="text-align: center; margin-top: 100px; padding-bottom: 40px;">
+            <h2 style="font-family: var(--font-mono); font-size: 1rem; color: var(--text-dim); margin-bottom: 32px; text-transform: uppercase; letter-spacing: 0.2em;">Connect with the developer</h2>
+            <div class="footer-socials" style="justify-content: center;">
+                <a href="#"><i class="bi bi-github"></i></a>
+                <a href="#"><i class="bi bi-twitter-x"></i></a>
+                <a href="#"><i class="bi bi-linkedin"></i></a>
+                <a href="#"><i class="bi bi-envelope-at"></i></a>
             </div>
         </section>
     </div>

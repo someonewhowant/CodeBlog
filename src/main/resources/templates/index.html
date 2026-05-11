@@ -8,8 +8,8 @@
 <body>
 
     <div layout:fragment="content">
-        <section class="author hero-minimal">
-            <div class="hero-label">/dev/null/intro</div>
+        <section class="hero-minimal">
+            <span class="hero-label">/dev/null/intro</span>
             <h1 class="author__heading">Hello World</h1>
             <p class="author__body">A blog about code, architecture, and the pursuit of elegant solutions.</p>
         </section>
@@ -50,7 +50,7 @@
             </h2>
 
             <ul class="article-grid">
-                <li th:each="post : ${data}" class="article-card card-glass">
+                <li th:each="post : ${data}" class="article-card">
                     <div class="article-card__image-container">
                         <img th:if="${post.imageUrl}" 
                              th:src="${post.imageUrl}" 
@@ -62,24 +62,23 @@
                     </div>
                     <div class="article-card__content">
                         <div class="article-card__meta">
-                            <span class="article-list__date" th:text="${#temporals.format(post.createdAt, 'MMMM dd, yyyy')}">Date</span>
-                            <span th:if="${post.category}" class="article-card__separator"></span>
-                            <a th:if="${post.category}" 
-                               th:href="@{/category/{slug}(slug=${post.category.slug})}" 
+                            <span class="article-card__date" th:text="${#temporals.format(post.createdAt, 'MMMM dd, yyyy')}">Date</span>
+                            <span th:if="${post.category}" class="article-card__separator">•</span>
+                            <span th:if="${post.category}" 
                                th:text="${post.category.name}"
-                               class="article-card__category">Category</a>
+                               class="article-card__category">Category</span>
                         </div>
                         <h3 class="article-card__title">
                             <a th:href="@{/post/{id}(id=${post.id})}" th:text="${post.title}" class="stretched-link">Post Title</a>
                         </h3>
-                        <p th:text="${#strings.abbreviate(post.body, 120)}"></p>
-                        <div th:if="${not #lists.isEmpty(post.tags)}" class="article-card__tags">
-                            <a th:each="tag : ${post.tags}" 
-                               th:href="@{/tag/{slug}(slug=${tag.slug})}" 
-                               th:text="'#' + ${tag.name}"
-                               class="badge-tag">#tag</a>
-                        </div>
+                        <p class="article-card__excerpt" th:text="${#strings.abbreviate(post.body, 120)}"></p>
+                        
                         <div class="article-card__footer">
+                            <div th:if="${not #lists.isEmpty(post.tags)}" class="article-card__tags">
+                                <span th:each="tag : ${post.tags}" 
+                                   th:text="'#' + ${tag.name}"
+                                   class="badge-tag" style="padding: 2px 8px; font-size: 0.7rem; border-radius: 4px; margin-right: 4px;">#tag</span>
+                            </div>
                             <span class="read-more">read_insight <i class="bi bi-arrow-right"></i></span>
                         </div>
                     </div>
