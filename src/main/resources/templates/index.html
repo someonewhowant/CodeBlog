@@ -15,75 +15,50 @@
         </section>
 
         <section class="articles">
-            <nav class="category-nav">
-                <ul class="category-list">
-                    <li>
-                        <a th:href="@{/}" 
-                           class="category-link" 
-                           th:classappend="${currentCategory == null} ? 'active'">
-                            <i class="bi bi-house-door"></i>
-                            <span>Все</span>
+            <div class="blog-layout">
+                <aside class="blog-sidebar">
+                    <nav th:replace="~{partials/fragments :: categoryNav(@{/})}"></nav>
+                </aside>
+
+                <div class="blog-main">
+                    <h2 class="section-title">
+                        <i class="bi bi-git"></i> recent_commits
+                    </h2>
+
+                    <ul class="article-grid">
+                        <li th:each="post : ${data}" class="article-card">
+                            <div class="article-card__image-container">
+                                <img th:if="${post.imageUrl}" 
+                                     th:src="${post.imageUrl}" 
+                                     th:alt="${post.title}" 
+                                     class="article-card__image"
+                                     loading="lazy">
+                                <div th:unless="${post.imageUrl}" class="article-card__placeholder"></div>
+                            </div>
+                            <div class="article-card__content">
+                                <div class="article-card__meta">
+                                    <span class="article-card__date" th:text="${#temporals.format(post.createdAt, 'MMMM dd, yyyy')}">Date</span>
+                                    <span th:if="${post.category}" class="article-card__separator">•</span>
+                                    <th:block th:replace="~{partials/fragments :: categoryBadge(${post.category}, 'article-card__category')}"></th:block>
+                                </div>
+                                <h3 class="article-card__title">
+                                    <a th:href="@{/post/{id}(id=${post.id})}" th:text="${post.title}" class="stretched-link">Post Title</a>
+                                </h3>
+                                <p class="article-card__excerpt" th:text="${#strings.abbreviate(post.body, 120)}"></p>
+                                
+                                <div class="article-card__footer">
+                                    <span class="read-more">read_insight <i class="bi bi-arrow-right"></i></span>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+
+                    <div style="margin-top: 40px; text-align: center;">
+                        <a th:href="@{/articles}" class="btn btn-outline">
+                            <i class="bi bi-archive"></i> view_all_articles()
                         </a>
-                    </li>
-                    <li th:each="cat : ${categories}">
-                        <a th:href="@{/category/{slug}(slug=${cat.slug})}" 
-                           class="category-link" 
-                           th:classappend="${currentCategory == cat.slug} ? 'active'">
-                            <i class="bi" th:classappend="${
-                                cat.slug == 'java' ? 'bi-cup-hot' :
-                                (cat.slug == 'javascript' ? 'bi-filetype-js' :
-                                (cat.slug == 'docker' ? 'bi-box-seam' :
-                                (cat.slug == 'aws' ? 'bi-cloud' :
-                                (cat.slug == 'spring' ? 'bi-bootstrap' : 
-                                (cat.slug == 'database' ? 'bi-database' :
-                                (cat.slug == 'architecture' ? 'bi-diagram-3' : 'bi-tag'))))))
-                            }"></i>
-                            <span th:text="${cat.name}">Category</span>
-                            <span class="category-count" th:text="${cat.posts.size()}">0</span>
-                        </a>
-                    </li>
-                </ul>
-            </nav>
-
-            <h2 class="section-title">
-                <i class="bi bi-git"></i> recent_commits
-            </h2>
-
-            <ul class="article-grid">
-                <li th:each="post : ${data}" class="article-card">
-                    <!-- ... existing card logic ... -->
-                    <div class="article-card__image-container">
-                        <img th:if="${post.imageUrl}" 
-                             th:src="${post.imageUrl}" 
-                             th:alt="${post.title}" 
-                             class="article-card__image"
-                             loading="lazy">
-                        <div th:unless="${post.imageUrl}" class="article-card__placeholder"></div>
                     </div>
-                    <div class="article-card__content">
-                        <div class="article-card__meta">
-                            <span class="article-card__date" th:text="${#temporals.format(post.createdAt, 'MMMM dd, yyyy')}">Date</span>
-                            <span th:if="${post.category}" class="article-card__separator">•</span>
-                            <span th:if="${post.category}" 
-                               th:text="${post.category.name}"
-                               class="article-card__category">Category</span>
-                        </div>
-                        <h3 class="article-card__title">
-                            <a th:href="@{/post/{id}(id=${post.id})}" th:text="${post.title}" class="stretched-link">Post Title</a>
-                        </h3>
-                        <p class="article-card__excerpt" th:text="${#strings.abbreviate(post.body, 120)}"></p>
-                        
-                        <div class="article-card__footer">
-                            <span class="read-more">read_insight <i class="bi bi-arrow-right"></i></span>
-                        </div>
-                    </div>
-                </li>
-            </ul>
-
-            <div style="margin-top: 40px; text-align: center;">
-                <a th:href="@{/articles}" class="btn btn-outline">
-                    <i class="bi bi-archive"></i> view_all_articles()
-                </a>
+                </div>
             </div>
         </section>
     </div>

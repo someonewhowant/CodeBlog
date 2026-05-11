@@ -111,7 +111,6 @@ public class MainController {
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", postPage.getTotalPages());
         model.addAttribute("title", title);
-        model.addAttribute("categories", postService.getAllCategories());
         if (description != null) {
             model.addAttribute("description", description);
         }

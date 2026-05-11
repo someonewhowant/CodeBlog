@@ -34,7 +34,7 @@
                         </div>
                         <span class="article-card__title" th:text="${post.title}">Post Title</span>
                         <p th:text="${#strings.abbreviate(post.body, 120)}"></p>
-                        <div th:if="${not #lists.isEmpty(post.tags)}" class="article-card__tags">
+                        <div th:if="${post.tags != null and not #sets.isEmpty(post.tags)}" class="article-card__tags">
                             <a th:each="tag : ${post.tags}" 
                                th:href="@{/tag/{slug}(slug=${tag.slug})}" 
                                th:text="'#' + ${tag.name}"

@@ -62,7 +62,7 @@
                     <div class="tag-selector">
                         <div th:each="tag : ${tags}" class="tag-option">
                             <input type="checkbox" name="tagIds" th:value="${tag.id}" th:id="'tag-' + ${tag.id}"
-                                   th:checked="${#sets.contains(post.tags.![id], tag.id)}">
+                                   th:checked="${post.tags != null and #lists.contains(post.tags.![id], tag.id)}">
                             <label th:for="'tag-' + ${tag.id}" th:text="${tag.name}"></label>
                         </div>
                     </div>
