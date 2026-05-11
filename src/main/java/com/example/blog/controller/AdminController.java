@@ -1,5 +1,6 @@
 package com.example.blog.controller;
 
+import com.example.blog.entity.Category;
 import com.example.blog.entity.Post;
 import com.example.blog.service.FileStorageService;
 import com.example.blog.service.PostService;
@@ -132,5 +133,33 @@ public class AdminController {
     public String deletePost(@PathVariable Long id) {
         postService.deletePost(id);
         return "redirect:/admin/dashboard";
+    }
+
+    /**
+     * Управление категориями.
+     */
+    @GetMapping("/categories")
+    public String manageCategories(Model model) {
+        model.addAttribute("categories", postService.getAllCategories());
+        model.addAttribute("title", "Manage Categories");
+        return "admin/categories";
+    }
+
+    /**
+     * Добавление новой категории.
+     */
+    @PostMapping("/categories")
+    public String addCategory(@ModelAttribute Category category) {
+        postService.createCategory(category);
+        return "redirect:/admin/categories";
+    }
+
+    /**
+     * Удаление категории.
+     */
+    @GetMapping("/delete-category/{id}")
+    public String deleteCategory(@PathVariable Long id) {
+        postService.deleteCategory(id);
+        return "redirect:/admin/categories";
     }
 }

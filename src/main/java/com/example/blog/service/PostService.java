@@ -14,6 +14,8 @@ public interface PostService {
     Page<Post> getPostsByCategory(String categorySlug, int page);
     Page<Post> getPostsByTag(String tagSlug, int page);
     List<Category> getAllCategories();
+    Category createCategory(Category category);
+    void deleteCategory(Long id);
     List<Tag> getAllTags();
     Post createPost(Post post);
     Post updatePost(Long id, Post postDetails);

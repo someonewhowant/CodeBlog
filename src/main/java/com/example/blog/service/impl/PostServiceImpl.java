@@ -72,6 +72,23 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
+    @Transactional
+    public Category createCategory(Category category) {
+        if (category.getSlug() == null || category.getSlug().isEmpty()) {
+            category.setSlug(category.getName().toLowerCase().replaceAll("[^a-z0-9]", "-"));
+        }
+        return categoryRepository.save(category);
+    }
+
+    @Override
+    @Transactional
+    public void deleteCategory(Long id) {
+        Category category = categoryRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Category not found with id: " + id));
+        categoryRepository.delete(category);
+    }
+
+    @Override
     public List<Tag> getAllTags() {
         return tagRepository.findAll(Sort.by("name").ascending());
     }
