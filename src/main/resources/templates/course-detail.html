@@ -26,6 +26,16 @@
                     Content goes here...
                 </div>
 
+                <div class="course-curriculum reveal-on-scroll" th:if="${not #lists.isEmpty(course.modules)}" style="margin-top: 60px;">
+                    <h2 style="font-family: var(--font-mono); margin-bottom: 30px; color: var(--accent-green);">// COURSE_CURRICULUM</h2>
+                    <div th:each="module : ${course.modules}" class="module-item" style="margin-bottom: 40px; border-left: 2px solid var(--accent-blue); padding-left: 24px;">
+                        <h3 th:text="${module.title}" style="color: var(--accent-blue); margin-bottom: 16px;">Module Title</h3>
+                        <div class="post-content" th:utext="${@markdownService.convertToHtml(module.content)}">
+                            Module content...
+                        </div>
+                    </div>
+                </div>
+
                 <div class="post-footer">
                     <a th:href="@{/courses}" class="btn btn--outline">
                         <i class="bi bi-arrow-left"></i> All Courses

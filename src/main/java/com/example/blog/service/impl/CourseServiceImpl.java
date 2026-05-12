@@ -1,6 +1,8 @@
 package com.example.blog.service.impl;
 
 import com.example.blog.entity.Course;
+import com.example.blog.entity.CourseModule;
+import com.example.blog.repository.CourseModuleRepository;
 import com.example.blog.repository.CourseRepository;
 import com.example.blog.service.CourseService;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +16,7 @@ import java.util.List;
 public class CourseServiceImpl implements CourseService {
 
     private final CourseRepository courseRepository;
+    private final CourseModuleRepository moduleRepository;
 
     @Override
     public List<Course> getAllCourses() {
@@ -50,5 +53,34 @@ public class CourseServiceImpl implements CourseService {
     public void deleteCourse(Long id) {
         Course course = getCourseById(id);
         courseRepository.delete(course);
+    }
+
+    @Override
+    @Transactional
+    public CourseModule addModule(Long courseId, CourseModule module) {
+        Course course = getCourseById(courseId);
+        module.setCourse(course);
+        
+        // Auto-set order index if not set
+        if (module.getOrderIndex() == 0) {
+            int maxOrder = course.getModules().stream()
+                    .mapToInt(CourseModule::getOrderIndex)
+                    .max()
+                    .orElse(-1);
+            module.setOrderIndex(maxOrder + 1);
+        }
+        
+        return moduleRepository.save(module);
+    }
+
+    @Override
+    @Transactional
+    public void deleteModule(Long moduleId) {
+        moduleRepository.deleteById(moduleId);
+    }
+
+    @Override
+    public List<CourseModule> getModulesByCourseId(Long courseId) {
+        return moduleRepository.findByCourseIdOrderByOrderIndexAsc(courseId);
     }
 }

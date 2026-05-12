@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/main}">
+<head>
+    <title th:text="${title}">Manage Modules</title>
+</head>
+<body>
+    <div layout:fragment="content">
+        <div class="admin-header">
+            <h1 th:text="'root@admin:~/courses/' + ${course.id} + '/modules$'">root@admin:~/courses/1/modules$</h1>
+            <div class="admin-actions">
+                <a th:href="@{/admin/courses}" class="btn btn-outline">
+                    <i class="bi bi-arrow-left"></i> back_to_courses()
+                </a>
+            </div>
+        </div>
+
+        <div class="admin-table-wrapper" style="margin-bottom: 40px;">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>ORDER</th>
+                        <th>MODULE_TITLE</th>
+                        <th style="text-align: right;">ACTIONS</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="module : ${modules}">
+                        <td th:text="${module.orderIndex}">0</td>
+                        <td th:text="${module.title}">Module Title</td>
+                        <td>
+                            <div class="admin-actions" style="justify-content: flex-end;">
+                                <a th:href="@{/admin/delete-module/{courseId}/{moduleId}(courseId=${course.id}, moduleId=${module.id})}" 
+                                   class="btn btn-outline btn-delete" 
+                                   style="padding: 6px 12px; font-size: 0.8rem;"
+                                   onclick="return confirm('rm -rf this_module?')">
+                                    <i class="bi bi-trash3"></i> DELETE
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(modules)}">
+                        <td colspan="3" style="text-align: center; padding: 40px; color: var(--text-dim);">
+                            No modules found. Use the form below to upload_module().
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="post-form-container fade-in">
+            <h2 style="margin-bottom: 24px; color: var(--accent-green); font-family: var(--font-mono); font-size: 1.25rem;">
+                <i class="bi bi-plus-lg"></i> upload_new_module()
+            </h2>
+            <form th:action="@{/admin/courses/{id}/modules(id=${course.id})}" method="POST" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label for="title" class="form-label">// STRING: module_title</label>
+                    <input type="text" id="title" name="title" placeholder="Introduction to Spring Boot..." class="form-control" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="file" class="form-label" style="color: var(--accent-blue);">// FILE: content_import (.md)</label>
+                    <input type="file" id="file" name="file" accept=".md" class="form-control">
+                </div>
+
+                <div class="form-group">
+                    <label for="content" class="form-label" style="color: var(--accent-purple);">// TEXT: module_content (markdown)</label>
+                    <textarea id="content" name="content" rows="10" placeholder="## Welcome..." class="form-control"></textarea>
+                </div>
+
+                <div style="margin-top: 32px;">
+                    <button type="submit" class="btn btn-primary btn-large" style="width: 100%;">
+                        <i class="bi bi-terminal"></i> upload_module()
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <th:block layout:fragment="scripts">
+        <link rel="stylesheet" href="https://unpkg.com/easymde/dist/easymde.min.css">
+        <script src="https://unpkg.com/easymde/dist/easymde.min.js"></script>
+        <script>
+            const easyMDE = new EasyMDE({
+                element: document.getElementById('content'),
+                spellChecker: false,
+                autosave: {
+                    enabled: true,
+                    uniqueId: "moduleContent",
+                    delay: 1000,
+                },
+                theme: "terminal" // I'll assume there might be some custom styling or just default
+            });
+        </script>
+        <style>
+            .EasyMDEContainer .editor-toolbar {
+                background: var(--bg-card);
+                border-color: var(--border-color);
+            }
+            .EasyMDEContainer .CodeMirror {
+                background: var(--bg-card);
+                color: var(--text-main);
+                border-color: var(--border-color);
+            }
+            .editor-toolbar button {
+                color: var(--text-main) !important;
+            }
+            .editor-toolbar button.active, .editor-toolbar button:hover {
+                background: var(--bg-body);
+                border-color: var(--accent-blue);
+            }
+        </style>
+    </th:block>
+</body>
+</html>

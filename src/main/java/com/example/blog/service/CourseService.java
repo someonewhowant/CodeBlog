@@ -1,6 +1,7 @@
 package com.example.blog.service;
 
 import com.example.blog.entity.Course;
+import com.example.blog.entity.CourseModule;
 import java.util.List;
 
 public interface CourseService {
@@ -9,4 +10,9 @@ public interface CourseService {
     Course createCourse(Course course);
     Course updateCourse(Long id, Course course);
     void deleteCourse(Long id);
+
+    // Module management
+    CourseModule addModule(Long courseId, CourseModule module);
+    void deleteModule(Long moduleId);
+    List<CourseModule> getModulesByCourseId(Long courseId);
 }

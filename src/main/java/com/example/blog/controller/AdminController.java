@@ -2,6 +2,7 @@ package com.example.blog.controller;
 
 import com.example.blog.entity.Category;
 import com.example.blog.entity.Course;
+import com.example.blog.entity.CourseModule;
 import com.example.blog.entity.Post;
 import com.example.blog.service.CourseService;
 import com.example.blog.service.FileStorageService;
@@ -237,5 +238,47 @@ public class AdminController {
     public String deleteCourse(@PathVariable Long id) {
         courseService.deleteCourse(id);
         return "redirect:/admin/courses";
+    }
+
+    /**
+     * Управление модулями курса.
+     */
+    @GetMapping("/courses/{id}/modules")
+    public String manageModules(@PathVariable Long id, Model model) {
+        Course course = courseService.getCourseById(id);
+        model.addAttribute("course", course);
+        model.addAttribute("modules", courseService.getModulesByCourseId(id));
+        model.addAttribute("title", "Manage Modules: " + course.getTitle());
+        return "admin/modules";
+    }
+
+    /**
+     * Добавление модуля.
+     */
+    @PostMapping("/courses/{id}/modules")
+    public String addModule(@PathVariable Long id,
+                            @RequestParam("title") String title,
+                            @RequestParam(value = "content", required = false) String content,
+                            @RequestParam(value = "file", required = false) MultipartFile file) throws IOException {
+        CourseModule module = new CourseModule();
+        module.setTitle(title);
+        
+        if (file != null && !file.isEmpty()) {
+            module.setContent(new String(file.getBytes(), StandardCharsets.UTF_8));
+        } else {
+            module.setContent(content);
+        }
+        
+        courseService.addModule(id, module);
+        return "redirect:/admin/courses/" + id + "/modules";
+    }
+
+    /**
+     * Удаление модуля.
+     */
+    @GetMapping("/delete-module/{courseId}/{moduleId}")
+    public String deleteModule(@PathVariable Long courseId, @PathVariable Long moduleId) {
+        courseService.deleteModule(moduleId);
+        return "redirect:/admin/courses/" + courseId + "/modules";
     }
 }
