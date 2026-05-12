@@ -1,6 +1,7 @@
 package com.example.blog.controller;
 
 import com.example.blog.entity.Course;
+import com.example.blog.entity.CourseModule;
 import com.example.blog.entity.Post;
 import com.example.blog.service.CourseService;
 import com.example.blog.service.MarkdownService;
@@ -144,7 +145,7 @@ public class MainController {
     }
 
     /**
-     * Детальная страница курса.
+     * Детальная страница курса (Overview).
      */
     @GetMapping("/course/{id}")
     public String courseDetail(@PathVariable Long id, Model model) {
@@ -154,6 +155,40 @@ public class MainController {
         model.addAttribute("course", course);
         model.addAttribute("htmlContent", htmlContent);
         model.addAttribute("title", course.getTitle());
+        model.addAttribute("isOverview", true);
+        return "course-detail";
+    }
+
+    /**
+     * Страница конкретного модуля курса.
+     */
+    @GetMapping("/course/{courseId}/module/{moduleId}")
+    public String moduleDetail(@PathVariable Long courseId, @PathVariable Long moduleId, Model model) {
+        Course course = courseService.getCourseById(courseId);
+        CourseModule module = courseService.getModuleById(moduleId);
+        
+        List<CourseModule> modules = course.getModules();
+        CourseModule nextModule = null;
+        CourseModule prevModule = null;
+        
+        for (int i = 0; i < modules.size(); i++) {
+            if (modules.get(i).getId().equals(moduleId)) {
+                if (i > 0) prevModule = modules.get(i - 1);
+                if (i < modules.size() - 1) nextModule = modules.get(i + 1);
+                break;
+            }
+        }
+        
+        String htmlContent = markdownService.convertToHtml(module.getContent());
+        
+        model.addAttribute("course", course);
+        model.addAttribute("module", module);
+        model.addAttribute("htmlContent", htmlContent);
+        model.addAttribute("nextModule", nextModule);
+        model.addAttribute("prevModule", prevModule);
+        model.addAttribute("title", module.getTitle() + " - " + course.getTitle());
+        model.addAttribute("isOverview", false);
+        
         return "course-detail";
     }
 

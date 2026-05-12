@@ -15,4 +15,5 @@ public interface CourseService {
     CourseModule addModule(Long courseId, CourseModule module);
     void deleteModule(Long moduleId);
     List<CourseModule> getModulesByCourseId(Long courseId);
+    CourseModule getModuleById(Long moduleId);
 }

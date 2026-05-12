@@ -83,4 +83,10 @@ public class CourseServiceImpl implements CourseService {
     public List<CourseModule> getModulesByCourseId(Long courseId) {
         return moduleRepository.findByCourseIdOrderByOrderIndexAsc(courseId);
     }
+
+    @Override
+    public CourseModule getModuleById(Long moduleId) {
+        return moduleRepository.findById(moduleId)
+                .orElseThrow(() -> new RuntimeException("Module not found with id: " + moduleId));
+    }
 }

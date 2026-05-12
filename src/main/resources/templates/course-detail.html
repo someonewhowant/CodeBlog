@@ -3,48 +3,110 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layouts/main}">
 <head>
-    <title th:text="${course.title}">Course Title</title>
+    <title th:text="${title}">Course Detail</title>
 </head>
 <body>
     <div layout:fragment="content">
-        <div class="post">
-            <header class="post-header fade-in">
-                <div class="post-category" th:text="${course.level}">LEVEL</div>
-                <h1 class="post-title" th:text="${course.title}">Course Title</h1>
-                <div class="post-meta">
-                    <span><i class="bi bi-clock"></i> <span th:text="${course.duration}">12 Hours</span></span>
-                    <span><i class="bi bi-calendar3"></i> <span th:text="${#temporals.format(course.createdAt, 'dd MMMM yyyy')}">Date</span></span>
-                </div>
-            </header>
+        <div class="container">
+            <!-- Breadcrumbs -->
+            <nav class="course-breadcrumbs fade-in">
+                <a th:href="@{/}">Home</a>
+                <i class="bi bi-chevron-right"></i>
+                <a th:href="@{/courses}">Courses</a>
+                <i class="bi bi-chevron-right"></i>
+                <a th:href="@{/course/{id}(id=${course.id})}" th:text="${course.title}">Course Title</a>
+                <th:block th:if="${not isOverview}">
+                    <i class="bi bi-chevron-right"></i>
+                    <span th:text="${module.title}">Module Title</span>
+                </th:block>
+            </nav>
 
-            <div class="post-cover fade-in" th:if="${course.imageUrl}">
-                <img th:src="${course.imageUrl}" th:alt="${course.title}">
-            </div>
-
-            <div class="reading-container">
-                <div class="post-content reveal-on-scroll" th:utext="${htmlContent}">
-                    Content goes here...
-                </div>
-
-                <div class="course-curriculum reveal-on-scroll" th:if="${not #lists.isEmpty(course.modules)}" style="margin-top: 60px;">
-                    <h2 style="font-family: var(--font-mono); margin-bottom: 30px; color: var(--accent-green);">// COURSE_CURRICULUM</h2>
-                    <div th:each="module : ${course.modules}" class="module-item" style="margin-bottom: 40px; border-left: 2px solid var(--accent-blue); padding-left: 24px;">
-                        <h3 th:text="${module.title}" style="color: var(--accent-blue); margin-bottom: 16px;">Module Title</h3>
-                        <div class="post-content" th:utext="${@markdownService.convertToHtml(module.content)}">
-                            Module content...
+            <div class="course-layout">
+                <!-- Sidebar: Course Map -->
+                <aside class="course-sidebar fade-in">
+                    <div class="course-map">
+                        <span class="course-map__title">// COURSE_MAP</span>
+                        <ul class="course-map__list">
+                            <li class="course-map__item" th:classappend="${isOverview} ? 'active' : ''">
+                                <a th:href="@{/course/{id}(id=${course.id})}">
+                                    <i class="bi bi-info-circle"></i> Overview
+                                </a>
+                            </li>
+                            <li th:each="m : ${course.modules}" 
+                                class="course-map__item" 
+                                th:classappend="${!isOverview and m.id == module.id} ? 'active' : ''">
+                                <a th:href="@{/course/{courseId}/module/{moduleId}(courseId=${course.id}, moduleId=${m.id})}">
+                                    <i class="bi bi-journal-text"></i>
+                                    <span th:text="${m.title}">Module Title</span>
+                                </a>
+                            </li>
+                        </ul>
+                        
+                        <div class="course-progress-info" th:if="${not isOverview}">
+                            <i class="bi bi-lightning-charge"></i>
+                            <span>Keep going! You're doing great.</span>
                         </div>
                     </div>
-                </div>
+                </aside>
 
-                <div class="post-footer">
-                    <a th:href="@{/courses}" class="btn btn--outline">
-                        <i class="bi bi-arrow-left"></i> All Courses
-                    </a>
-                    <div class="footer-socials">
-                        <a href="#"><i class="bi bi-share"></i></a>
-                        <a href="#"><i class="bi bi-bookmark"></i></a>
-                    </div>
-                </div>
+                <!-- Main Content -->
+                <main class="course-main">
+                    <article class="post">
+                        <header class="post-header fade-in">
+                            <div class="post-category" th:text="${isOverview ? course.level : 'MODULE ' + (module.orderIndex + 1)}">LEVEL / MODULE X</div>
+                            <h1 class="post-title" th:text="${isOverview ? course.title : module.title}">Title</h1>
+                            <div class="post-meta" th:if="${isOverview}">
+                                <span><i class="bi bi-clock"></i> <span th:text="${course.duration}">12 Hours</span></span>
+                                <span><i class="bi bi-calendar3"></i> <span th:text="${#temporals.format(course.createdAt, 'dd MMMM yyyy')}">Date</span></span>
+                            </div>
+                        </header>
+
+                        <div class="post-cover fade-in" th:if="${isOverview and course.imageUrl != null}">
+                            <img th:src="${course.imageUrl}" th:alt="${course.title}">
+                        </div>
+
+                        <div class="post-content reveal-on-scroll" th:utext="${htmlContent}">
+                            Content goes here...
+                        </div>
+
+                        <!-- Module Navigation -->
+                        <div class="course-navigation reveal-on-scroll" th:if="${not isOverview}">
+                            <a th:if="${prevModule}" 
+                               th:href="@{/course/{courseId}/module/{moduleId}(courseId=${course.id}, moduleId=${prevModule.id})}" 
+                               class="nav-btn">
+                                <span class="nav-btn__label"><i class="bi bi-arrow-left"></i> Previous</span>
+                                <span class="nav-btn__title" th:text="${prevModule.title}">Previous Module</span>
+                            </a>
+                            <div th:unless="${prevModule}" style="flex: 1;"></div>
+                            
+                            <a th:if="${nextModule}" 
+                               th:href="@{/course/{courseId}/module/{moduleId}(courseId=${course.id}, moduleId=${nextModule.id})}" 
+                               class="nav-btn nav-btn--next">
+                                <span class="nav-btn__label">Next <i class="bi bi-arrow-right"></i></span>
+                                <span class="nav-btn__title" th:text="${nextModule.title}">Next Module</span>
+                            </a>
+                            
+                            <a th:unless="${nextModule}" 
+                               th:href="@{/courses}" 
+                               class="nav-btn nav-btn--next">
+                                <span class="nav-btn__label">Finish <i class="bi bi-check2-circle"></i></span>
+                                <span class="nav-btn__title">Back to Courses</span>
+                            </a>
+                        </div>
+
+                        <!-- Footer for Overview -->
+                        <div class="post-footer" th:if="${isOverview}">
+                            <a th:href="@{/courses}" class="btn btn-outline">
+                                <i class="bi bi-arrow-left"></i> All Courses
+                            </a>
+                            <a th:if="${not #lists.isEmpty(course.modules)}" 
+                               th:href="@{/course/{courseId}/module/{moduleId}(courseId=${course.id}, moduleId=${course.modules[0].id})}" 
+                               class="btn btn-primary">
+                                Start Course <i class="bi bi-play-fill"></i>
+                            </a>
+                        </div>
+                    </article>
+                </main>
             </div>
         </div>
     </div>

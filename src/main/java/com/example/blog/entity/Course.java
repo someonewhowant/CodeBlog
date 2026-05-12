@@ -42,6 +42,7 @@ public class Course {
     @Column(nullable = false)
     private String duration; // e.g., "12 Hours"
 
+    @Builder.Default
     @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("orderIndex ASC")
     private List<CourseModule> modules = new ArrayList<>();
