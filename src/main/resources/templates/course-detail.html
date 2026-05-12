@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/main}">
+<head>
+    <title th:text="${course.title}">Course Title</title>
+</head>
+<body>
+    <div layout:fragment="content">
+        <div class="post">
+            <header class="post-header fade-in">
+                <div class="post-category" th:text="${course.level}">LEVEL</div>
+                <h1 class="post-title" th:text="${course.title}">Course Title</h1>
+                <div class="post-meta">
+                    <span><i class="bi bi-clock"></i> <span th:text="${course.duration}">12 Hours</span></span>
+                    <span><i class="bi bi-calendar3"></i> <span th:text="${#temporals.format(course.createdAt, 'dd MMMM yyyy')}">Date</span></span>
+                </div>
+            </header>
+
+            <div class="post-cover fade-in" th:if="${course.imageUrl}">
+                <img th:src="${course.imageUrl}" th:alt="${course.title}">
+            </div>
+
+            <div class="reading-container">
+                <div class="post-content reveal-on-scroll" th:utext="${htmlContent}">
+                    Content goes here...
+                </div>
+
+                <div class="post-footer">
+                    <a th:href="@{/courses}" class="btn btn--outline">
+                        <i class="bi bi-arrow-left"></i> All Courses
+                    </a>
+                    <div class="footer-socials">
+                        <a href="#"><i class="bi bi-share"></i></a>
+                        <a href="#"><i class="bi bi-bookmark"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

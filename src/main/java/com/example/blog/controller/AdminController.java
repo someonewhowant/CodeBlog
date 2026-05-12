@@ -1,7 +1,9 @@
 package com.example.blog.controller;
 
 import com.example.blog.entity.Category;
+import com.example.blog.entity.Course;
 import com.example.blog.entity.Post;
+import com.example.blog.service.CourseService;
 import com.example.blog.service.FileStorageService;
 import com.example.blog.service.PostService;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +22,7 @@ import java.util.List;
 public class AdminController {
 
     private final PostService postService;
+    private final CourseService courseService;
     private final FileStorageService fileStorageService;
 
     /**
@@ -161,5 +164,78 @@ public class AdminController {
     public String deleteCategory(@PathVariable Long id) {
         postService.deleteCategory(id);
         return "redirect:/admin/categories";
+    }
+
+    /**
+     * Управление курсами.
+     */
+    @GetMapping("/courses")
+    public String manageCourses(Model model) {
+        model.addAttribute("courses", courseService.getAllCourses());
+        model.addAttribute("title", "Manage Courses");
+        return "admin/courses";
+    }
+
+    /**
+     * Форма добавления курса.
+     */
+    @GetMapping("/add-course")
+    public String addCourseForm(Model model) {
+        model.addAttribute("title", "Add Course");
+        return "admin/add-course";
+    }
+
+    /**
+     * Обработка создания курса.
+     */
+    @PostMapping("/add-course")
+    public String addCourse(@ModelAttribute Course course, 
+                            @RequestParam("image") MultipartFile image,
+                            @RequestParam(value = "markdownFile", required = false) MultipartFile markdownFile) throws IOException {
+        if (!image.isEmpty()) {
+            course.setImageUrl(fileStorageService.storeFile(image));
+        }
+        if (markdownFile != null && !markdownFile.isEmpty()) {
+            course.setContent(new String(markdownFile.getBytes(), StandardCharsets.UTF_8));
+        }
+        courseService.createCourse(course);
+        return "redirect:/admin/courses";
+    }
+
+    /**
+     * Форма редактирования курса.
+     */
+    @GetMapping("/edit-course/{id}")
+    public String editCourseForm(@PathVariable Long id, Model model) {
+        model.addAttribute("course", courseService.getCourseById(id));
+        model.addAttribute("title", "Edit Course");
+        return "admin/edit-course";
+    }
+
+    /**
+     * Обработка обновления курса.
+     */
+    @PostMapping("/edit-course/{id}")
+    public String updateCourse(@PathVariable Long id, 
+                               @ModelAttribute Course course, 
+                               @RequestParam("image") MultipartFile image,
+                               @RequestParam(value = "markdownFile", required = false) MultipartFile markdownFile) throws IOException {
+        if (!image.isEmpty()) {
+            course.setImageUrl(fileStorageService.storeFile(image));
+        }
+        if (markdownFile != null && !markdownFile.isEmpty()) {
+            course.setContent(new String(markdownFile.getBytes(), StandardCharsets.UTF_8));
+        }
+        courseService.updateCourse(id, course);
+        return "redirect:/admin/courses";
+    }
+
+    /**
+     * Удаление курса.
+     */
+    @GetMapping("/delete-course/{id}")
+    public String deleteCourse(@PathVariable Long id) {
+        courseService.deleteCourse(id);
+        return "redirect:/admin/courses";
     }
 }

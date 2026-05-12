@@ -1,6 +1,8 @@
 package com.example.blog.controller;
 
+import com.example.blog.entity.Course;
 import com.example.blog.entity.Post;
+import com.example.blog.service.CourseService;
 import com.example.blog.service.MarkdownService;
 import com.example.blog.service.PostService;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +21,7 @@ import java.util.stream.Collectors;
 public class MainController {
 
     private final PostService postService;
+    private final CourseService courseService;
     private final MarkdownService markdownService;
 
     /**
@@ -128,6 +131,30 @@ public class MainController {
                 .category(post.getCategory())
                 .tags(post.getTags())
                 .build();
+    }
+
+    /**
+     * Страница "Courses".
+     */
+    @GetMapping("/courses")
+    public String courses(Model model) {
+        model.addAttribute("courses", courseService.getAllCourses());
+        model.addAttribute("title", "Courses");
+        return "courses";
+    }
+
+    /**
+     * Детальная страница курса.
+     */
+    @GetMapping("/course/{id}")
+    public String courseDetail(@PathVariable Long id, Model model) {
+        Course course = courseService.getCourseById(id);
+        String htmlContent = markdownService.convertToHtml(course.getContent());
+        
+        model.addAttribute("course", course);
+        model.addAttribute("htmlContent", htmlContent);
+        model.addAttribute("title", course.getTitle());
+        return "course-detail";
     }
 
     /**
