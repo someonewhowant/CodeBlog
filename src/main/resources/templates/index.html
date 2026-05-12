@@ -15,50 +15,44 @@
         </section>
 
         <section class="articles">
-            <div class="blog-layout">
-                <aside class="blog-sidebar">
-                    <nav th:replace="~{partials/fragments :: categoryNav(@{/})}"></nav>
-                </aside>
+            <h2 class="section-title">
+                <i class="bi bi-git"></i> recent_commits
+            </h2>
 
-                <div class="blog-main">
-                    <h2 class="section-title">
-                        <i class="bi bi-git"></i> recent_commits
-                    </h2>
+            <nav th:replace="~{partials/fragments :: categoryNav(@{/})}"></nav>
 
-                    <ul class="article-grid">
-                        <li th:each="post : ${data}" class="article-card">
-                            <div class="article-card__image-container">
-                                <img th:if="${post.imageUrl}" 
-                                     th:src="${post.imageUrl}" 
-                                     th:alt="${post.title}" 
-                                     class="article-card__image"
-                                     loading="lazy">
-                                <div th:unless="${post.imageUrl}" class="article-card__placeholder"></div>
-                            </div>
-                            <div class="article-card__content">
-                                <div class="article-card__meta">
-                                    <span class="article-card__date" th:text="${#temporals.format(post.createdAt, 'MMMM dd, yyyy')}">Date</span>
-                                    <span th:if="${post.category}" class="article-card__separator">•</span>
-                                    <th:block th:replace="~{partials/fragments :: categoryBadge(${post.category}, 'article-card__category')}"></th:block>
-                                </div>
-                                <h3 class="article-card__title">
-                                    <a th:href="@{/post/{id}(id=${post.id})}" th:text="${post.title}" class="stretched-link">Post Title</a>
-                                </h3>
-                                <p class="article-card__excerpt" th:text="${#strings.abbreviate(post.body, 120)}"></p>
-                                
-                                <div class="article-card__footer">
-                                    <span class="read-more">read_insight <i class="bi bi-arrow-right"></i></span>
-                                </div>
-                            </div>
-                        </li>
-                    </ul>
-
-                    <div style="margin-top: 40px; text-align: center;">
-                        <a th:href="@{/articles}" class="btn btn-outline">
-                            <i class="bi bi-archive"></i> view_all_articles()
-                        </a>
+            <ul class="article-grid">
+                <li th:each="post : ${data}" class="article-card">
+                    <div class="article-card__image-container">
+                        <img th:if="${post.imageUrl}" 
+                             th:src="${post.imageUrl}" 
+                             th:alt="${post.title}" 
+                             class="article-card__image"
+                             loading="lazy">
+                        <div th:unless="${post.imageUrl}" class="article-card__placeholder"></div>
                     </div>
-                </div>
+                    <div class="article-card__content">
+                        <div class="article-card__meta">
+                            <span class="article-card__date" th:text="${#temporals.format(post.createdAt, 'MMMM dd, yyyy')}">Date</span>
+                            <span th:if="${post.category}" class="article-card__separator">•</span>
+                            <th:block th:replace="~{partials/fragments :: categoryBadge(${post.category}, 'article-card__category')}"></th:block>
+                        </div>
+                        <h3 class="article-card__title">
+                            <a th:href="@{/post/{id}(id=${post.id})}" th:text="${post.title}" class="stretched-link">Post Title</a>
+                        </h3>
+                        <p class="article-card__excerpt" th:text="${#strings.abbreviate(post.body, 120)}"></p>
+                        
+                        <div class="article-card__footer">
+                            <span class="read-more">read_insight <i class="bi bi-arrow-right"></i></span>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+
+            <div style="margin-top: 40px; text-align: center;">
+                <a th:href="@{/articles}" class="btn btn-outline">
+                    <i class="bi bi-archive"></i> view_all_articles()
+                </a>
             </div>
         </section>
     </div>

@@ -1,4 +1,81 @@
 document.addEventListener('DOMContentLoaded', function() {
+
+    function initCategoryNav() {
+        const containers = document.querySelectorAll('.category-nav__scroll-container, .blog-sidebar');
+        
+        containers.forEach(container => {
+            if (!container) return;
+
+            const parent = container.classList.contains('blog-sidebar') ? container : container.closest('.category-nav');
+            const scrollHint = parent ? parent.querySelector('.category-nav__scroll-hint') : null;
+
+            const updateScrollState = () => {
+                const isVertical = container.classList.contains('blog-sidebar');
+                const scrollPos = isVertical ? container.scrollTop : container.scrollLeft;
+                const maxScroll = isVertical ? 
+                    container.scrollHeight - container.clientHeight : 
+                    container.scrollWidth - container.clientWidth;
+                
+                if (!parent) return;
+
+                // Threshold for showing/hiding masks
+                const threshold = 10;
+                const hasOverflow = maxScroll > 1;
+
+                if (!hasOverflow) {
+                    parent.classList.add('no-overflow');
+                    parent.classList.remove('is-start', 'is-end');
+                    return;
+                }
+
+                parent.classList.remove('no-overflow');
+                
+                if (scrollPos <= threshold) {
+                    parent.classList.add('is-start');
+                    parent.classList.remove('is-end');
+                } else if (scrollPos >= maxScroll - threshold) {
+                    parent.classList.add('is-end');
+                    parent.classList.remove('is-start');
+                } else {
+                    parent.classList.remove('is-start', 'is-end');
+                }
+            };
+
+            // Handle scroll hint click
+            if (scrollHint) {
+                scrollHint.addEventListener('click', () => {
+                    const isVertical = container.classList.contains('blog-sidebar');
+                    const scrollAmount = isVertical ? 150 : 200;
+                    container.scrollBy({
+                        [isVertical ? 'top' : 'left']: scrollAmount,
+                        behavior: 'smooth'
+                    });
+                });
+            }
+
+            // Initialize state
+            updateScrollState();
+            
+            // Listen for scroll
+            container.addEventListener('scroll', updateScrollState);
+            
+            // Handle window resize
+            window.addEventListener('resize', updateScrollState);
+
+            // Active element centering for mobile
+            if (container.classList.contains('category-nav__scroll-container')) {
+                const activeItem = container.querySelector('.category-link.active');
+                if (activeItem) {
+                    const containerRect = container.getBoundingClientRect();
+                    const itemRect = activeItem.getBoundingClientRect();
+                    const scrollLeft = itemRect.left - containerRect.left - (containerRect.width / 2) + (itemRect.width / 2);
+                    container.scrollLeft = scrollLeft;
+                }
+            }
+        });
+    }
+    
+    initCategoryNav();
     
     // --- Theme Toggle logic ---
     const initTheme = () => {
