@@ -1,13 +1,7 @@
 package com.example.blog.config;
 
-import com.example.blog.entity.Category;
-import com.example.blog.entity.Post;
-import com.example.blog.entity.Tag;
-import com.example.blog.entity.User;
-import com.example.blog.repository.CategoryRepository;
-import com.example.blog.repository.PostRepository;
-import com.example.blog.repository.TagRepository;
-import com.example.blog.repository.UserRepository;
+import com.example.blog.entity.*;
+import com.example.blog.repository.*;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -23,6 +17,8 @@ public class DataInitializer {
                                       TagRepository tagRepository,
                                       PostRepository postRepository,
                                       UserRepository userRepository,
+                                      CourseRepository courseRepository,
+                                      CourseModuleRepository moduleRepository,
                                       PasswordEncoder passwordEncoder) {
         return args -> {
             // Инициализация пользователя
@@ -59,23 +55,73 @@ public class DataInitializer {
             // Инициализация тестовых постов
             if (postRepository.count() == 0) {
                 Category backend = categoryRepository.findBySlug("backend").orElse(null);
+                Category architecture = categoryRepository.findBySlug("architecture").orElse(null);
                 
                 postRepository.save(Post.builder()
-                        .title("Welcome to Spring Blog")
-                        .body("This is your first post migrated from Node.js to Spring Boot. Enjoy!")
+                        .title("Mastering Spring Boot Performance")
+                        .body("Optimizing the critical path in your Spring Boot applications requires a deep understanding of the JVM, garbage collection, and thread pool management. In this post, we explore techniques to squeeze every millisecond of performance.")
                         .category(backend)
+                        .imageUrl("https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&q=80&w=1000")
                         .build());
                 
                 postRepository.save(Post.builder()
-                        .title("Spring Boot vs Node.js")
-                        .body("Spring Boot provides a robust ecosystem and strong typing, making it great for enterprise apps.")
-                        .category(backend)
+                        .title("Microservices Architecture: The Hard Parts")
+                        .body("While microservices offer scalability and independence, they also introduce complexity in data consistency and network reliability. We discuss how to handle distributed transactions and service discovery effectively.")
+                        .category(architecture)
+                        .imageUrl("https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&q=80&w=1000")
                         .build());
 
                 postRepository.save(Post.builder()
-                        .title("Thymeleaf Layouts")
-                        .body("Using layouts in Thymeleaf makes your frontend clean and modular.")
-                        .category(categoryRepository.findBySlug("frontend").orElse(null))
+                        .title("Building a Scalable Data Pipeline with Kafka")
+                        .body("Apache Kafka has become the de-facto standard for event-driven architectures. Learn how to design a resilient data pipeline that handles millions of events per second with ease.")
+                        .category(categoryRepository.findBySlug("devops").orElse(null))
+                        .imageUrl("https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&q=80&w=1000")
+                        .build());
+            }
+
+            // Инициализация курсов
+            if (courseRepository.count() == 0) {
+                Course architectureCourse = Course.builder()
+                        .title("Zero to One: System Architecture")
+                        .description("A comprehensive guide to designing scalable, reliable, and maintainable systems from scratch.")
+                        .content("In this course, we cover the fundamental principles of system design, including CAP theorem, Load Balancing, and Database Sharding.")
+                        .level("Advanced")
+                        .duration("15 Hours")
+                        .imageUrl("https://images.unsplash.com/photo-1508921334112-4c6ef99ce26d?auto=format&fit=crop&q=80&w=1000")
+                        .build();
+                
+                courseRepository.save(architectureCourse);
+
+                moduleRepository.save(CourseModule.builder()
+                        .title("Introduction to Scalability")
+                        .content("Scalability is the ability of a system to handle a growing amount of work by adding resources.")
+                        .orderIndex(0)
+                        .course(architectureCourse)
+                        .build());
+
+                moduleRepository.save(CourseModule.builder()
+                        .title("Database Partitioning Strategies")
+                        .content("Horizontal vs Vertical scaling. Sharding mechanisms and rebalancing.")
+                        .orderIndex(1)
+                        .course(architectureCourse)
+                        .build());
+
+                Course backendCourse = Course.builder()
+                        .title("Backend Mastery: Java & Spring Boot")
+                        .description("Master the core concepts of Spring Framework and build enterprise-grade applications.")
+                        .content("Deep dive into Spring Core, Security, Data, and Cloud. Learn how to build production-ready APIs.")
+                        .level("Beginner")
+                        .duration("20 Hours")
+                        .imageUrl("https://images.unsplash.com/photo-1587620962725-abab7fe55159?auto=format&fit=crop&q=80&w=1000")
+                        .build();
+                
+                courseRepository.save(backendCourse);
+
+                moduleRepository.save(CourseModule.builder()
+                        .title("Getting Started with Dependency Injection")
+                        .content("Understanding the Inversion of Control principle.")
+                        .orderIndex(0)
+                        .course(backendCourse)
                         .build());
             }
         };

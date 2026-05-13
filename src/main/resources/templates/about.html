@@ -1,53 +1,78 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{layouts/main}">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{layouts/main}">
+
 <head>
     <title>About</title>
 </head>
+
 <body>
     <div layout:fragment="content">
-        <section class="about-hero fade-in">
-            <h1 class="author__heading">/dev/about</h1>
+        <section class="about-hero">
+            <h1 class="author__heading">/dev/academy/about</h1>
             <p class="author__body">
-                This blog is a digital workbench where complex ideas are deconstructed into manageable components. We focus on modern software engineering, robust architectures, and the continuous evolution of the web.
+                CodeBlog Academy is more than just a technical blog. It's a structured learning platform designed for engineers who want to go beyond the basics and master <span class="text-accent-mono">complex system architecture</span> and <span class="text-accent-mono">performance engineering</span>.
             </p>
         </section>
 
-        <section class="card-glass reveal-on-scroll" style="margin-bottom: 60px; padding: 40px;">
-            <h3 class="section-title" style="margin-top: 0;">
-                <i class="bi bi-terminal" style="color: var(--accent-blue);"></i> system.init()
-            </h3>
-            <p style="font-size: 1.1rem; line-height: 1.8; color: var(--text-dim); margin-bottom: 40px;">
-                CodeBlog was built with a simple goal: to document the journey of building software that lasts. We believe in transparency, technical excellence, and the power of shared knowledge.
-            </p>
-            
-            <div class="about-grid">
-                <div class="card-glass about-card">
-                    <i class="bi bi-cpu about-card__icon" style="color: var(--accent-green);"></i>
-                    <div class="about-card__title" style="color: var(--accent-green);">01. COMPILE</div>
-                    <div class="about-card__text">
-                        Turning abstract concepts into functional, optimized code.
+        <section class="card-glass" style="margin-bottom: 80px; padding: 60px;">
+            <div class="terminal-header">
+                <span class="terminal-header__dot"></span>
+                <span class="terminal-header__dot"></span>
+                <span class="terminal-header__dot"></span>
+                <span class="terminal-header__title">system.init()</span>
+            </div>
+            <div class="terminal-body">
+                <p class="terminal-line"><span class="terminal-prompt">$</span> cat mission.md</p>
+                <p class="terminal-text">
+                    The mission of CodeBlog Academy is to bridge the gap between academic theory and production-grade engineering. We provide deep technical insights, architectural case studies, and structured learning paths for modern developers.
+                </p>
+
+                <div class="about-grid" style="margin-top: 60px;">
+                    <div class="about-card">
+                        <div class="text-accent-mono" style="margin-bottom: 12px; font-size: 0.8rem;">01 // ANALYZE
+                        </div>
+                        <h3 style="margin-bottom: 12px; font-weight: 700;">Deep Architecture</h3>
+                        <p style="color: var(--text-dim); font-size: 0.95rem;">Exploring the internals of distributed
+                            systems and database engines.</p>
                     </div>
-                </div>
-                <div class="card-glass about-card">
-                    <i class="bi bi-rocket-takeoff about-card__icon" style="color: var(--accent-blue);"></i>
-                    <div class="about-card__title" style="color: var(--accent-blue);">02. EXECUTE</div>
-                    <div class="about-card__text">
-                        Deploying scalable and high-performance solutions.
+                    <div class="about-card">
+                        <div class="text-accent-mono"
+                            style="margin-bottom: 12px; font-size: 0.8rem; color: var(--accent-green);">02 // OPTIMIZE
+                        </div>
+                        <h3 style="margin-bottom: 12px; font-weight: 700;">Performance First</h3>
+                        <p style="color: var(--text-dim); font-size: 0.95rem;">Practical guides on squeezing every
+                            millisecond out of the critical path.</p>
                     </div>
-                </div>
-                <div class="card-glass about-card">
-                    <i class="bi bi-bug about-card__icon" style="color: var(--accent-purple);"></i>
-                    <div class="about-card__title" style="color: var(--accent-purple);">03. DEBUG</div>
-                    <div class="about-card__text">
-                        Constant iteration, testing, and continuous improvement.
+                    <div class="about-card">
+                        <div class="text-accent-mono"
+                            style="margin-bottom: 12px; font-size: 0.8rem; color: var(--accent-purple);">03 // SCALE
+                        </div>
+                        <h3 style="margin-bottom: 12px; font-weight: 700;">Cloud Native</h3>
+                        <p style="color: var(--text-dim); font-size: 0.95rem;">Designing for horizontal scale and
+                            zero-downtime deployments.</p>
                     </div>
                 </div>
             </div>
         </section>
 
-        <section class="tech-stack reveal-on-scroll">
+        <section class="academy-philosophy" style="margin-bottom: 100px;">
+            <h2 class="section-title">
+                <i class="bi bi-patch-check"></i> Academy Philosophy
+            </h2>
+            <div class="about-grid about-grid--2" style="margin-top: 40px;">
+                <div class="card-glass" style="padding: 40px;">
+                    <h4 style="margin-bottom: 16px; color: var(--accent-blue); font-family: var(--font-mono);">01 // PRODUCTION_READY</h4>
+                    <p style="color: var(--text-dim); line-height: 1.6;">Every article and course is based on real-world production experience. We don't just show you "Hello World" - we show you how to build systems that handle traffic, failures, and scale.</p>
+                </div>
+                <div class="card-glass" style="padding: 40px;">
+                    <h4 style="margin-bottom: 16px; color: var(--accent-green); font-family: var(--font-mono);">02 // STRUCTURED_PATH</h4>
+                    <p style="color: var(--text-dim); line-height: 1.6;">Our courses are designed as logical progressions. From understanding memory management to designing distributed databases, we guide you through the learning curve.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="tech-stack">
             <h2 class="section-title">
                 <i class="bi bi-layers"></i> The Stack
             </h2>
@@ -61,11 +86,11 @@
                 </div>
                 <div class="tech-item">
                     <i class="bi bi-database"></i>
-                    <span>PostgreSQL</span>
+                    <span>PostgreSQL/MySQL</span>
                 </div>
                 <div class="tech-item">
                     <i class="bi bi-code-slash"></i>
-                    <span>TypeScript</span>
+                    <span>JavaScript</span>
                 </div>
                 <div class="tech-item">
                     <i class="bi bi-box-seam"></i>
@@ -82,8 +107,16 @@
             </div>
         </section>
 
-        <section class="reveal-on-scroll" style="text-align: center; margin-top: 100px; padding-bottom: 40px;">
-            <h2 style="font-family: var(--font-mono); font-size: 1rem; color: var(--text-dim); margin-bottom: 32px; text-transform: uppercase; letter-spacing: 0.2em;">Connect with the developer</h2>
+        <section style="text-align: center; margin-top: 100px; padding-bottom: 40px;">
+            <div style="margin-top: 60px; margin-bottom: 80px;">
+                <a th:href="@{/courses}" class="btn btn-primary" style="padding: 16px 40px; font-size: 1.1rem; border-radius: 30px;">
+                    Explore Academy <i class="bi bi-arrow-right" style="margin-left: 8px;"></i>
+                </a>
+            </div>
+
+            <h2
+                style="font-family: var(--font-mono); font-size: 1rem; color: var(--text-dim); margin-bottom: 32px; text-transform: uppercase; letter-spacing: 0.2em;">
+                Connect with the developer</h2>
             <div class="footer-socials" style="justify-content: center;">
                 <a href="#"><i class="bi bi-github"></i></a>
                 <a href="#"><i class="bi bi-twitter-x"></i></a>
@@ -93,4 +126,5 @@
         </section>
     </div>
 </body>
+
 </html>

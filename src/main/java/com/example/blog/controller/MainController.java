@@ -31,6 +31,13 @@ public class MainController {
     @GetMapping("")
     public String index(@RequestParam(defaultValue = "1") int page, Model model) {
         Page<Post> postPage = postService.getAllPosts(page);
+        
+        // Добавляем последние курсы (топ 3)
+        List<Course> recentCourses = courseService.getAllCourses().stream()
+                .limit(3)
+                .collect(Collectors.toList());
+        model.addAttribute("recentCourses", recentCourses);
+        
         return populateModelAndReturn(postPage, page, "CodeBlog", "A modern blog platform built with Spring Boot 3.", model, "index");
     }
 

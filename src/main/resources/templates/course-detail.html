@@ -9,7 +9,7 @@
     <div layout:fragment="content">
         <div class="container">
             <!-- Breadcrumbs -->
-            <nav class="course-breadcrumbs fade-in">
+            <nav class="course-breadcrumbs">
                 <a th:href="@{/}">Home</a>
                 <i class="bi bi-chevron-right"></i>
                 <a th:href="@{/courses}">Courses</a>
@@ -23,7 +23,7 @@
 
             <div class="course-layout">
                 <!-- Sidebar: Course Map -->
-                <aside class="course-sidebar fade-in">
+                <aside class="course-sidebar">
                     <div class="course-map">
                         <span class="course-map__title">// COURSE_MAP</span>
                         <ul class="course-map__list">
@@ -52,7 +52,7 @@
                 <!-- Main Content -->
                 <main class="course-main">
                     <article class="post">
-                        <header class="post-header fade-in">
+                        <header class="post-header">
                             <div class="post-category" th:text="${isOverview ? course.level : 'MODULE ' + (module.orderIndex + 1)}">LEVEL / MODULE X</div>
                             <h1 class="post-title" th:text="${isOverview ? course.title : module.title}">Title</h1>
                             <div class="post-meta" th:if="${isOverview}">
@@ -61,16 +61,16 @@
                             </div>
                         </header>
 
-                        <div class="post-cover fade-in" th:if="${isOverview and course.imageUrl != null}">
+                        <div class="post-cover" th:if="${isOverview and course.imageUrl != null}">
                             <img th:src="${course.imageUrl}" th:alt="${course.title}">
                         </div>
 
-                        <div class="post-content reveal-on-scroll" th:utext="${htmlContent}">
+                        <div class="post-content" th:utext="${htmlContent}">
                             Content goes here...
                         </div>
 
                         <!-- Module Navigation -->
-                        <div class="course-navigation reveal-on-scroll" th:if="${not isOverview}">
+                        <div class="course-navigation" th:if="${not isOverview}">
                             <a th:if="${prevModule}" 
                                th:href="@{/course/{courseId}/module/{moduleId}(courseId=${course.id}, moduleId=${prevModule.id})}" 
                                class="nav-btn">

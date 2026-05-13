@@ -183,8 +183,14 @@ document.addEventListener('DOMContentLoaded', function() {
     }, observerOptions);
 
     const initScrollAnimations = () => {
+        // Skip animations if explicitly disabled on the body or container
+        if (document.body.classList.contains('no-animations')) return;
+
         const revealElements = document.querySelectorAll('.article-card, .hero-minimal, .section-title, .category-nav, .post-header, .post-content > *, .reveal-on-scroll');
         revealElements.forEach(el => {
+            // Skip elements that are inside course-related layouts to fulfill the request of removing animations there
+            if (el.closest('.course-layout') || el.closest('.courses-grid') || el.closest('.courses-hero')) return;
+
             if (!el.classList.contains('reveal-on-scroll')) {
                 el.classList.add('reveal-on-scroll');
             }
