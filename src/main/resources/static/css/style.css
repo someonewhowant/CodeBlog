@@ -1557,3 +1557,39 @@ a:hover {
   align-items: center;
   gap: 8px;
 }
+
+/* --- Quiz & Locked States --- */
+.locked-content {
+  background: var(--bg-surface) !important;
+  border: 1px dashed var(--accent-orange) !important;
+  box-shadow: var(--shadow);
+}
+
+.pass-badge, .fail-badge {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  padding: 8px 16px;
+  border-radius: 50px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pass-badge {
+  background: rgba(63, 185, 80, 0.1);
+  color: var(--accent-green);
+  border: 1px solid var(--accent-green);
+}
+
+.fail-badge {
+  background: rgba(210, 153, 34, 0.1);
+  color: var(--accent-orange);
+  border: 1px solid var(--accent-orange);
+}
+
+.nav-btn.disabled:hover {
+  transform: none;
+  background: var(--bg-surface);
+  border-color: var(--border-subtle);
+}

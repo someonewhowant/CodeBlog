@@ -5,12 +5,15 @@ import com.example.blog.service.CourseService;
 import com.example.blog.service.MarkdownService;
 import com.example.blog.service.PostService;
 import com.example.blog.service.QuizService;
+import com.example.blog.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -22,6 +25,7 @@ public class MainController {
     private final CourseService courseService;
     private final QuizService quizService;
     private final MarkdownService markdownService;
+    private final UserRepository userRepository;
 
     /**
      * Главная страница блога с пагинацией.
@@ -149,9 +153,6 @@ public class MainController {
         return "courses";
     }
 
-    /**
-     * Детальная страница курса (Overview).
-     */
     @GetMapping("/course/{id}")
     public String courseDetail(@PathVariable Long id, Model model) {
         Course course = courseService.getCourseById(id);
@@ -161,6 +162,8 @@ public class MainController {
         model.addAttribute("htmlContent", htmlContent);
         model.addAttribute("title", course.getTitle());
         model.addAttribute("isOverview", true);
+        model.addAttribute("isLocked", false);
+        model.addAttribute("isNextLocked", false);
         return "course-detail";
     }
 
@@ -168,7 +171,10 @@ public class MainController {
      * Страница конкретного модуля курса.
      */
     @GetMapping("/course/{courseId}/module/{moduleId}")
-    public String moduleDetail(@PathVariable Long courseId, @PathVariable Long moduleId, Model model) {
+    public String moduleDetail(@PathVariable Long courseId, 
+                               @PathVariable Long moduleId, 
+                               Principal principal,
+                               Model model) {
         Course course = courseService.getCourseById(courseId);
         CourseModule module = courseService.getModuleById(moduleId);
         
@@ -176,11 +182,33 @@ public class MainController {
         CourseModule nextModule = null;
         CourseModule prevModule = null;
         
+        boolean isLocked = false;
+        String lockReason = "";
+        
         for (int i = 0; i < modules.size(); i++) {
             if (modules.get(i).getId().equals(moduleId)) {
-                if (i > 0) prevModule = modules.get(i - 1);
+                if (i > 0) {
+                    prevModule = modules.get(i - 1);
+                    // Check if previous module had a quiz and if it was passed
+                    if (prevModule.getQuiz() != null && principal != null) {
+                        User user = userRepository.findByUsername(principal.getName())
+                                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+                        if (!quizService.isQuizPassed(user.getId(), prevModule.getQuiz().getId())) {
+                            isLocked = true;
+                            lockReason = "You must score at least 3 points in the quiz for module: " + prevModule.getTitle();
+                        }
+                    }
+                }
                 if (i < modules.size() - 1) nextModule = modules.get(i + 1);
                 break;
+            }
+        }
+        
+        boolean isNextLocked = false;
+        if (module.getQuiz() != null && principal != null) {
+            User user = userRepository.findByUsername(principal.getName()).orElse(null);
+            if (user != null && !quizService.isQuizPassed(user.getId(), module.getQuiz().getId())) {
+                isNextLocked = true;
             }
         }
         
@@ -191,6 +219,9 @@ public class MainController {
         model.addAttribute("htmlContent", htmlContent);
         model.addAttribute("nextModule", nextModule);
         model.addAttribute("prevModule", prevModule);
+        model.addAttribute("isLocked", isLocked);
+        model.addAttribute("isNextLocked", isNextLocked);
+        model.addAttribute("lockReason", lockReason);
         model.addAttribute("title", module.getTitle() + " - " + course.getTitle());
         model.addAttribute("isOverview", false);
         
@@ -214,6 +245,7 @@ public class MainController {
     @PostMapping("/quiz/{id}/submit")
     public String submitQuiz(@PathVariable Long id, 
                              @RequestParam Map<String, String> params, 
+                             Principal principal,
                              Model model) {
         Quiz quiz = quizService.getQuizById(id);
         int correctAnswers = 0;
@@ -246,6 +278,14 @@ public class MainController {
             result.put("correct", correctAnswerText);
             result.put("isCorrect", isCorrect);
             results.add(result);
+        }
+        
+        // Save results if user is logged in
+        if (principal != null) {
+            User user = userRepository.findByUsername(principal.getName())
+                    .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+            quizService.saveQuizResult(user.getId(), quiz.getId(), correctAnswers);
+            model.addAttribute("isPassed", correctAnswers >= 3);
         }
         
         model.addAttribute("quiz", quiz);

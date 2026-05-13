@@ -3,9 +3,13 @@ package com.example.blog.service.impl;
 import com.example.blog.entity.Course;
 import com.example.blog.entity.Quiz;
 import com.example.blog.entity.Question;
+import com.example.blog.entity.User;
+import com.example.blog.entity.UserQuizResult;
 import com.example.blog.repository.CourseRepository;
 import com.example.blog.repository.QuizRepository;
 import com.example.blog.repository.QuestionRepository;
+import com.example.blog.repository.UserRepository;
+import com.example.blog.repository.UserQuizResultRepository;
 import com.example.blog.service.QuizService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -19,6 +23,8 @@ public class QuizServiceImpl implements QuizService {
     private final QuizRepository quizRepository;
     private final QuestionRepository questionRepository;
     private final CourseRepository courseRepository;
+    private final UserRepository userRepository;
+    private final UserQuizResultRepository userQuizResultRepository;
 
     @Override
     public List<Quiz> getQuizzesByCourseId(Long courseId) {
@@ -69,5 +75,37 @@ public class QuizServiceImpl implements QuizService {
     @Transactional
     public void deleteQuestion(Long questionId) {
         questionRepository.deleteById(questionId);
+    }
+
+    @Override
+    @Transactional
+    public void saveQuizResult(Long userId, Long quizId, int score) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        Quiz quiz = getQuizById(quizId);
+        
+        UserQuizResult result = userQuizResultRepository.findByUserIdAndQuizId(userId, quizId)
+                .orElse(new UserQuizResult());
+        
+        result.setUser(user);
+        result.setQuiz(quiz);
+        // We save the best score
+        if (score > result.getScore()) {
+            result.setScore(score);
+        }
+        
+        userQuizResultRepository.save(result);
+    }
+
+    @Override
+    public int getUserScore(Long userId, Long quizId) {
+        return userQuizResultRepository.findByUserIdAndQuizId(userId, quizId)
+                .map(UserQuizResult::getScore)
+                .orElse(0);
+    }
+
+    @Override
+    public boolean isQuizPassed(Long userId, Long quizId) {
+        return getUserScore(userId, quizId) >= 3;
     }
 }

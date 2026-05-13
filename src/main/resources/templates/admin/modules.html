@@ -22,6 +22,7 @@
                     <tr>
                         <th>ORDER</th>
                         <th>MODULE_TITLE</th>
+                        <th>QUIZ_ASSOCIATION</th>
                         <th style="text-align: right;">ACTIONS</th>
                     </tr>
                 </thead>
@@ -84,6 +85,37 @@
         <script>
             const easyMDE = new EasyMDE({
                 element: document.getElementById('content'),
+                spellChecker: false,
+                autosave: {
+                    enabled: true,
+                    uniqueId: "moduleContent",
+                    delay: 1000,
+                },
+                theme: "terminal" // I'll assume there might be some custom styling or just default
+            });
+        </script>
+        <style>
+            .EasyMDEContainer .editor-toolbar {
+                background: var(--bg-card);
+                border-color: var(--border-color);
+            }
+            .EasyMDEContainer .CodeMirror {
+                background: var(--bg-card);
+                color: var(--text-main);
+                border-color: var(--border-color);
+            }
+            .editor-toolbar button {
+                color: var(--text-main) !important;
+            }
+            .editor-toolbar button.active, .editor-toolbar button:hover {
+                background: var(--bg-body);
+                border-color: var(--accent-blue);
+            }
+        </style>
+    </th:block>
+</body>
+</html>
+nt: document.getElementById('content'),
                 spellChecker: false,
                 autosave: {
                     enabled: true,

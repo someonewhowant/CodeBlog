@@ -13,4 +13,8 @@ public interface QuizService {
     
     Question addQuestion(Long quizId, Question question);
     void deleteQuestion(Long questionId);
+    
+    void saveQuizResult(Long userId, Long quizId, int score);
+    int getUserScore(Long userId, Long quizId);
+    boolean isQuizPassed(Long userId, Long quizId);
 }

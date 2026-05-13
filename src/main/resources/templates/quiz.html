@@ -46,16 +46,32 @@
                 <div th:if="${submitted != null}" class="quiz-results fade-in">
                     <div class="result-summary" style="text-align: center; margin-bottom: 60px; padding: 40px; background: var(--bg-card); border-radius: 16px; border: 2px solid var(--accent-blue);">
                         <h2 style="font-family: var(--font-mono); margin-bottom: 10px;">// QUIZ_RESULTS</h2>
-                        <div class="score-display" style="font-size: 4rem; font-weight: 700; color: var(--accent-green); margin: 20px 0;">
+                        
+                        <div th:if="${isPassed}" class="pass-badge" style="display: inline-block; padding: 10px 24px; background: rgba(0, 255, 153, 0.1); color: var(--accent-green); border: 1px solid var(--accent-green); border-radius: 50px; font-weight: 600; margin-bottom: 20px;">
+                            <i class="bi bi-patch-check-fill"></i> PASSED_UNLOCKED
+                        </div>
+                        <div th:unless="${isPassed}" class="fail-badge" style="display: inline-block; padding: 10px 24px; background: rgba(255, 102, 102, 0.1); color: var(--accent-red); border: 1px solid var(--accent-red); border-radius: 50px; font-weight: 600; margin-bottom: 20px;">
+                            <i class="bi bi-exclamation-triangle-fill"></i> FAILED_STILL_LOCKED
+                        </div>
+
+                        <div class="score-display" style="font-size: 4rem; font-weight: 700; color: var(--accent-green); margin: 20px 0;" th:styleappend="${not isPassed} ? 'color: var(--accent-red);' : ''">
                             <span th:text="${score}">8</span> / <span th:text="${total}">10</span>
                         </div>
                         <p class="text-dim" style="font-size: 1.2rem;">
                             Your accuracy: <span th:text="${(score * 100) / total} + '%'">80%</span>
                         </p>
+                        <p th:if="${not isPassed}" style="color: var(--accent-orange); margin-top: 10px;">
+                            <i class="bi bi-info-circle"></i> You need at least 3 correct answers to proceed to the next module.
+                        </p>
                         
-                        <a th:href="@{/course/{id}(id=${quiz.course.id})}" class="btn btn--outline" style="margin-top: 20px;">
-                            <i class="bi bi-arrow-left"></i> Back to Course
-                        </a>
+                        <div style="margin-top: 30px; display: flex; justify-content: center; gap: 20px;">
+                            <a th:href="@{/course/{id}(id=${quiz.course.id})}" class="btn btn-outline">
+                                <i class="bi bi-arrow-left"></i> Course Overview
+                            </a>
+                            <a th:if="${not isPassed}" th:href="@{/quiz/{id}(id=${quiz.id})}" class="btn btn-primary" style="background: var(--accent-orange); border-color: var(--accent-orange);">
+                                <i class="bi bi-arrow-clockwise"></i> Try Again
+                            </a>
+                        </div>
                     </div>
 
                     <div class="detailed-results">

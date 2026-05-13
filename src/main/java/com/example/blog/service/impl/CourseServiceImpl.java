@@ -2,8 +2,10 @@ package com.example.blog.service.impl;
 
 import com.example.blog.entity.Course;
 import com.example.blog.entity.CourseModule;
+import com.example.blog.entity.Quiz;
 import com.example.blog.repository.CourseModuleRepository;
 import com.example.blog.repository.CourseRepository;
+import com.example.blog.repository.QuizRepository;
 import com.example.blog.service.CourseService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -17,6 +19,7 @@ public class CourseServiceImpl implements CourseService {
 
     private final CourseRepository courseRepository;
     private final CourseModuleRepository moduleRepository;
+    private final QuizRepository quizRepository;
 
     @Override
     public List<Course> getAllCourses() {
@@ -88,5 +91,19 @@ public class CourseServiceImpl implements CourseService {
     public CourseModule getModuleById(Long moduleId) {
         return moduleRepository.findById(moduleId)
                 .orElseThrow(() -> new RuntimeException("Module not found with id: " + moduleId));
+    }
+
+    @Override
+    @Transactional
+    public void setModuleQuiz(Long moduleId, Long quizId) {
+        CourseModule module = getModuleById(moduleId);
+        if (quizId != null) {
+            Quiz quiz = quizRepository.findById(quizId)
+                    .orElseThrow(() -> new RuntimeException("Quiz not found"));
+            module.setQuiz(quiz);
+        } else {
+            module.setQuiz(null);
+        }
+        moduleRepository.save(module);
     }
 }

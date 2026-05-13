@@ -254,8 +254,20 @@ public class AdminController {
         Course course = courseService.getCourseById(id);
         model.addAttribute("course", course);
         model.addAttribute("modules", courseService.getModulesByCourseId(id));
+        model.addAttribute("quizzes", quizService.getQuizzesByCourseId(id));
         model.addAttribute("title", "Manage Modules: " + course.getTitle());
         return "admin/modules";
+    }
+
+    /**
+     * Установка квиза для модуля.
+     */
+    @PostMapping("/courses/{courseId}/modules/{moduleId}/quiz")
+    public String setModuleQuiz(@PathVariable Long courseId,
+                                @PathVariable Long moduleId,
+                                @RequestParam(value = "quizId", required = false) Long quizId) {
+        courseService.setModuleQuiz(moduleId, quizId);
+        return "redirect:/admin/courses/" + courseId + "/modules";
     }
 
     /**
