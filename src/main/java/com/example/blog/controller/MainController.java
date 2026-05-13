@@ -1,20 +1,17 @@
 package com.example.blog.controller;
 
-import com.example.blog.entity.Course;
-import com.example.blog.entity.CourseModule;
-import com.example.blog.entity.Post;
+import com.example.blog.entity.*;
 import com.example.blog.service.CourseService;
 import com.example.blog.service.MarkdownService;
 import com.example.blog.service.PostService;
+import com.example.blog.service.QuizService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Controller
@@ -23,6 +20,7 @@ public class MainController {
 
     private final PostService postService;
     private final CourseService courseService;
+    private final QuizService quizService;
     private final MarkdownService markdownService;
 
     /**
@@ -197,6 +195,67 @@ public class MainController {
         model.addAttribute("isOverview", false);
         
         return "course-detail";
+    }
+
+    /**
+     * Страница прохождения квиза.
+     */
+    @GetMapping("/quiz/{id}")
+    public String takeQuiz(@PathVariable Long id, Model model) {
+        Quiz quiz = quizService.getQuizById(id);
+        model.addAttribute("quiz", quiz);
+        model.addAttribute("title", "Quiz: " + quiz.getTitle());
+        return "quiz";
+    }
+
+    /**
+     * Обработка результатов квиза.
+     */
+    @PostMapping("/quiz/{id}/submit")
+    public String submitQuiz(@PathVariable Long id, 
+                             @RequestParam Map<String, String> params, 
+                             Model model) {
+        Quiz quiz = quizService.getQuizById(id);
+        int correctAnswers = 0;
+        int totalQuestions = quiz.getQuestions().size();
+        
+        List<Map<String, Object>> results = new ArrayList<>();
+        
+        for (Question question : quiz.getQuestions()) {
+            String selectedOptionId = params.get("question_" + question.getId());
+            boolean isCorrect = false;
+            String correctAnswerText = "";
+            String selectedAnswerText = "No answer";
+            
+            for (QuestionOption option : question.getOptions()) {
+                if (option.isCorrect()) {
+                    correctAnswerText = option.getText();
+                }
+                if (selectedOptionId != null && selectedOptionId.equals(option.getId().toString())) {
+                    selectedAnswerText = option.getText();
+                    if (option.isCorrect()) {
+                        isCorrect = true;
+                        correctAnswers++;
+                    }
+                }
+            }
+            
+            Map<String, Object> result = new HashMap<>();
+            result.put("question", question.getText());
+            result.put("selected", selectedAnswerText);
+            result.put("correct", correctAnswerText);
+            result.put("isCorrect", isCorrect);
+            results.add(result);
+        }
+        
+        model.addAttribute("quiz", quiz);
+        model.addAttribute("score", correctAnswers);
+        model.addAttribute("total", totalQuestions);
+        model.addAttribute("results", results);
+        model.addAttribute("title", "Results: " + quiz.getTitle());
+        model.addAttribute("submitted", true);
+        
+        return "quiz";
     }
 
     /**

@@ -41,6 +41,9 @@
                                 <a th:href="@{/admin/courses/{id}/modules(id=${course.id})}" class="btn btn-outline" style="padding: 6px 12px; font-size: 0.8rem; border-color: var(--accent-purple); color: var(--accent-purple);">
                                     <i class="bi bi-stack"></i> MODULES
                                 </a>
+                                <a th:href="@{/admin/courses/{id}/quizzes(id=${course.id})}" class="btn btn-outline" style="padding: 6px 12px; font-size: 0.8rem; border-color: var(--accent-orange); color: var(--accent-orange);">
+                                    <i class="bi bi-question-circle"></i> QUIZZES
+                                </a>
                                 <a th:href="@{/admin/edit-course/{id}(id=${course.id})}" class="btn btn-outline" style="padding: 6px 12px; font-size: 0.8rem;">
                                     <i class="bi bi-pencil"></i> EDIT
                                 </a>

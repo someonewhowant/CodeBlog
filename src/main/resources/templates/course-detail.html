@@ -94,6 +94,20 @@
                             </a>
                         </div>
 
+                        <!-- Quizzes section -->
+                        <div class="course-quizzes reveal-on-scroll" th:if="${isOverview and not #lists.isEmpty(course.quizzes)}" style="margin-top: 60px;">
+                            <h2 style="font-family: var(--font-mono); margin-bottom: 30px; color: var(--accent-orange);">// COURSE_QUIZZES</h2>
+                            <div th:each="quiz : ${course.quizzes}" class="quiz-item" style="margin-bottom: 20px; border-left: 2px solid var(--accent-orange); padding-left: 24px; display: flex; align-items: center; justify-content: space-between;">
+                                <div>
+                                    <h3 th:text="${quiz.title}" style="color: var(--accent-orange); margin-bottom: 0;">Quiz Title</h3>
+                                    <span class="text-dim" style="font-size: 0.8rem;" th:text="${#lists.size(quiz.questions)} + ' questions'">0 questions</span>
+                                </div>
+                                <a th:href="@{/quiz/{id}(id=${quiz.id})}" class="btn btn-outline" style="border-color: var(--accent-orange); color: var(--accent-orange); padding: 8px 16px;">
+                                    <i class="bi bi-play-fill"></i> Take Quiz
+                                </a>
+                            </div>
+                        </div>
+
                         <!-- Footer for Overview -->
                         <div class="post-footer" th:if="${isOverview}">
                             <a th:href="@{/courses}" class="btn btn-outline">

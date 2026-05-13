@@ -3,10 +3,14 @@ package com.example.blog.controller;
 import com.example.blog.entity.Category;
 import com.example.blog.entity.Course;
 import com.example.blog.entity.CourseModule;
+import com.example.blog.entity.Question;
+import com.example.blog.entity.QuestionOption;
+import com.example.blog.entity.Quiz;
 import com.example.blog.entity.Post;
 import com.example.blog.service.CourseService;
 import com.example.blog.service.FileStorageService;
 import com.example.blog.service.PostService;
+import com.example.blog.service.QuizService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -15,6 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.List;
 
 @Controller
@@ -24,6 +29,7 @@ public class AdminController {
 
     private final PostService postService;
     private final CourseService courseService;
+    private final QuizService quizService;
     private final FileStorageService fileStorageService;
 
     /**
@@ -280,5 +286,80 @@ public class AdminController {
     public String deleteModule(@PathVariable Long courseId, @PathVariable Long moduleId) {
         courseService.deleteModule(moduleId);
         return "redirect:/admin/courses/" + courseId + "/modules";
+    }
+
+    /**
+     * Управление квизами курса.
+     */
+    @GetMapping("/courses/{id}/quizzes")
+    public String manageQuizzes(@PathVariable Long id, Model model) {
+        Course course = courseService.getCourseById(id);
+        model.addAttribute("course", course);
+        model.addAttribute("quizzes", quizService.getQuizzesByCourseId(id));
+        model.addAttribute("title", "Manage Quizzes: " + course.getTitle());
+        return "admin/quizzes";
+    }
+
+    /**
+     * Добавление квиза.
+     */
+    @PostMapping("/courses/{id}/quizzes")
+    public String addQuiz(@PathVariable Long id, @ModelAttribute Quiz quiz) {
+        quizService.createQuiz(id, quiz);
+        return "redirect:/admin/courses/" + id + "/quizzes";
+    }
+
+    /**
+     * Удаление квиза.
+     */
+    @GetMapping("/delete-quiz/{courseId}/{quizId}")
+    public String deleteQuiz(@PathVariable Long courseId, @PathVariable Long quizId) {
+        quizService.deleteQuiz(quizId);
+        return "redirect:/admin/courses/" + courseId + "/quizzes";
+    }
+
+    /**
+     * Управление вопросами квиза.
+     */
+    @GetMapping("/quizzes/{id}/questions")
+    public String manageQuestions(@PathVariable Long id, Model model) {
+        Quiz quiz = quizService.getQuizById(id);
+        model.addAttribute("quiz", quiz);
+        model.addAttribute("title", "Manage Questions: " + quiz.getTitle());
+        return "admin/questions";
+    }
+
+    /**
+     * Добавление вопроса.
+     */
+    @PostMapping("/quizzes/{id}/questions")
+    public String addQuestion(@PathVariable Long id,
+                              @RequestParam("text") String text,
+                              @RequestParam("optionText") List<String> optionTexts,
+                              @RequestParam("correctOptionIndex") int correctIndex) {
+        Question question = new Question();
+        question.setText(text);
+        
+        List<QuestionOption> options = new ArrayList<>();
+        for (int i = 0; i < optionTexts.size(); i++) {
+            QuestionOption option = new QuestionOption();
+            option.setText(optionTexts.get(i));
+            option.setCorrect(i == correctIndex);
+            option.setQuestion(question);
+            options.add(option);
+        }
+        question.setOptions(options);
+        
+        quizService.addQuestion(id, question);
+        return "redirect:/admin/quizzes/" + id + "/questions";
+    }
+
+    /**
+     * Удаление вопроса.
+     */
+    @GetMapping("/delete-question/{quizId}/{questionId}")
+    public String deleteQuestion(@PathVariable Long quizId, @PathVariable Long questionId) {
+        quizService.deleteQuestion(questionId);
+        return "redirect:/admin/quizzes/" + quizId + "/questions";
     }
 }
