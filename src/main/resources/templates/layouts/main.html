@@ -16,17 +16,15 @@
 </head>
 <body>
 
-    <div class="container">
-        <!-- Header Partial -->
-        <header th:replace="~{partials/header :: header}"></header>
+    <!-- Header Partial -->
+    <header th:replace="~{partials/header :: header}"></header>
 
-        <main class="main fade-in" layout:fragment="content">
-            <!-- Сюда будет вставляться контент из других файлов -->
-        </main>
+    <main class="main fade-in" layout:fragment="content">
+        <!-- Сюда будет вставляться контент из других файлов -->
+    </main>
 
-        <!-- Footer Partial -->
-        <footer th:replace="~{partials/footer :: footer}"></footer>
-    </div>
+    <!-- Footer Partial -->
+    <footer th:replace="~{partials/footer :: footer}"></footer>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-java.min.js"></script>

@@ -6,7 +6,7 @@
     <title th:text="${title}">Quiz</title>
 </head>
 <body>
-    <div layout:fragment="content">
+    <div layout:fragment="content" class="container py-l">
         <div class="post">
             <header class="post-header fade-in">
                 <div class="post-category">QUIZ</div>
@@ -17,76 +17,86 @@
             </header>
 
             <div class="reading-container">
-                <!-- Quiz Form -->
+                <!-- Premium Quiz Form -->
                 <form th:if="${submitted == null}" th:action="@{/quiz/{id}/submit(id=${quiz.id})}" method="POST">
-                    <div th:each="question, qStat : ${quiz.questions}" class="quiz-question-card" style="margin-bottom: 40px; padding: 30px; border: 1px solid var(--border-color); border-radius: 12px; background: var(--bg-card);">
-                        <h3 style="font-family: var(--font-mono); margin-bottom: 24px; color: var(--accent-blue);">
-                            <span th:text="${qStat.count} + '. '">1. </span>
-                            <span th:text="${question.text}">Question text</span>
-                        </h3>
+                    <div th:each="question, qStat : ${quiz.questions}" class="quiz-question-modern reveal-on-scroll">
+                        <div class="flex gap-xl mb-xl">
+                            <span class="text-accent-mono text-blue font-bold text-xl" th:text="${#numbers.formatInteger(qStat.count, 2)}">01</span>
+                            <h3 class="font-sans text-main font-semibold leading-relaxed" th:text="${question.text}">Question text</h3>
+                        </div>
                         
                         <div class="quiz-options">
-                            <div th:each="option : ${question.options}" class="quiz-option" style="margin-bottom: 12px;">
-                                <label style="display: flex; align-items: center; cursor: pointer; padding: 12px 20px; border: 1px solid var(--border-color); border-radius: 8px; transition: all 0.2s;">
-                                    <input type="radio" th:name="'question_' + ${question.id}" th:value="${option.id}" required style="margin-right: 15px;">
+                            <label th:each="option : ${question.options}" class="quiz-option-modern">
+                                <input type="radio" th:name="'question_' + ${question.id}" th:value="${option.id}" required>
+                                <div class="quiz-option-modern__content">
+                                    <div class="quiz-option-modern__indicator"></div>
                                     <span th:text="${option.text}">Option text</span>
-                                </label>
-                            </div>
+                                </div>
+                            </label>
                         </div>
                     </div>
 
-                    <div style="text-align: center; margin-top: 40px;">
-                        <button type="submit" class="btn btn--primary btn--large" style="padding: 15px 40px; font-size: 1.1rem; background-color: var(--accent-orange); border-color: var(--accent-orange);">
-                            <i class="bi bi-send-fill"></i> Submit Answers
+                    <div class="text-center mt-3xl">
+                        <button type="submit" class="btn btn-primary btn-large min-w-280 btn-orange">
+                            <i class="bi bi-send-check-fill"></i> Submit Assessment
                         </button>
                     </div>
                 </form>
 
-                <!-- Results Section -->
+                <!-- Premium Results Section -->
                 <div th:if="${submitted != null}" class="quiz-results fade-in">
-                    <div class="result-summary" style="text-align: center; margin-bottom: 60px; padding: 40px; background: var(--bg-card); border-radius: 16px; border: 2px solid var(--accent-blue);">
-                        <h2 style="font-family: var(--font-mono); margin-bottom: 10px;">// QUIZ_RESULTS</h2>
+                    <div class="score-summary-premium">
+                        <h2 class="font-mono mb-xl text-dim text-xs tracking-widest">// ASSESSMENT_SCORE</h2>
                         
-                        <div th:if="${isPassed}" class="pass-badge" style="display: inline-block; padding: 10px 24px; background: rgba(0, 255, 153, 0.1); color: var(--accent-green); border: 1px solid var(--accent-green); border-radius: 50px; font-weight: 600; margin-bottom: 20px;">
+                        <div class="score-visual" th:classappend="${isPassed} ? 'score-visual--pass' : 'score-visual--fail'">
+                            <span class="score-number" th:text="${score}">8</span>
+                            <span class="score-label" th:text="'of ' + ${total}">of 10</span>
+                        </div>
+
+                        <div th:if="${isPassed}" class="pass-badge mb-xl text-m">
                             <i class="bi bi-patch-check-fill"></i> PASSED_UNLOCKED
                         </div>
-                        <div th:unless="${isPassed}" class="fail-badge" style="display: inline-block; padding: 10px 24px; background: rgba(255, 102, 102, 0.1); color: var(--accent-red); border: 1px solid var(--accent-red); border-radius: 50px; font-weight: 600; margin-bottom: 20px;">
+                        <div th:unless="${isPassed}" class="fail-badge mb-xl text-m">
                             <i class="bi bi-exclamation-triangle-fill"></i> FAILED_STILL_LOCKED
                         </div>
 
-                        <div class="score-display" style="font-size: 4rem; font-weight: 700; color: var(--accent-green); margin: 20px 0;" th:styleappend="${not isPassed} ? 'color: var(--accent-red);' : ''">
-                            <span th:text="${score}">8</span> / <span th:text="${total}">10</span>
-                        </div>
-                        <p class="text-dim" style="font-size: 1.2rem;">
-                            Your accuracy: <span th:text="${(score * 100) / total} + '%'">80%</span>
-                        </p>
-                        <p th:if="${not isPassed}" style="color: var(--accent-orange); margin-top: 10px;">
-                            <i class="bi bi-info-circle"></i> You need at least 3 correct answers to proceed to the next module.
+                        <p class="text-dim text-l max-w-450 leading-relaxed">
+                            <th:block th:if="${isPassed}">Congratulations! You've successfully passed the assessment and unlocked the next phase of the course.</th:block>
+                            <th:block th:unless="${isPassed}">You didn't reach the required passing score. Review the material and try again to unlock the next module.</th:block>
                         </p>
                         
-                        <div style="margin-top: 30px; display: flex; justify-content: center; gap: 20px;">
+                        <div class="mt-2xl flex justify-center gap-xl">
                             <a th:href="@{/course/{id}(id=${quiz.course.id})}" class="btn btn-outline">
-                                <i class="bi bi-arrow-left"></i> Course Overview
+                                <i class="bi bi-arrow-left"></i> Course Map
                             </a>
-                            <a th:if="${not isPassed}" th:href="@{/quiz/{id}(id=${quiz.id})}" class="btn btn-primary" style="background: var(--accent-orange); border-color: var(--accent-orange);">
-                                <i class="bi bi-arrow-clockwise"></i> Try Again
+                            <a th:if="${not isPassed}" th:href="@{/quiz/{id}(id=${quiz.id})}" class="btn btn-primary btn-orange py-m px-xl">
+                                <i class="bi bi-arrow-clockwise"></i> Retake Assessment
                             </a>
                         </div>
                     </div>
 
                     <div class="detailed-results">
-                        <h3 style="font-family: var(--font-mono); margin-bottom: 30px; color: var(--accent-blue);">// DETAILED_REVIEW</h3>
-                        <div th:each="res, rStat : ${results}" class="result-card" style="margin-bottom: 30px; padding: 25px; border-radius: 12px; border: 1px solid var(--border-color);" th:styleappend="${res.isCorrect} ? 'border-left: 5px solid var(--accent-green);' : 'border-left: 5px solid var(--accent-red);'">
-                            <h4 th:text="${rStat.count} + '. ' + ${res.question}" style="margin-bottom: 15px;">Question?</h4>
-                            
-                            <div style="display: flex; flex-direction: column; gap: 10px; font-size: 0.95rem;">
-                                <div>
-                                    <span class="text-dim">Your Answer: </span>
-                                    <span th:text="${res.selected}" th:style="${res.isCorrect} ? 'color: var(--accent-green); font-weight: 600;' : 'color: var(--accent-orange); font-weight: 600; text-decoration: line-through;'">Answer</span>
+                        <h3 class="font-mono mb-2xl text-blue text-l">// DETAILED_REVIEW</h3>
+                        <div th:each="res, rStat : ${results}" class="result-card-premium" th:classappend="${res.isCorrect} ? 'correct' : 'incorrect'">
+                            <div class="flex gap-xl">
+                                <span class="font-mono opacity-50 font-bold" th:text="${#numbers.formatInteger(rStat.count, 2)}">01</span>
+                                <div class="flex-1">
+                                    <h4 th:text="${res.question}" class="mb-xl font-semibold leading-relaxed">Question?</h4>
+                                    
+                                    <div class="grid grid-2 gap-3xl">
+                                        <div class="bg-surface-subtle p-m rounded">
+                                            <div class="text-dim text-3xs font-mono uppercase mb-xs">Your Choice</div>
+                                            <div th:text="${res.selected}" th:classappend="${res.isCorrect} ? 'text-green font-semibold' : 'text-red font-semibold'">Answer</div>
+                                        </div>
+                                        <div th:if="${not res.isCorrect}" class="bg-green-faded p-m rounded border-green-faded">
+                                            <div class="text-dim text-3xs font-mono uppercase mb-xs text-green">Correct Answer</div>
+                                            <div th:text="${res.correct}" class="text-green font-semibold">Correct Answer</div>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div th:if="${not res.isCorrect}">
-                                    <span class="text-dim">Correct Answer: </span>
-                                    <span th:text="${res.correct}" style="color: var(--accent-green); font-weight: 600;">Correct Answer</span>
+                                <div class="text-xl">
+                                    <i th:if="${res.isCorrect}" class="bi bi-check-circle-fill text-green"></i>
+                                    <i th:unless="${res.isCorrect}" class="bi bi-x-circle-fill text-red"></i>
                                 </div>
                             </div>
                         </div>
@@ -98,20 +108,10 @@
 
     <th:block layout:fragment="scripts">
         <style>
-            .quiz-option label:hover {
-                background: var(--bg-body);
-                border-color: var(--accent-blue);
-            }
-            .quiz-option input:checked + span {
-                color: var(--accent-blue);
-                font-weight: 600;
-            }
-            .quiz-option label:has(input:checked) {
-                background: rgba(var(--accent-blue-rgb), 0.1);
-                border-color: var(--accent-blue);
-            }
+            .quiz-option-modern:last-child { margin-bottom: 0; }
             .text-success { color: var(--accent-green); }
             .text-dim { color: var(--text-dim); }
+            .detailed-results { margin-top: 80px; }
         </style>
     </th:block>
 </body>

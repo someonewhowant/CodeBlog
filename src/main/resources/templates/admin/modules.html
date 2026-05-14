@@ -6,17 +6,17 @@
     <title th:text="${title}">Manage Modules</title>
 </head>
 <body>
-    <div layout:fragment="content">
+    <div layout:fragment="content" class="container py-l">
         <div class="admin-header">
             <h1 th:text="'root@admin:~/courses/' + ${course.id} + '/modules$'">root@admin:~/courses/1/modules$</h1>
             <div class="admin-actions">
-                <a th:href="@{/admin/courses}" class="btn btn-outline">
+                <a th:href="@{/admin/courses}" class="btn btn-outline btn-orange">
                     <i class="bi bi-arrow-left"></i> back_to_courses()
                 </a>
             </div>
         </div>
 
-        <div class="admin-table-wrapper" style="margin-bottom: 40px;">
+        <div class="admin-table-wrapper mb-xl">
             <table class="admin-table">
                 <thead>
                     <tr>
@@ -31,14 +31,28 @@
                         <td th:text="${module.orderIndex}">0</td>
                         <td th:text="${module.title}">Module Title</td>
                         <td>
-                            <div class="admin-actions" style="justify-content: flex-end;">
-                                <a th:href="@{/admin/delete-module/{courseId}/{moduleId}(courseId=${course.id}, moduleId=${module.id})}" 
-                                   class="btn btn-outline btn-delete" 
-                                   style="padding: 6px 12px; font-size: 0.8rem;"
-                                   onclick="return confirm('rm -rf this_module?')">
-                                    <i class="bi bi-trash3"></i> DELETE
-                                </a>
-                            </div>
+                            <form th:action="@{/admin/courses/{courseId}/modules/{moduleId}/quiz(courseId=${course.id}, moduleId=${module.id})}" 
+                                  method="POST" style="display: flex; gap: 8px;">
+                                <select name="quizId" class="form-control" style="padding: 4px 8px; font-size: 0.8rem; height: 32px; min-width: 150px;">
+                                    <option value="">-- No Quiz --</option>
+                                    <option th:each="q : ${quizzes}" 
+                                            th:value="${q.id}" 
+                                            th:text="${q.title}"
+                                            th:selected="${module.quiz != null and module.quiz.id == q.id}">
+                                        Quiz Title
+                                    </option>
+                                </select>
+                                <button type="submit" class="btn btn-outline btn-xs btn-blue">
+                                    UPDATE
+                                </button>
+                            </form>
+                        </td>
+                        <td style="text-align: right;">
+                            <a th:href="@{/admin/delete-module/{courseId}/{moduleId}(courseId=${course.id}, moduleId=${module.id})}" 
+                               class="btn btn-outline btn-delete btn-xs" 
+                               onclick="return confirm('rm -rf this_module?')">
+                                <i class="bi bi-trash3"></i> DELETE
+                            </a>
                         </td>
                     </tr>
                     <tr th:if="${#lists.isEmpty(modules)}">
@@ -91,57 +105,18 @@
                     uniqueId: "moduleContent",
                     delay: 1000,
                 },
-                theme: "terminal" // I'll assume there might be some custom styling or just default
+                placeholder: "## Welcome...",
+                minHeight: "400px"
             });
         </script>
         <style>
-            .EasyMDEContainer .editor-toolbar {
-                background: var(--bg-card);
-                border-color: var(--border-color);
-            }
-            .EasyMDEContainer .CodeMirror {
-                background: var(--bg-card);
-                color: var(--text-main);
-                border-color: var(--border-color);
-            }
-            .editor-toolbar button {
-                color: var(--text-main) !important;
-            }
-            .editor-toolbar button.active, .editor-toolbar button:hover {
-                background: var(--bg-body);
-                border-color: var(--accent-blue);
-            }
-        </style>
-    </th:block>
-</body>
-</html>
-nt: document.getElementById('content'),
-                spellChecker: false,
-                autosave: {
-                    enabled: true,
-                    uniqueId: "moduleContent",
-                    delay: 1000,
-                },
-                theme: "terminal" // I'll assume there might be some custom styling or just default
-            });
-        </script>
-        <style>
-            .EasyMDEContainer .editor-toolbar {
-                background: var(--bg-card);
-                border-color: var(--border-color);
-            }
-            .EasyMDEContainer .CodeMirror {
-                background: var(--bg-card);
-                color: var(--text-main);
-                border-color: var(--border-color);
-            }
-            .editor-toolbar button {
-                color: var(--text-main) !important;
-            }
-            .editor-toolbar button.active, .editor-toolbar button:hover {
-                background: var(--bg-body);
-                border-color: var(--accent-blue);
-            }
+            .EasyMDEContainer { background: var(--bg-dark); border-radius: var(--radius); margin-top: 8px; }
+            .editor-toolbar { border-color: var(--border-subtle) !important; background: var(--bg-surface) !important; border-radius: var(--radius) var(--radius) 0 0 !important; }
+            .editor-toolbar button { color: var(--text-main) !important; }
+            .editor-toolbar button:hover, .editor-toolbar button.active { background: var(--bg-dark) !important; border-color: var(--border-active) !important; }
+            .CodeMirror { background: var(--bg-dark) !important; color: var(--text-main) !important; border-color: var(--border-subtle) !important; border-radius: 0 0 var(--radius) var(--radius) !important; font-family: var(--font-mono) !important; }
+            .editor-preview-active { background: var(--bg-dark) !important; color: var(--text-main) !important; }
+            .editor-statusbar { color: var(--text-dim) !important; }
         </style>
     </th:block>
 </body>

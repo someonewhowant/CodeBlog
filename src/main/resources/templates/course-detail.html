@@ -6,8 +6,8 @@
     <title th:text="${title}">Course Detail</title>
 </head>
 <body>
-    <div layout:fragment="content">
-        <div class="container">
+    <div layout:fragment="content" class="container py-l">
+        <div>
             <!-- Breadcrumbs -->
             <nav class="course-breadcrumbs">
                 <a th:href="@{/}">Home</a>
@@ -36,8 +36,16 @@
                                 class="course-map__item" 
                                 th:classappend="${!isOverview and m.id == module.id} ? 'active' : ''">
                                 <a th:href="@{/course/{courseId}/module/{moduleId}(courseId=${course.id}, moduleId=${m.id})}">
-                                    <i class="bi bi-journal-text"></i>
-                                    <span th:text="${m.title}">Module Title</span>
+                                    <div class="flex flex-column">
+                                        <div class="flex items-center gap-m">
+                                            <i class="bi" th:classappend="${m.quiz != null} ? 'bi-patch-question' : 'bi-journal-text'"></i>
+                                            <span th:text="${m.title}">Module Title</span>
+                                            <i th:if="${m.orderIndex > 0 and module != null and m.orderIndex > module.orderIndex}" class="bi bi-lock-fill sidebar-lock"></i>
+                                        </div>
+                                        <div class="module-status" th:if="${m.quiz != null}">
+                                            <span class="module-status--quiz"><i class="bi bi-lightning-fill"></i> QUIZ_REQUIRED</span>
+                                        </div>
+                                    </div>
                                 </a>
                             </li>
                         </ul>
@@ -65,14 +73,16 @@
                             <img th:src="${course.imageUrl}" th:alt="${course.title}">
                         </div>
 
-                        <!-- Locked Content Warning -->
-                        <div th:if="${isLocked}" class="locked-content fade-in" style="background: var(--bg-card); border: 1px dashed var(--accent-red); padding: 40px; text-align: center; border-radius: 8px; margin: 40px 0;">
-                            <i class="bi bi-lock-fill" style="font-size: 3rem; color: var(--accent-red); display: block; margin-bottom: 20px;"></i>
-                            <h2 style="color: var(--accent-red); margin-bottom: 16px;">MODULE_LOCKED</h2>
-                            <p th:text="${lockReason}" style="color: var(--text-dim); margin-bottom: 30px;">Reason for the lock...</p>
+                        <!-- Premium Locked Content Warning -->
+                        <div th:if="${isLocked}" class="locked-content-premium fade-in">
+                            <div class="locked-icon-wrapper">
+                                <i class="bi bi-lock-fill"></i>
+                            </div>
+                            <h2 class="locked-title">// MODULE_LOCKED</h2>
+                            <p class="locked-reason" th:text="${lockReason}">Reason for the lock...</p>
                             <a th:if="${prevModule != null and prevModule.quiz != null}" 
                                th:href="@{/quiz/{id}(id=${prevModule.quiz.id})}" 
-                               class="btn btn-outline" style="border-color: var(--accent-red); color: var(--accent-red);">
+                               class="btn btn-primary btn-orange">
                                 <i class="bi bi-play-fill"></i> Take Required Quiz
                             </a>
                         </div>
@@ -82,15 +92,18 @@
                         </div>
 
                         <!-- Module Quiz Link -->
-                        <div class="module-quiz-section reveal-on-scroll" th:if="${not isOverview and not isLocked and module.quiz != null}" style="margin-top: 60px; padding: 30px; background: var(--bg-card); border-radius: 8px; border: 1px solid var(--border-color);">
-                            <h3 style="font-family: var(--font-mono); margin-bottom: 20px; color: var(--accent-blue);">// MODULE_QUIZ</h3>
-                            <div style="display: flex; align-items: center; justify-content: space-between;">
+                        <div class="module-quiz-section reveal-on-scroll mt-3xl p-xl glass rounded-l border-active relative overflow-hidden" th:if="${not isOverview and not isLocked and module.quiz != null}">
+                            <div style="position: absolute; top: -20px; right: -20px; font-size: 8rem; opacity: 0.03; color: var(--accent-blue); pointer-events: none;">
+                                <i class="bi bi-patch-question"></i>
+                            </div>
+                            <h3 class="font-mono mb-xl text-blue text-xs tracking-widest">// MODULE_QUIZ</h3>
+                            <div class="flex items-center justify-between relative z-10">
                                 <div>
-                                    <h4 th:text="${module.quiz.title}" style="margin-bottom: 5px;">Quiz Title</h4>
-                                    <p class="text-dim" style="font-size: 0.9rem; margin: 0;">Complete this quiz with 3+ points to unlock the next module.</p>
+                                    <h4 th:text="${module.quiz.title}" class="text-xl mb-xs font-bold">Quiz Title</h4>
+                                    <p class="text-dim max-w-400 leading-relaxed">Complete this assessment with at least <span class="text-orange font-bold">3 points</span> to finalize this module and unlock the next one.</p>
                                 </div>
-                                <a th:href="@{/quiz/{id}(id=${module.quiz.id})}" class="btn btn-primary">
-                                    <i class="bi bi-play-fill"></i> Take Quiz
+                                <a th:href="@{/quiz/{id}(id=${module.quiz.id})}" class="btn btn-primary btn-large">
+                                    <i class="bi bi-play-fill"></i> Start Assessment
                                 </a>
                             </div>
                         </div>
@@ -112,9 +125,9 @@
                                     <span class="nav-btn__label">Next <i class="bi bi-arrow-right"></i></span>
                                     <span class="nav-btn__title" th:text="${nextModule.title}">Next Module</span>
                                 </a>
-                                <div th:if="${isNextLocked}" class="nav-btn nav-btn--next disabled" style="opacity: 0.5; cursor: not-allowed; border-color: var(--accent-red);">
-                                    <span class="nav-btn__label" style="color: var(--accent-red);">Locked <i class="bi bi-lock-fill"></i></span>
-                                    <span class="nav-btn__title">Pass quiz to unlock</span>
+                                <div th:if="${isNextLocked}" class="nav-btn nav-btn--next disabled opacity-70 cursor-not-allowed border-orange-faded bg-orange-faded">
+                                    <span class="nav-btn__label text-orange"><i class="bi bi-lock-fill"></i> Locked</span>
+                                    <span class="nav-btn__title text-dim">Pass quiz to unlock</span>
                                 </div>
                             </th:block>
                             
@@ -127,14 +140,14 @@
                         </div>
 
                         <!-- Quizzes section -->
-                        <div class="course-quizzes reveal-on-scroll" th:if="${isOverview and not #lists.isEmpty(course.quizzes)}" style="margin-top: 60px;">
-                            <h2 style="font-family: var(--font-mono); margin-bottom: 30px; color: var(--accent-orange);">// COURSE_QUIZZES</h2>
-                            <div th:each="quiz : ${course.quizzes}" class="quiz-item" style="margin-bottom: 20px; border-left: 2px solid var(--accent-orange); padding-left: 24px; display: flex; align-items: center; justify-content: space-between;">
+                        <div class="course-quizzes reveal-on-scroll mt-3xl" th:if="${isOverview and not #lists.isEmpty(course.quizzes)}">
+                            <h2 class="font-mono mb-xl text-orange">// COURSE_QUIZZES</h2>
+                            <div th:each="quiz : ${course.quizzes}" class="quiz-item mb-m border-l-2-orange pl-l flex items-center justify-between">
                                 <div>
-                                    <h3 th:text="${quiz.title}" style="color: var(--accent-orange); margin-bottom: 0;">Quiz Title</h3>
-                                    <span class="text-dim" style="font-size: 0.8rem;" th:text="${#lists.size(quiz.questions)} + ' questions'">0 questions</span>
+                                    <h3 th:text="${quiz.title}" class="text-orange mb-0">Quiz Title</h3>
+                                    <span class="text-dim text-xs" th:text="${#lists.size(quiz.questions)} + ' questions'">0 questions</span>
                                 </div>
-                                <a th:href="@{/quiz/{id}(id=${quiz.id})}" class="btn btn-outline" style="border-color: var(--accent-orange); color: var(--accent-orange); padding: 8px 16px;">
+                                <a th:href="@{/quiz/{id}(id=${quiz.id})}" class="btn btn-outline btn-orange py-xs px-m">
                                     <i class="bi bi-play-fill"></i> Take Quiz
                                 </a>
                             </div>

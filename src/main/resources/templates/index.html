@@ -9,7 +9,7 @@
 <body>
 
     <div layout:fragment="content">
-        <section class="hero-minimal">
+        <section class="hero-minimal container">
             <span class="hero-label">/dev/academy/intro</span>
             <h1 class="author__heading">Accelerate Your Dev Journey</h1>
             <p class="author__body">High-quality courses and deep technical articles for engineers who want to master
@@ -18,7 +18,7 @@
             </p>
         </section>
 
-        <section class="articles">
+        <section class="articles container py-l">
             <h2 class="section-title">
                 <i class="bi bi-journal-code"></i> latest_insights
             </h2>
@@ -54,23 +54,22 @@
                 </li>
             </ul>
 
-            <div style="margin-top: 40px; text-align: center;">
+            <div class="text-center mt-l">
                 <a th:href="@{/articles}" class="btn btn-outline">
                     <i class="bi bi-archive"></i> view_all_articles()
                 </a>
             </div>
         </section>
 
-        <section class="recent-courses"
-            style="margin-top: 100px; padding-top: 60px; border-top: 1px solid var(--border-subtle);">
+        <section class="recent-courses container mt-3xl py-2xl border-top">
             <h2 class="section-title">
                 <i class="bi bi-mortarboard"></i> recent_courses
             </h2>
 
-            <div class="courses-grid" style="margin-top: 40px;">
+            <div class="courses-grid mt-l">
                 <div th:each="course : ${recentCourses}" class="card-glass course-card">
                     <div class="course-card__icon"
-                        th:style="${course.level == 'Beginner'} ? 'background: rgba(0, 204, 136, 0.1); color: var(--accent-green);' : (${course.level == 'Advanced'} ? 'background: rgba(163, 61, 255, 0.1); color: var(--accent-purple);' : 'background: rgba(0, 153, 255, 0.1); color: var(--accent-blue);')">
+                        th:classappend="${course.level == 'Beginner'} ? 'level-beginner' : (${course.level == 'Advanced'} ? 'level-advanced' : 'level-intermediate')">
                         <i
                             th:class="${course.level == 'Beginner'} ? 'bi bi-code-slash' : (${course.level == 'Advanced'} ? 'bi bi-layers-half' : 'bi bi-lightning-charge')"></i>
                     </div>
@@ -81,14 +80,12 @@
                         <span><i class="bi bi-clock"></i> <span th:text="${course.duration}">12 Hours</span></span>
                         <span><i class="bi bi-bar-chart"></i> <span th:text="${course.level}">Level</span></span>
                     </div>
-                    <a th:href="@{/course/{id}(id=${course.id})}" class="btn btn-outline"
-                        style="width: 100%; margin-top: 20px;">Start Learning</a>
+                    <a th:href="@{/course/{id}(id=${course.id})}" class="btn btn-outline w-full mt-m">Start Learning</a>
                 </div>
             </div>
 
-            <div style="margin-top: 60px; text-align: center;">
-                <a th:href="@{/courses}" class="btn btn-primary"
-                    style="padding: 16px 40px; font-size: 1.1rem; border-radius: 30px;">
+            <div class="text-center mt-xl">
+                <a th:href="@{/courses}" class="btn btn-primary btn-large">
                     Get Started <i class="bi bi-arrow-right" style="margin-left: 8px;"></i>
                 </a>
             </div>

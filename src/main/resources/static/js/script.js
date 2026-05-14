@@ -145,6 +145,32 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
+    // --- Mobile Menu ---
+    const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+    const headerNav = document.querySelector('.header__nav');
+
+    if (mobileMenuToggle && headerNav) {
+        mobileMenuToggle.addEventListener('click', () => {
+            headerNav.classList.toggle('open');
+            const icon = mobileMenuToggle.querySelector('i');
+            if (headerNav.classList.contains('open')) {
+                icon.classList.remove('bi-list');
+                icon.classList.add('bi-x-lg');
+            } else {
+                icon.classList.remove('bi-x-lg');
+                icon.classList.add('bi-list');
+            }
+        });
+
+        // Close menu on click outside
+        document.addEventListener('click', (e) => {
+            if (!headerNav.contains(e.target) && !mobileMenuToggle.contains(e.target) && headerNav.classList.contains('open')) {
+                headerNav.classList.remove('open');
+                mobileMenuToggle.querySelector('i').className = 'bi bi-list';
+            }
+        });
+    }
+
     // --- Scroll Progress Bar ---
     const progressBar = document.createElement('div');
     progressBar.className = 'scroll-progress';

@@ -6,21 +6,21 @@
     <title>Dashboard</title>
 </head>
 <body>
-    <div layout:fragment="content">
+    <div layout:fragment="content" class="container py-l">
         <div class="admin-header">
             <h1>root@admin:~/posts$</h1>
             <div class="admin-actions">
-                <a th:href="@{/admin/categories}" class="btn btn-outline" style="border-color: var(--accent-green); color: var(--accent-green);">
+                <a th:href="@{/admin/categories}" class="btn btn-outline btn-green">
                     <i class="bi bi-folder2"></i> manage_categories()
                 </a>
-                <a th:href="@{/admin/courses}" class="btn btn-outline" style="border-color: var(--accent-blue); color: var(--accent-blue);">
+                <a th:href="@{/admin/courses}" class="btn btn-outline btn-blue">
                     <i class="bi bi-book"></i> manage_courses()
                 </a>
                 <a th:href="@{/admin/add-post}" class="btn btn-primary">
                     <i class="bi bi-plus-lg"></i> new_post()
                 </a>
-                <form th:action="@{/admin/logout}" method="POST">
-                    <button type="submit" class="btn btn-outline" style="color: var(--accent-orange); border-color: var(--accent-orange);">
+                <form th:action="@{/admin/logout}" method="POST" class="m-0">
+                    <button type="submit" class="btn btn-outline btn-orange">
                         <i class="bi bi-power"></i> exit()
                     </button>
                 </form>
@@ -49,12 +49,11 @@
                         <td th:text="${#temporals.format(post.createdAt, 'yyyy-MM-dd HH:mm')}">Date</td>
                         <td>
                             <div class="admin-actions" style="justify-content: flex-end;">
-                                <a th:href="@{/admin/edit-post/{id}(id=${post.id})}" class="btn btn-outline" style="padding: 6px 12px; font-size: 0.8rem;">
+                                <a th:href="@{/admin/edit-post/{id}(id=${post.id})}" class="btn btn-outline btn-xs">
                                     <i class="bi bi-pencil"></i> EDIT
                                 </a>
                                 <a th:href="@{/admin/delete-post/{id}(id=${post.id})}" 
-                                   class="btn btn-outline btn-delete" 
-                                   style="padding: 6px 12px; font-size: 0.8rem;"
+                                   class="btn btn-outline btn-delete btn-xs" 
                                    onclick="return confirm('rm -rf this_post?')">
                                     <i class="bi bi-trash3"></i> DELETE
                                 </a>

@@ -16,10 +16,10 @@
     </style>
 </head>
 <body>
-    <div layout:fragment="content">
+    <div layout:fragment="content" class="container py-l">
         <div class="admin-header">
             <h1>new_course.sh</h1>
-            <a th:href="@{/admin/courses}" class="btn btn-outline" style="color: var(--accent-orange); border-color: var(--accent-orange);">
+            <a th:href="@{/admin/courses}" class="btn btn-outline btn-orange">
                 <i class="bi bi-x-lg"></i> abort()
             </a>
         </div>
@@ -31,8 +31,8 @@
                     <input type="text" id="title" name="title" placeholder="Course title..." class="form-control" required>
                 </div>
 
-                <div class="form-row" style="display: flex; gap: 20px;">
-                    <div class="form-group" style="flex: 1;">
+                <div class="form-row flex gap-xl">
+                    <div class="form-group flex-1">
                         <label for="level" class="form-label">// ENUM: level</label>
                         <select id="level" name="level" class="form-control" required>
                             <option value="Beginner">Beginner</option>
@@ -40,14 +40,14 @@
                             <option value="Advanced">Advanced</option>
                         </select>
                     </div>
-                    <div class="form-group" style="flex: 1;">
+                    <div class="form-group flex-1">
                         <label for="duration" class="form-label">// STRING: duration</label>
                         <input type="text" id="duration" name="duration" placeholder="e.g. 12 Hours" class="form-control" required>
                     </div>
                 </div>
 
                 <div class="form-group">
-                    <label for="image" class="form-label" style="color: var(--accent-orange);">// FILE: cover_image</label>
+                    <label for="image" class="form-label text-orange">// FILE: cover_image</label>
                     <input type="file" id="image" name="image" accept="image/*" class="form-control">
                 </div>
 
@@ -57,17 +57,17 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="markdownFile" class="form-label" style="color: var(--accent-blue);">// FILE: content_import (.md)</label>
+                    <label for="markdownFile" class="form-label text-blue">// FILE: content_import (.md)</label>
                     <input type="file" id="markdownFile" name="markdownFile" accept=".md" class="form-control">
                 </div>
 
                 <div class="form-group">
-                    <label for="content" class="form-label" style="color: var(--accent-purple);">// TEXT: course_materials (markdown)</label>
+                    <label for="content" class="form-label text-purple">// TEXT: course_materials (markdown)</label>
                     <textarea id="content" name="content" rows="15" placeholder="## Module 1..." class="form-control"></textarea>
                 </div>
 
-                <div style="margin-top: 32px;">
-                    <button type="submit" class="btn btn-primary btn-large" style="width: 100%;">
+                <div class="mt-2xl">
+                    <button type="submit" class="btn btn-primary btn-large w-full">
                         <i class="bi bi-terminal"></i> deploy_course()
                     </button>
                 </div>

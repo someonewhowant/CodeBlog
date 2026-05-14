@@ -6,11 +6,11 @@
     <title>Manage Courses</title>
 </head>
 <body>
-    <div layout:fragment="content">
+    <div layout:fragment="content" class="container py-l">
         <div class="admin-header">
             <h1>root@admin:~/courses$</h1>
             <div class="admin-actions">
-                <a th:href="@{/admin/dashboard}" class="btn btn-outline">
+                <a th:href="@{/admin/dashboard}" class="btn btn-outline btn-orange">
                     <i class="bi bi-arrow-left"></i> back_to_posts()
                 </a>
                 <a th:href="@{/admin/add-course}" class="btn btn-primary">
@@ -38,18 +38,17 @@
                         <td th:text="${course.duration}">Duration</td>
                         <td>
                             <div class="admin-actions" style="justify-content: flex-end;">
-                                <a th:href="@{/admin/courses/{id}/modules(id=${course.id})}" class="btn btn-outline" style="padding: 6px 12px; font-size: 0.8rem; border-color: var(--accent-purple); color: var(--accent-purple);">
+                                <a th:href="@{/admin/courses/{id}/modules(id=${course.id})}" class="btn btn-outline btn-xs btn-blue">
                                     <i class="bi bi-stack"></i> MODULES
                                 </a>
-                                <a th:href="@{/admin/courses/{id}/quizzes(id=${course.id})}" class="btn btn-outline" style="padding: 6px 12px; font-size: 0.8rem; border-color: var(--accent-orange); color: var(--accent-orange);">
+                                <a th:href="@{/admin/courses/{id}/quizzes(id=${course.id})}" class="btn btn-outline btn-xs btn-orange">
                                     <i class="bi bi-question-circle"></i> QUIZZES
                                 </a>
-                                <a th:href="@{/admin/edit-course/{id}(id=${course.id})}" class="btn btn-outline" style="padding: 6px 12px; font-size: 0.8rem;">
+                                <a th:href="@{/admin/edit-course/{id}(id=${course.id})}" class="btn btn-outline btn-xs">
                                     <i class="bi bi-pencil"></i> EDIT
                                 </a>
                                 <a th:href="@{/admin/delete-course/{id}(id=${course.id})}" 
-                                   class="btn btn-outline btn-delete" 
-                                   style="padding: 6px 12px; font-size: 0.8rem;"
+                                   class="btn btn-outline btn-delete btn-xs" 
                                    onclick="return confirm('rm -rf this_course?')">
                                     <i class="bi bi-trash3"></i> DELETE
                                 </a>
