@@ -142,7 +142,7 @@ body::before {
 }
 
 .reading-container {
-  max-width: 760px;
+  max-width: 950px;
   margin: 0 auto;
   padding: 0 clamp(1.2rem, 5vw, 2.5rem);
   width: 100%;
@@ -895,8 +895,9 @@ a:hover {
 }
 
 /* --- Code Blocks --- */
-pre, code {
-  max-width: 100%;
+pre,
+code {
+  max-width: 900px;
   overflow-x: auto;
   word-wrap: normal;
   overflow-wrap: normal;
@@ -914,7 +915,7 @@ pre, code {
 .code-header {
   background: var(--bg-surface);
   border-bottom: 1px solid var(--border-subtle);
-  padding: 12px 16px;
+  padding: 12px 79px;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -1202,31 +1203,14 @@ pre, code {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
-/* --- About Page --- */
+/* --- About Page Enhancements --- */
 .about-hero {
   padding: clamp(3rem, 10vh, 6rem) 0 clamp(1.5rem, 5vh, 3rem);
   position: relative;
 }
 
-.about-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 1.5rem;
-  margin-top: 2.5rem;
-}
-
-.about-grid--2 {
-  grid-template-columns: repeat(2, 1fr);
-}
-
-@media (max-width: 768px) {
-  .about-grid--2 {
-    grid-template-columns: 1fr;
-  }
-}
-
 .about-card {
-  padding: 32px;
+  padding: clamp(1.5rem, 3vw, 2rem);
   height: 100%;
   transition: var(--transition);
   border-left: 1px solid var(--border-subtle);
@@ -1238,23 +1222,42 @@ pre, code {
   background: rgba(255, 255, 255, 0.02);
 }
 
-.about-card__icon {
-  font-size: 1.5rem;
-  margin-bottom: 20px;
-  display: block;
+.about-card__step {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  margin-bottom: var(--space-s);
+  color: var(--accent-blue);
 }
 
 .about-card__title {
-  font-family: var(--font-mono);
-  font-size: 1.1rem;
   font-weight: 700;
-  margin-bottom: 12px;
+  margin-bottom: var(--space-s);
+  font-size: clamp(1.1rem, 2vw, 1.25rem);
 }
 
 .about-card__text {
   color: var(--text-dim);
   font-size: 0.95rem;
   line-height: 1.6;
+}
+
+.philosophy-card {
+  padding: clamp(1.5rem, 5vw, 3rem);
+}
+
+.philosophy-card__label {
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+  margin-bottom: var(--space-s);
+}
+
+.social-connect-title {
+  font-family: var(--font-mono);
+  font-size: 1rem;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  margin-bottom: 50px;
 }
 
 /* --- Terminal Aesthetic --- */
@@ -2191,6 +2194,13 @@ pre, code {
   grid-template-columns: 1fr 1fr;
 }
 
+@media (max-width: 768px) {
+  .grid-2 {
+    grid-template-columns: 1fr;
+  }
+}
+
+
 .gap-xs {
   gap: var(--space-xs);
 }
@@ -2388,4 +2398,33 @@ pre, code {
 
 .cursor-not-allowed {
   cursor: not-allowed;
+}
+
+/* --- Added for Mandatory Quizzes --- */
+.btn-orange-faded {
+  background: rgba(210, 153, 34, 0.05) !important;
+  border-color: rgba(210, 153, 34, 0.2) !important;
+}
+
+.btn-orange-faded:hover {
+  background: rgba(210, 153, 34, 0.1) !important;
+  border-color: var(--accent-orange) !important;
+}
+
+.btn-green-faded {
+  background: rgba(63, 185, 80, 0.05) !important;
+  border-color: rgba(63, 185, 80, 0.2) !important;
+}
+
+.btn-green-faded:hover {
+  background: rgba(63, 185, 80, 0.1) !important;
+  border-color: var(--accent-green) !important;
+}
+
+.border-green-faded {
+  border-color: rgba(63, 185, 80, 0.3) !important;
+}
+
+.bg-green-faded {
+  background: rgba(63, 185, 80, 0.05) !important;
 }

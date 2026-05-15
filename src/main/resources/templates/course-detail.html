@@ -81,7 +81,7 @@
                             <h2 class="locked-title">// MODULE_LOCKED</h2>
                             <p class="locked-reason" th:text="${lockReason}">Reason for the lock...</p>
                             <a th:if="${prevModule != null and prevModule.quiz != null}" 
-                               th:href="@{/quiz/{id}(id=${prevModule.quiz.id})}" 
+                               th:href="@{/quiz/{id}(id=${prevModule.quiz.id}, moduleId=${prevModule.id})}" 
                                class="btn btn-primary btn-orange">
                                 <i class="bi bi-play-fill"></i> Take Required Quiz
                             </a>
@@ -92,18 +92,24 @@
                         </div>
 
                         <!-- Module Quiz Link -->
-                        <div class="module-quiz-section reveal-on-scroll mt-3xl p-xl glass rounded-l border-active relative overflow-hidden" th:if="${not isOverview and not isLocked and module.quiz != null}">
+                        <div class="module-quiz-section reveal-on-scroll mt-3xl p-xl glass rounded-l border-active relative overflow-hidden" 
+                             th:if="${not isOverview and not isLocked and module.quiz != null}"
+                             th:classappend="${isCurrentQuizPassed} ? 'border-green-faded' : ''">
                             <div style="position: absolute; top: -20px; right: -20px; font-size: 8rem; opacity: 0.03; color: var(--accent-blue); pointer-events: none;">
                                 <i class="bi bi-patch-question"></i>
                             </div>
-                            <h3 class="font-mono mb-xl text-blue text-xs tracking-widest">// MODULE_QUIZ</h3>
+                            <h3 class="font-mono mb-xl text-blue text-xs tracking-widest" th:text="${isCurrentQuizPassed} ? '// MODULE_QUIZ_COMPLETED' : '// MODULE_QUIZ'">// MODULE_QUIZ</h3>
                             <div class="flex items-center justify-between relative z-10">
                                 <div>
                                     <h4 th:text="${module.quiz.title}" class="text-xl mb-xs font-bold">Quiz Title</h4>
-                                    <p class="text-dim max-w-400 leading-relaxed">Complete this assessment with at least <span class="text-orange font-bold">3 points</span> to finalize this module and unlock the next one.</p>
+                                    <p th:if="${not isCurrentQuizPassed}" class="text-dim max-w-400 leading-relaxed">Complete this assessment with at least <span class="text-orange font-bold">3 points</span> to finalize this module and unlock the next one.</p>
+                                    <p th:if="${isCurrentQuizPassed}" class="text-green max-w-400 leading-relaxed"><i class="bi bi-check-circle-fill"></i> You have successfully passed this assessment! You can retake it to improve your score.</p>
                                 </div>
-                                <a th:href="@{/quiz/{id}(id=${module.quiz.id})}" class="btn btn-primary btn-large">
-                                    <i class="bi bi-play-fill"></i> Start Assessment
+                                <a th:href="@{/quiz/{id}(id=${module.quiz.id}, moduleId=${module.id})}" 
+                                   class="btn btn-primary btn-large"
+                                   th:classappend="${isCurrentQuizPassed} ? 'btn-outline' : ''">
+                                    <i class="bi" th:classappend="${isCurrentQuizPassed} ? 'bi-arrow-clockwise' : 'bi-play-fill'"></i> 
+                                    <span th:text="${isCurrentQuizPassed} ? 'Retake Assessment' : 'Start Assessment'">Start Assessment</span>
                                 </a>
                             </div>
                         </div>
@@ -125,10 +131,12 @@
                                     <span class="nav-btn__label">Next <i class="bi bi-arrow-right"></i></span>
                                     <span class="nav-btn__title" th:text="${nextModule.title}">Next Module</span>
                                 </a>
-                                <div th:if="${isNextLocked}" class="nav-btn nav-btn--next disabled opacity-70 cursor-not-allowed border-orange-faded bg-orange-faded">
-                                    <span class="nav-btn__label text-orange"><i class="bi bi-lock-fill"></i> Locked</span>
-                                    <span class="nav-btn__title text-dim">Pass quiz to unlock</span>
-                                </div>
+                                <a th:if="${isNextLocked}" 
+                                   th:href="@{/quiz/{id}(id=${module.quiz.id}, moduleId=${module.id})}" 
+                                   class="nav-btn nav-btn--next btn-orange-faded">
+                                    <span class="nav-btn__label text-orange">Next: Quiz <i class="bi bi-patch-question"></i></span>
+                                    <span class="nav-btn__title" th:text="${module.quiz.title}">Quiz Title</span>
+                                </a>
                             </th:block>
                             
                             <a th:unless="${nextModule}" 

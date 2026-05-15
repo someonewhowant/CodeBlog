@@ -205,10 +205,14 @@ public class MainController {
         }
         
         boolean isNextLocked = false;
+        boolean isCurrentQuizPassed = false;
         if (module.getQuiz() != null && principal != null) {
             User user = userRepository.findByUsername(principal.getName()).orElse(null);
-            if (user != null && !quizService.isQuizPassed(user.getId(), module.getQuiz().getId())) {
-                isNextLocked = true;
+            if (user != null) {
+                isCurrentQuizPassed = quizService.isQuizPassed(user.getId(), module.getQuiz().getId());
+                if (!isCurrentQuizPassed) {
+                    isNextLocked = true;
+                }
             }
         }
         
@@ -221,6 +225,7 @@ public class MainController {
         model.addAttribute("prevModule", prevModule);
         model.addAttribute("isLocked", isLocked);
         model.addAttribute("isNextLocked", isNextLocked);
+        model.addAttribute("isCurrentQuizPassed", isCurrentQuizPassed);
         model.addAttribute("lockReason", lockReason);
         model.addAttribute("title", module.getTitle() + " - " + course.getTitle());
         model.addAttribute("isOverview", false);
@@ -232,9 +237,12 @@ public class MainController {
      * Страница прохождения квиза.
      */
     @GetMapping("/quiz/{id}")
-    public String takeQuiz(@PathVariable Long id, Model model) {
+    public String takeQuiz(@PathVariable Long id, 
+                           @RequestParam(required = false) Long moduleId,
+                           Model model) {
         Quiz quiz = quizService.getQuizById(id);
         model.addAttribute("quiz", quiz);
+        model.addAttribute("moduleId", moduleId);
         model.addAttribute("title", "Quiz: " + quiz.getTitle());
         return "quiz";
     }
@@ -244,6 +252,7 @@ public class MainController {
      */
     @PostMapping("/quiz/{id}/submit")
     public String submitQuiz(@PathVariable Long id, 
+                             @RequestParam(required = false) Long moduleId,
                              @RequestParam Map<String, String> params, 
                              Principal principal,
                              Model model) {
@@ -280,15 +289,35 @@ public class MainController {
             results.add(result);
         }
         
+        boolean isPassed = false;
         // Save results if user is logged in
         if (principal != null) {
             User user = userRepository.findByUsername(principal.getName())
                     .orElseThrow(() -> new UsernameNotFoundException("User not found"));
             quizService.saveQuizResult(user.getId(), quiz.getId(), correctAnswers);
-            model.addAttribute("isPassed", correctAnswers >= 3);
+            isPassed = correctAnswers >= 3;
+            model.addAttribute("isPassed", isPassed);
+        }
+        
+        if (isPassed && moduleId != null) {
+            CourseModule module = courseService.getModuleById(moduleId);
+            Course course = module.getCourse();
+            List<CourseModule> modules = course.getModules();
+            CourseModule nextModule = null;
+            for (int i = 0; i < modules.size(); i++) {
+                if (modules.get(i).getId().equals(moduleId)) {
+                    if (i < modules.size() - 1) {
+                        nextModule = modules.get(i + 1);
+                    }
+                    break;
+                }
+            }
+            model.addAttribute("nextModule", nextModule);
+            model.addAttribute("courseId", course.getId());
         }
         
         model.addAttribute("quiz", quiz);
+        model.addAttribute("moduleId", moduleId);
         model.addAttribute("score", correctAnswers);
         model.addAttribute("total", totalQuestions);
         model.addAttribute("results", results);

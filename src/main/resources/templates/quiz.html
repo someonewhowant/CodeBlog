@@ -66,11 +66,22 @@
                         </p>
                         
                         <div class="mt-2xl flex justify-center gap-xl">
-                            <a th:href="@{/course/{id}(id=${quiz.course.id})}" class="btn btn-outline">
+                            <a th:if="${moduleId != null}" th:href="@{/course/{courseId}/module/{mId}(courseId=${quiz.course.id}, mId=${moduleId})}" class="btn btn-outline">
+                                <i class="bi bi-arrow-left"></i> Back to Module
+                            </a>
+                            <a th:unless="${moduleId != null}" th:href="@{/course/{id}(id=${quiz.course.id})}" class="btn btn-outline">
                                 <i class="bi bi-arrow-left"></i> Course Map
                             </a>
-                            <a th:if="${not isPassed}" th:href="@{/quiz/{id}(id=${quiz.id})}" class="btn btn-primary btn-orange py-m px-xl">
+                            
+                            <a th:if="${not isPassed}" th:href="@{/quiz/{id}(id=${quiz.id}, moduleId=${moduleId})}" class="btn btn-primary btn-orange py-m px-xl">
                                 <i class="bi bi-arrow-clockwise"></i> Retake Assessment
+                            </a>
+                            
+                            <a th:if="${isPassed and nextModule != null}" th:href="@{/course/{courseId}/module/{mId}(courseId=${courseId}, mId=${nextModule.id})}" class="btn btn-primary btn-green py-m px-xl">
+                                Continue to Next Module <i class="bi bi-arrow-right"></i>
+                            </a>
+                            <a th:if="${isPassed and nextModule == null and moduleId != null}" th:href="@{/course/{id}(id=${quiz.course.id})}" class="btn btn-primary btn-green py-m px-xl">
+                                Finish Course <i class="bi bi-check2-circle"></i>
                             </a>
                         </div>
                     </div>
