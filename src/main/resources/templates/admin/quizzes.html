@@ -57,10 +57,21 @@
             <h2 class="section-title text-orange font-mono text-m mb-xl">
                 <i class="bi bi-plus-lg"></i> create_new_quiz()
             </h2>
-            <form th:action="@{/admin/courses/{id}/quizzes(id=${course.id})}" method="POST">
+            <form th:action="@{/admin/courses/{id}/quizzes(id=${course.id})}" method="POST" enctype="multipart/form-data">
                 <div class="form-group">
-                    <label for="title" class="form-label">// STRING: quiz_title</label>
-                    <input type="text" id="title" name="title" placeholder="Spring Boot Basics Quiz..." class="form-control" required>
+                    <label for="title" class="form-label">// STRING: quiz_title (optional if using markdown)</label>
+                    <input type="text" id="title" name="title" placeholder="Spring Boot Basics Quiz..." class="form-control">
+                </div>
+
+                <div class="form-group mt-xl">
+                    <label for="file" class="form-label">// FILE: import_from_markdown (.md)</label>
+                    <input type="file" id="file" name="file" class="form-control" accept=".md">
+                    <div class="form-help text-dim font-mono text-xs mt-s" style="border: 1px dashed var(--admin-border); padding: 10px; border-radius: 4px;">
+                        # Quiz Title (optional)<br>
+                        ## Question Text<br>
+                        - [ ] Wrong Option<br>
+                        - [x] Correct Option
+                    </div>
                 </div>
 
                 <div class="mt-2xl">

@@ -17,4 +17,6 @@ public interface QuizService {
     void saveQuizResult(Long userId, Long quizId, int score);
     int getUserScore(Long userId, Long quizId);
     boolean isQuizPassed(Long userId, Long quizId);
+
+    Quiz importQuizFromMarkdown(Long courseId, String content);
 }

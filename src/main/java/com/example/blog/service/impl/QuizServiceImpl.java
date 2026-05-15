@@ -3,6 +3,7 @@ package com.example.blog.service.impl;
 import com.example.blog.entity.Course;
 import com.example.blog.entity.Quiz;
 import com.example.blog.entity.Question;
+import com.example.blog.entity.QuestionOption;
 import com.example.blog.entity.User;
 import com.example.blog.entity.UserQuizResult;
 import com.example.blog.repository.CourseRepository;
@@ -14,6 +15,7 @@ import com.example.blog.service.QuizService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -107,5 +109,49 @@ public class QuizServiceImpl implements QuizService {
     @Override
     public boolean isQuizPassed(Long userId, Long quizId) {
         return getUserScore(userId, quizId) >= 3;
+    }
+
+    @Override
+    @Transactional
+    public Quiz importQuizFromMarkdown(Long courseId, String content) {
+        String[] lines = content.split("\n");
+        Quiz quiz = new Quiz();
+        List<Question> questions = new ArrayList<>();
+        Question currentQuestion = null;
+
+        for (String line : lines) {
+            String trimmedLine = line.trim();
+            if (trimmedLine.isEmpty()) continue;
+
+            if (trimmedLine.startsWith("# ")) {
+                if (quiz.getTitle() == null) {
+                    quiz.setTitle(trimmedLine.substring(2).trim());
+                }
+            } else if (trimmedLine.startsWith("## ")) {
+                currentQuestion = new Question();
+                currentQuestion.setText(trimmedLine.substring(3).trim());
+                currentQuestion.setQuiz(quiz);
+                currentQuestion.setOptions(new ArrayList<>());
+                questions.add(currentQuestion);
+            } else if (trimmedLine.startsWith("- [ ] ") || trimmedLine.startsWith("- [x] ") || 
+                       trimmedLine.startsWith("- [] ")) {
+                if (currentQuestion != null) {
+                    QuestionOption option = new QuestionOption();
+                    boolean isCorrect = trimmedLine.startsWith("- [x] ");
+                    String optionText = trimmedLine.substring(6).trim();
+                    option.setText(optionText);
+                    option.setCorrect(isCorrect);
+                    option.setQuestion(currentQuestion);
+                    currentQuestion.getOptions().add(option);
+                }
+            }
+        }
+
+        if (quiz.getTitle() == null) {
+            quiz.setTitle("Imported Quiz");
+        }
+
+        quiz.setQuestions(questions);
+        return createQuiz(courseId, quiz);
     }
 }

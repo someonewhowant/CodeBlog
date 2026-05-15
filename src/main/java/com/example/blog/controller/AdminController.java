@@ -316,8 +316,19 @@ public class AdminController {
      * Добавление квиза.
      */
     @PostMapping("/courses/{id}/quizzes")
-    public String addQuiz(@PathVariable Long id, @ModelAttribute Quiz quiz) {
-        quizService.createQuiz(id, quiz);
+    public String addQuiz(@PathVariable Long id, 
+                          @ModelAttribute Quiz quiz,
+                          @RequestParam(value = "file", required = false) MultipartFile file) throws IOException {
+        if (file != null && !file.isEmpty()) {
+            String content = new String(file.getBytes(), StandardCharsets.UTF_8);
+            Quiz importedQuiz = quizService.importQuizFromMarkdown(id, content);
+            if (quiz.getTitle() != null && !quiz.getTitle().isEmpty()) {
+                importedQuiz.setTitle(quiz.getTitle());
+                quizService.updateQuiz(importedQuiz.getId(), importedQuiz);
+            }
+        } else {
+            quizService.createQuiz(id, quiz);
+        }
         return "redirect:/admin/courses/" + id + "/quizzes";
     }
 
