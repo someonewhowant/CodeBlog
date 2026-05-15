@@ -6,54 +6,51 @@
     <title>Search Results</title>
 </head>
 <body>
-    <div layout:fragment="content">
-        <h1 class="author__heading" style="margin-bottom: 40px; font-size: 1.8rem;">
-            grep -r "<span style="color: var(--accent-green);" th:text="${searchTerm}"></span>" .
+    <div layout:fragment="content" class="container py-l">
+        <h1 class="author__heading mb-xl text-xl">
+            grep -r "<span class="text-green" th:text="${searchTerm}"></span>" .
         </h1>
         
         <ul class="article-grid" th:if="${not #lists.isEmpty(data)}">
-            <li th:each="post : ${data}">
-                <a th:href="@{/post/{id}(id=${post.id})}">
-                    <div class="article-card__image-container">
-                        <img th:if="${post.imageUrl}" 
-                             th:src="${post.imageUrl}" 
-                             th:alt="${post.title}" 
-                             class="article-card__image"
-                             loading="lazy"
-                             decoding="async">
-                        <div th:unless="${post.imageUrl}" class="article-card__placeholder"></div>
+            <li th:each="post : ${data}" class="article-card">
+                <div class="article-card__image-container">
+                    <img th:if="${post.imageUrl}" 
+                         th:src="${post.imageUrl}" 
+                         th:alt="${post.title}" 
+                         class="article-card__image"
+                         loading="lazy"
+                         decoding="async">
+                    <div th:unless="${post.imageUrl}" class="article-card__placeholder"></div>
+                </div>
+                <div class="article-card__content">
+                    <div class="article-card__meta">
+                        <span class="article-list__date" th:text="${#temporals.format(post.createdAt, 'MMMM dd, yyyy')}">Date</span>
+                        <span th:if="${post.category}" class="text-dim opacity-50">|</span>
+                        <th:block th:replace="~{partials/fragments :: categoryBadge(${post.category}, 'article-card__category')}"></th:block>
                     </div>
-                    <div class="article-card__content">
-                        <div class="article-card__meta">
-                            <span class="article-list__date" th:text="${#temporals.format(post.createdAt, 'MMMM dd, yyyy')}">Date</span>
-                            <span th:if="${post.category}" style="color: var(--text-dim); opacity: 0.5;">|</span>
-                            <a th:if="${post.category}" 
-                               th:href="@{/category/{slug}(slug=${post.category.slug})}" 
-                               th:text="${post.category.name}"
-                               class="article-card__category">Category</a>
-                        </div>
-                        <span class="article-card__title" th:text="${post.title}">Post Title</span>
-                        <p th:text="${#strings.abbreviate(post.body, 120)}"></p>
-                        <div th:if="${post.tags != null and not #sets.isEmpty(post.tags)}" class="article-card__tags">
-                            <a th:each="tag : ${post.tags}" 
-                               th:href="@{/tag/{slug}(slug=${tag.slug})}" 
-                               th:text="'#' + ${tag.name}"
-                               class="badge-tag">#tag</a>
-                        </div>
+                    <h3 class="article-card__title">
+                        <a th:href="@{/post/{id}(id=${post.id})}" th:text="${post.title}" class="stretched-link">Post Title</a>
+                    </h3>
+                    <p class="article-card__excerpt" th:text="${#strings.abbreviate(post.body, 120)}"></p>
+                    <div th:if="${post.tags != null and not #sets.isEmpty(post.tags)}" class="article-card__tags mt-auto pt-m">
+                        <a th:each="tag : ${post.tags}" 
+                           th:href="@{/tag/{slug}(slug=${tag.slug})}" 
+                           th:text="'#' + ${tag.name}"
+                           class="badge-tag">#tag</a>
                     </div>
-                </a>
+                </div>
             </li>
         </ul>
         
-        <div th:if="${#lists.isEmpty(data)}" style="text-align: center; padding: 80px 0; background: var(--bg-surface); border-radius: var(--radius); border: 1px dashed var(--border-subtle);">
-            <div style="font-family: var(--font-mono); font-size: 3rem; color: var(--accent-orange); opacity: 0.5; margin-bottom: 24px;">404</div>
-            <p style="font-family: var(--font-mono); font-size: 1.2rem; color: var(--text-main);">STDOUT: No results found for current query.</p>
-            <p style="color: var(--text-dim); margin-top: 8px;">Try refining your search parameters.</p>
+        <div th:if="${#lists.isEmpty(data)}" class="text-center py-3xl bg-surface rounded border-active border-dashed">
+            <div class="font-mono text-3xl text-orange opacity-50 mb-l">404</div>
+            <p class="font-mono text-l text-main">STDOUT: No results found for current query.</p>
+            <p class="text-dim mt-s">Try refining your search parameters.</p>
         </div>
         
-        <div style="margin-top: 60px;">
-            <a th:href="@{/}" class="pagination-btn">
-                &lt;-- cd ..
+        <div class="mt-2xl">
+            <a th:href="@{/}" class="btn btn-outline">
+                <i class="bi bi-chevron-left"></i> cd ..
             </a>
         </div>
     </div>

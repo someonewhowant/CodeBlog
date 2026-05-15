@@ -81,19 +81,23 @@ document.addEventListener('DOMContentLoaded', function() {
     const initTheme = () => {
         const themeToggle = document.getElementById('themeToggle');
         const htmlElement = document.documentElement;
+        const bodyElement = document.body;
         
         const applyTheme = (theme) => {
+            // Add transition class to body
+            bodyElement.classList.add('theme-transitioning');
+            
             if (theme === 'light-theme') {
                 htmlElement.classList.add('light-theme');
             } else {
                 htmlElement.classList.remove('light-theme');
             }
+            
+            // Remove transition class after transition completes
+            setTimeout(() => {
+                bodyElement.classList.remove('theme-transitioning');
+            }, 300);
         };
-
-        const savedTheme = localStorage.getItem('theme');
-        if (savedTheme) {
-            applyTheme(savedTheme);
-        }
 
         if (themeToggle) {
             themeToggle.addEventListener('click', () => {

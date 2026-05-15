@@ -86,7 +86,7 @@
                         </div>
                     </div>
 
-                    <div class="detailed-results">
+                    <div class="detailed-results mt-3xl">
                         <h3 class="font-mono mb-2xl text-blue text-l">// DETAILED_REVIEW</h3>
                         <div th:each="res, rStat : ${results}" class="result-card-premium" th:classappend="${res.isCorrect} ? 'correct' : 'incorrect'">
                             <div class="flex gap-xl">

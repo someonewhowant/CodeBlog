@@ -95,7 +95,7 @@
                         <div class="module-quiz-section reveal-on-scroll mt-3xl p-xl glass rounded-l border-active relative overflow-hidden" 
                              th:if="${not isOverview and not isLocked and module.quiz != null}"
                              th:classappend="${isCurrentQuizPassed} ? 'border-green-faded' : ''">
-                            <div style="position: absolute; top: -20px; right: -20px; font-size: 8rem; opacity: 0.03; color: var(--accent-blue); pointer-events: none;">
+                            <div class="quiz-bg-icon">
                                 <i class="bi bi-patch-question"></i>
                             </div>
                             <h3 class="font-mono mb-xl text-blue text-xs tracking-widest" th:text="${isCurrentQuizPassed} ? '// MODULE_QUIZ_COMPLETED' : '// MODULE_QUIZ'">// MODULE_QUIZ</h3>
@@ -115,7 +115,7 @@
                         </div>
 
                         <!-- Module Navigation -->
-                        <div class="course-navigation" th:if="${not isOverview}">
+                        <div class="course-navigation mt-3xl">
                             <a th:if="${prevModule}" 
                                th:href="@{/course/{courseId}/module/{moduleId}(courseId=${course.id}, moduleId=${prevModule.id})}" 
                                class="nav-btn">

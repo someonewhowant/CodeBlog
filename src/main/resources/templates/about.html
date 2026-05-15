@@ -16,21 +16,23 @@
             </p>
         </section>
 
-        <section class="container mb-xl">
-            <div class="card-glass py-2xl px-m">
+        <section class="container">
+            <div class="card-glass overflow-hidden">
                 <div class="terminal-header">
                     <span class="terminal-header__dot"></span>
                     <span class="terminal-header__dot"></span>
                     <span class="terminal-header__dot"></span>
                     <span class="terminal-header__title">system.init()</span>
                 </div>
-                <div class="terminal-body">
-                    <p class="terminal-line"><span class="terminal-prompt">$</span> cat mission.md</p>
-                    <p class="terminal-text">
-                        The mission of CodeBlog Academy is to bridge the gap between academic theory and production-grade engineering. We provide deep technical insights, architectural case studies, and structured learning paths for modern developers.
-                    </p>
+                <div class="p-l">
+                    <div class="terminal-body p-0">
+                        <p class="terminal-line"><span class="terminal-prompt">$</span> cat mission.md</p>
+                        <p class="terminal-text mb-0">
+                            The mission of CodeBlog Academy is to bridge the gap between academic theory and production-grade engineering. We provide deep technical insights, architectural case studies, and structured learning paths for modern developers.
+                        </p>
+                    </div>
 
-                    <div class="about-grid">
+                    <div class="about-grid mt-2xl">
                         <div class="about-card">
                             <div class="about-card__step">01 // ANALYZE</div>
                             <h3 class="about-card__title">Deep Architecture</h3>
@@ -51,11 +53,11 @@
             </div>
         </section>
 
-        <section class="container mb-3xl">
+        <section class="container">
             <h2 class="section-title">
                 <i class="bi bi-patch-check"></i> Academy Philosophy
             </h2>
-            <div class="grid grid-2 gap-m mt-l">
+            <div class="grid grid-2 gap-m">
                 <div class="card-glass philosophy-card">
                     <h4 class="philosophy-card__label text-blue">01 // PRODUCTION_READY</h4>
                     <p class="text-dim leading-relaxed">Every article and course is based on real-world production experience. We don't just show you "Hello World" - we show you how to build systems that handle traffic, failures, and scale.</p>
@@ -67,14 +69,14 @@
             </div>
         </section>
 
-        <section class="tech-stack container">
+        <section class="container">
             <h2 class="section-title">
                 <i class="bi bi-layers"></i> The Stack
             </h2>
-            <p class="text-dim max-w-450">
+            <p class="text-dim max-w-450 mb-l">
                 Our core architectural pillars and tools used for building modern applications.
             </p>
-            <div class="tech-grid mt-l">
+            <div class="tech-grid">
                 <div class="tech-item">
                     <i class="bi bi-cup-hot"></i>
                     <span>Java / Spring</span>
@@ -102,10 +104,10 @@
             </div>
         </section>
 
-        <section class="text-center mt-3xl py-xl container">
-            <div class="mt-l mb-2xl">
+        <section class="text-center py-2xl container border-top mt-3xl">
+            <div class="mb-3xl">
                 <a th:href="@{/courses}" class="btn btn-primary btn-large">
-                    Explore Academy <i class="bi bi-arrow-right"></i>
+                    Explore Academy <i class="bi bi-arrow-right" style="margin-left: 8px;"></i>
                 </a>
             </div>
 

@@ -26,7 +26,7 @@
                         <th>COURSE_TITLE</th>
                         <th>LEVEL</th>
                         <th>DURATION</th>
-                        <th style="text-align: right;">ACTIONS</th>
+                        <th class="text-right">ACTIONS</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -37,7 +37,7 @@
                         </td>
                         <td th:text="${course.duration}">Duration</td>
                         <td>
-                            <div class="admin-actions" style="justify-content: flex-end;">
+                            <div class="admin-actions justify-end">
                                 <a th:href="@{/admin/courses/{id}/modules(id=${course.id})}" class="btn btn-outline btn-xs btn-blue">
                                     <i class="bi bi-stack"></i> MODULES
                                 </a>
@@ -56,8 +56,8 @@
                         </td>
                     </tr>
                     <tr th:if="${#lists.isEmpty(courses)}">
-                        <td colspan="4" style="text-align: center; padding: 40px; color: var(--text-dim);">
-                            No courses found. Run <span style="color: var(--accent-blue);">new_course()</span> to get started.
+                        <td colspan="4" class="text-center py-2xl text-dim">
+                            No courses found. Run <span class="text-blue">new_course()</span> to get started.
                         </td>
                     </tr>
                 </tbody>

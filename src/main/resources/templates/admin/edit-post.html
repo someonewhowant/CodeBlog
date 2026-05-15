@@ -19,12 +19,12 @@
     <div layout:fragment="content">
         <div class="admin-header">
             <h1>edit_post.py</h1>
-            <a th:href="@{/admin/dashboard}" class="btn btn-outline" style="color: var(--accent-orange); border-color: var(--accent-orange);">
+            <a th:href="@{/admin/dashboard}" class="btn btn-outline btn-orange">
                 <i class="bi bi-x-lg"></i> discard_changes()
             </a>
         </div>
         
-        <div class="form-card">
+        <div class="form-card mt-xl">
             <form th:action="@{/admin/edit-post/{id}(id=${post.id})}" method="POST" enctype="multipart/form-data">
                 
                 <div class="form-group">
@@ -33,16 +33,16 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="image" class="form-label" style="color: var(--accent-orange);">// FILE: image (leave empty to keep current)</label>
+                    <label for="image" class="form-label text-orange">// FILE: image (leave empty to keep current)</label>
                     <input type="file" id="image" name="image" accept="image/*" class="form-control">
-                    <div th:if="${post.imageUrl}" style="margin-top: 16px; display: flex; align-items: center; gap: 16px;">
-                        <img th:src="${post.imageUrl}" style="max-width: 120px; border-radius: var(--radius); border: 1px solid var(--border-subtle);">
-                        <span class="hero-label" style="margin: 0;">Current asset path</span>
+                    <div th:if="${post.imageUrl}" class="mt-m flex items-center gap-m">
+                        <img th:src="${post.imageUrl}" class="rounded border-active" style="max-width: 120px;">
+                        <span class="hero-label m-0">Current asset path</span>
                     </div>
                 </div>
 
                 <div class="form-group">
-                    <label for="markdownFile" class="form-label" style="color: var(--accent-blue);">// FILE: markdown_import (.md)</label>
+                    <label for="markdownFile" class="form-label text-blue">// FILE: markdown_import (.md)</label>
                     <input type="file" id="markdownFile" name="markdownFile" accept=".md" class="form-control">
                 </div>
 

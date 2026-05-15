@@ -64,8 +64,8 @@
             </table>
         </div>
 
-        <div class="post-form-container fade-in">
-            <h2 style="margin-bottom: 24px; color: var(--accent-green); font-family: var(--font-mono); font-size: 1.25rem;">
+        <div class="post-form-container fade-in mt-3xl">
+            <h2 class="mb-xl text-green font-mono text-l">
                 <i class="bi bi-plus-lg"></i> upload_new_module()
             </h2>
             <form th:action="@{/admin/courses/{id}/modules(id=${course.id})}" method="POST" enctype="multipart/form-data">

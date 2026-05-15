@@ -19,12 +19,12 @@
     <div layout:fragment="content">
         <div class="admin-header">
             <h1>new_post.sh</h1>
-            <a th:href="@{/admin/dashboard}" class="btn btn-outline" style="color: var(--accent-orange); border-color: var(--accent-orange);">
+            <a th:href="@{/admin/dashboard}" class="btn btn-outline btn-orange">
                 <i class="bi bi-x-lg"></i> abort()
             </a>
         </div>
         
-        <div class="form-card">
+        <div class="form-card mt-xl">
             <form th:action="@{/admin/add-post}" method="POST" enctype="multipart/form-data">
                 <div class="form-group">
                     <label for="title" class="form-label">// STRING: title</label>
