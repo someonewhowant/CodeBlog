@@ -1,5 +1,6 @@
 package com.example.blog.config;
 
+import com.example.blog.entity.Role;
 import com.example.blog.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -33,18 +34,35 @@ public class SecurityConfig {
         http.csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(authorize -> authorize
                 .requestMatchers("/css/**", "/js/**", "/img/**", "/uploads/**", "/h2-console/**", "/favicon.ico").permitAll()
-                .requestMatchers("/", "/post/**", "/search", "/about", "/admin/login").permitAll()
+                .requestMatchers("/", "/post/**", "/search", "/about", "/admin/login", "/register/**").permitAll()
                 .requestMatchers("/admin/**").hasRole("ADMIN")
+                .requestMatchers("/student/**").hasRole("STUDENT")
+                .requestMatchers("/teacher/**").hasRole("TEACHER")
                 .anyRequest().authenticated()
             )
             .formLogin(form -> form
                 .loginPage("/admin/login")
                 .loginProcessingUrl("/admin/login")
-                .defaultSuccessUrl("/admin/dashboard")
+                .successHandler((request, response, authentication) -> {
+                    for (var auth : authentication.getAuthorities()) {
+                        if (auth.getAuthority().equals("ROLE_ADMIN")) {
+                            response.sendRedirect("/admin/dashboard");
+                            return;
+                        } else if (auth.getAuthority().equals("ROLE_STUDENT")) {
+                            response.sendRedirect("/student/dashboard");
+                            return;
+                        } else if (auth.getAuthority().equals("ROLE_TEACHER")) {
+                            response.sendRedirect("/teacher/dashboard");
+                            return;
+                        }
+                    }
+                    response.sendRedirect("/");
+                })
                 .permitAll()
             )
             .logout(logout -> logout
-                .logoutRequestMatcher(new AntPathRequestMatcher("/admin/logout"))
+                .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
+                .logoutSuccessUrl("/")
                 .permitAll()
             )
             .headers(headers -> headers.frameOptions(frame -> frame.disable()));
@@ -58,7 +76,7 @@ public class SecurityConfig {
                 .map(user -> User.builder()
                         .username(user.getUsername())
                         .password(user.getPassword())
-                        .roles("ADMIN")
+                        .roles(user.getRole().name())
                         .build())
                 .orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
     }

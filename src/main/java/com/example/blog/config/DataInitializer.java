@@ -26,6 +26,7 @@ public class DataInitializer {
                 User admin = User.builder()
                         .username("admin")
                         .password(passwordEncoder.encode("admin")) // Пароль: admin
+                        .role(Role.ADMIN)
                         .build();
                 userRepository.save(admin);
             }
