@@ -292,6 +292,41 @@ public class AdminController {
     }
 
     /**
+     * Форма редактирования модуля.
+     */
+    @GetMapping("/courses/{courseId}/modules/{moduleId}/edit")
+    public String editModuleForm(@PathVariable Long courseId, @PathVariable Long moduleId, Model model) {
+        Course course = courseService.getCourseById(courseId);
+        CourseModule module = courseService.getModuleById(moduleId);
+        model.addAttribute("course", course);
+        model.addAttribute("module", module);
+        model.addAttribute("title", "Edit Module: " + module.getTitle());
+        return "admin/edit-module";
+    }
+
+    /**
+     * Обработка обновления модуля.
+     */
+    @PostMapping("/courses/{courseId}/modules/{moduleId}/edit")
+    public String updateModule(@PathVariable Long courseId,
+                               @PathVariable Long moduleId,
+                               @RequestParam("title") String title,
+                               @RequestParam(value = "content", required = false) String content,
+                               @RequestParam(value = "file", required = false) MultipartFile file) throws IOException {
+        CourseModule module = new CourseModule();
+        module.setTitle(title);
+
+        if (file != null && !file.isEmpty()) {
+            module.setContent(new String(file.getBytes(), StandardCharsets.UTF_8));
+        } else {
+            module.setContent(content);
+        }
+
+        courseService.updateModule(moduleId, module);
+        return "redirect:/admin/courses/" + courseId + "/modules";
+    }
+
+    /**
      * Удаление модуля.
      */
     @GetMapping("/delete-module/{courseId}/{moduleId}")

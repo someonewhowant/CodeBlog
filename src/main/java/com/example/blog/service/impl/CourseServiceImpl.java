@@ -95,6 +95,18 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     @Transactional
+    public CourseModule updateModule(Long moduleId, CourseModule moduleDetails) {
+        CourseModule module = getModuleById(moduleId);
+        module.setTitle(moduleDetails.getTitle());
+        module.setContent(moduleDetails.getContent());
+        if (moduleDetails.getOrderIndex() != 0) {
+            module.setOrderIndex(moduleDetails.getOrderIndex());
+        }
+        return moduleRepository.save(module);
+    }
+
+    @Override
+    @Transactional
     public void setModuleQuiz(Long moduleId, Long quizId) {
         CourseModule module = getModuleById(moduleId);
         if (quizId != null) {

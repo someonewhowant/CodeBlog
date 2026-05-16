@@ -45,6 +45,10 @@
                                 <button type="submit" class="btn btn-outline btn-xs btn-blue">
                                     UPDATE
                                 </button>
+                                <a th:href="@{/admin/courses/{courseId}/modules/{moduleId}/edit(courseId=${course.id}, moduleId=${module.id})}" 
+                                   class="btn btn-outline btn-xs btn-orange">
+                                    EDIT
+                                </a>
                             </form>
                         </td>
                         <td style="text-align: right;">
