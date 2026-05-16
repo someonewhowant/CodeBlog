@@ -321,7 +321,14 @@ public class AdminController {
                           @RequestParam(value = "file", required = false) MultipartFile file) throws IOException {
         if (file != null && !file.isEmpty()) {
             String content = new String(file.getBytes(), StandardCharsets.UTF_8);
-            Quiz importedQuiz = quizService.importQuizFromMarkdown(id, content);
+            String fileName = file.getOriginalFilename();
+            Quiz importedQuiz;
+            if (fileName != null && fileName.toLowerCase().endsWith(".gift")) {
+                importedQuiz = quizService.importQuizFromGift(id, content);
+            } else {
+                importedQuiz = quizService.importQuizFromMarkdown(id, content);
+            }
+            
             if (quiz.getTitle() != null && !quiz.getTitle().isEmpty()) {
                 importedQuiz.setTitle(quiz.getTitle());
                 quizService.updateQuiz(importedQuiz.getId(), importedQuiz);
@@ -357,23 +364,36 @@ public class AdminController {
      */
     @PostMapping("/quizzes/{id}/questions")
     public String addQuestion(@PathVariable Long id,
-                              @RequestParam("text") String text,
-                              @RequestParam("optionText") List<String> optionTexts,
-                              @RequestParam("correctOptionIndex") int correctIndex) {
-        Question question = new Question();
-        question.setText(text);
+                              @RequestParam(value = "text", required = false) String text,
+                              @RequestParam(value = "optionText", required = false) List<String> optionTexts,
+                              @RequestParam(value = "correctOptionIndex", required = false) Integer correctIndex,
+                              @RequestParam(value = "file", required = false) MultipartFile file) throws IOException {
         
-        List<QuestionOption> options = new ArrayList<>();
-        for (int i = 0; i < optionTexts.size(); i++) {
-            QuestionOption option = new QuestionOption();
-            option.setText(optionTexts.get(i));
-            option.setCorrect(i == correctIndex);
-            option.setQuestion(question);
-            options.add(option);
+        if (file != null && !file.isEmpty()) {
+            String content = new String(file.getBytes(), StandardCharsets.UTF_8);
+            String fileName = file.getOriginalFilename();
+            if (fileName != null && fileName.toLowerCase().endsWith(".gift")) {
+                quizService.importQuestionsFromGift(id, content);
+            } else {
+                quizService.importQuestionsFromMarkdown(id, content);
+            }
+        } else if (text != null && optionTexts != null && correctIndex != null) {
+            Question question = new Question();
+            question.setText(text);
+            
+            List<QuestionOption> options = new ArrayList<>();
+            for (int i = 0; i < optionTexts.size(); i++) {
+                QuestionOption option = new QuestionOption();
+                option.setText(optionTexts.get(i));
+                option.setCorrect(i == correctIndex);
+                option.setQuestion(question);
+                options.add(option);
+            }
+            question.setOptions(options);
+            
+            quizService.addQuestion(id, question);
         }
-        question.setOptions(options);
         
-        quizService.addQuestion(id, question);
         return "redirect:/admin/quizzes/" + id + "/questions";
     }
 

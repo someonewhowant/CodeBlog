@@ -74,4 +74,39 @@ class QuizServiceTest {
         assertTrue(q2.getOptions().get(0).isCorrect());
         assertFalse(q2.getOptions().get(1).isCorrect());
     }
+
+    @Test
+    void testImportQuizFromGift() {
+        String gift = "::Java Basics::Which keyword is used to create a class in Java? {\n" +
+                "    ~struct\n" +
+                "    =class\n" +
+                "    ~create\n" +
+                "}\n" +
+                "\n" +
+                "What is the entry point of a Java program? {\n" +
+                "    ~start()\n" +
+                "    =main()\n" +
+                "    ~init()\n" +
+                "}";
+
+        when(courseRepository.findById(1L)).thenReturn(Optional.of(new com.example.blog.entity.Course()));
+        when(quizRepository.save(any(Quiz.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        Quiz quiz = quizService.importQuizFromGift(1L, gift);
+
+        assertNotNull(quiz);
+        assertEquals("Java Basics", quiz.getTitle());
+        assertEquals(2, quiz.getQuestions().size());
+
+        Question q1 = quiz.getQuestions().get(0);
+        assertEquals("Which keyword is used to create a class in Java?", q1.getText());
+        assertEquals(3, q1.getOptions().size());
+        assertFalse(q1.getOptions().get(0).isCorrect());
+        assertTrue(q1.getOptions().get(1).isCorrect());
+
+        Question q2 = quiz.getQuestions().get(1);
+        assertEquals("What is the entry point of a Java program?", q2.getText());
+        assertEquals(3, q2.getOptions().size());
+        assertTrue(q2.getOptions().get(1).isCorrect());
+    }
 }

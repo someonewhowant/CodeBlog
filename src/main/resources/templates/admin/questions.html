@@ -39,30 +39,68 @@
             </div>
         </div>
 
-        <div class="post-form-container fade-in">
-            <h2 class="section-title text-green font-mono text-m mb-xl">
-                <i class="bi bi-plus-lg"></i> add_new_question()
-            </h2>
-            <form th:action="@{/admin/quizzes/{id}/questions(id=${quiz.id})}" method="POST">
-                <div class="form-group">
-                    <label for="text" class="form-label">// STRING: question_text</label>
-                    <textarea id="text" name="text" rows="3" placeholder="What is the main advantage of Spring Boot?" class="form-control" required></textarea>
-                </div>
-
-                <div class="options-container">
-                    <label class="form-label">// OPTIONS: (mark the correct one)</label>
-                    <div th:each="i : ${#numbers.sequence(0, 3)}" class="form-group flex items-center gap-m mb-m">
-                        <input type="radio" name="correctOptionIndex" th:value="${i}" th:checked="${i == 0}" required>
-                        <input type="text" name="optionText" th:placeholder="'Option ' + (${i} + 1)" class="form-control" required>
+        <div class="grid grid-2 gap-xl fade-in">
+            <!-- Single Question Form -->
+            <div class="post-form-container">
+                <h2 class="section-title text-green font-mono text-m mb-xl">
+                    <i class="bi bi-plus-lg"></i> add_new_question()
+                </h2>
+                <form th:action="@{/admin/quizzes/{id}/questions(id=${quiz.id})}" method="POST">
+                    <div class="form-group">
+                        <label for="text" class="form-label">// STRING: question_text</label>
+                        <textarea id="text" name="text" rows="3" placeholder="What is the main advantage of Spring Boot?" class="form-control" required></textarea>
                     </div>
-                </div>
 
-                <div class="mt-2xl">
-                    <button type="submit" class="btn btn-primary btn-large w-full">
-                        <i class="bi bi-terminal"></i> deploy_question()
-                    </button>
-                </div>
-            </form>
+                    <div class="options-container">
+                        <label class="form-label">// OPTIONS: (mark the correct one)</label>
+                        <div th:each="i : ${#numbers.sequence(0, 3)}" class="form-group flex items-center gap-m mb-m">
+                            <input type="radio" name="correctOptionIndex" th:value="${i}" th:checked="${i == 0}" required>
+                            <input type="text" name="optionText" th:placeholder="'Option ' + (${i} + 1)" class="form-control" required>
+                        </div>
+                    </div>
+
+                    <div class="mt-2xl">
+                        <button type="submit" class="btn btn-primary btn-large w-full">
+                            <i class="bi bi-terminal"></i> deploy_question()
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Bulk Import Form -->
+            <div class="post-form-container">
+                <h2 class="section-title text-orange font-mono text-m mb-xl">
+                    <i class="bi bi-file-earmark-arrow-up"></i> bulk_import_questions()
+                </h2>
+                <form th:action="@{/admin/quizzes/{id}/questions(id=${quiz.id})}" method="POST" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <label for="file" class="form-label">// FILE: import_from_file (.md, .gift)</label>
+                        <input type="file" id="file" name="file" class="form-control" accept=".md,.gift" required>
+                        
+                        <div class="grid grid-2 gap-m mt-s">
+                            <div class="form-help text-dim font-mono text-xs" style="border: 1px dashed var(--border-subtle); padding: 10px; border-radius: 4px; background: rgba(0,0,0,0.1);">
+                                <div class="mb-s text-blue">// MARKDOWN_FORMAT (.md):</div>
+                                ## Question Text<br>
+                                - [ ] Wrong Option<br>
+                                - [x] Correct Option
+                            </div>
+                            <div class="form-help text-dim font-mono text-xs" style="border: 1px dashed var(--border-subtle); padding: 10px; border-radius: 4px; background: rgba(0,0,0,0.1);">
+                                <div class="mb-s text-blue">// GIFT_FORMAT (.gift):</div>
+                                Question Name {<br>
+                                &nbsp;&nbsp;~Wrong Option<br>
+                                &nbsp;&nbsp;=Correct Option<br>
+                                }
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-2xl">
+                        <button type="submit" class="btn btn-primary btn-large btn-orange w-full">
+                            <i class="bi bi-terminal"></i> deploy_bulk_questions()
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 </body>

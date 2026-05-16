@@ -19,4 +19,8 @@ public interface QuizService {
     boolean isQuizPassed(Long userId, Long quizId);
 
     Quiz importQuizFromMarkdown(Long courseId, String content);
+    void importQuestionsFromMarkdown(Long quizId, String content);
+
+    Quiz importQuizFromGift(Long courseId, String content);
+    void importQuestionsFromGift(Long quizId, String content);
 }

@@ -116,23 +116,83 @@ public class QuizServiceImpl implements QuizService {
     public Quiz importQuizFromMarkdown(Long courseId, String content) {
         String[] lines = content.split("\n");
         Quiz quiz = new Quiz();
-        List<Question> questions = new ArrayList<>();
+        
+        for (String line : lines) {
+            String trimmedLine = line.trim();
+            if (trimmedLine.startsWith("# ")) {
+                quiz.setTitle(trimmedLine.substring(2).trim());
+                break;
+            }
+        }
+
+        if (quiz.getTitle() == null) {
+            quiz.setTitle("Imported Quiz");
+        }
+
+        Quiz savedQuiz = createQuiz(courseId, quiz);
+        importQuestionsToQuiz(savedQuiz, content, "markdown");
+        return savedQuiz;
+    }
+
+    @Override
+    @Transactional
+    public void importQuestionsFromMarkdown(Long quizId, String content) {
+        Quiz quiz = getQuizById(quizId);
+        importQuestionsToQuiz(quiz, content, "markdown");
+    }
+
+    @Override
+    @Transactional
+    public Quiz importQuizFromGift(Long courseId, String content) {
+        Quiz quiz = new Quiz();
+        quiz.setTitle("Imported GIFT Quiz");
+        
+        // Try to find a title in GIFT format (often at the beginning)
+        if (content.contains("::")) {
+            int firstColons = content.indexOf("::");
+            int secondColons = content.indexOf("::", firstColons + 2);
+            if (firstColons != -1 && secondColons != -1) {
+                quiz.setTitle(content.substring(firstColons + 2, secondColons).trim());
+            }
+        }
+
+        Quiz savedQuiz = createQuiz(courseId, quiz);
+        importQuestionsToQuiz(savedQuiz, content, "gift");
+        return savedQuiz;
+    }
+
+    @Override
+    @Transactional
+    public void importQuestionsFromGift(Long quizId, String content) {
+        Quiz quiz = getQuizById(quizId);
+        importQuestionsToQuiz(quiz, content, "gift");
+    }
+
+    private void importQuestionsToQuiz(Quiz quiz, String content, String format) {
+        if ("markdown".equalsIgnoreCase(format)) {
+            parseMarkdown(quiz, content);
+        } else if ("gift".equalsIgnoreCase(format)) {
+            parseGift(quiz, content);
+        }
+    }
+
+    private void parseMarkdown(Quiz quiz, String content) {
+        String[] lines = content.split("\n");
         Question currentQuestion = null;
 
         for (String line : lines) {
             String trimmedLine = line.trim();
             if (trimmedLine.isEmpty()) continue;
 
-            if (trimmedLine.startsWith("# ")) {
-                if (quiz.getTitle() == null) {
-                    quiz.setTitle(trimmedLine.substring(2).trim());
+            if (trimmedLine.startsWith("## ")) {
+                if (currentQuestion != null) {
+                    questionRepository.save(currentQuestion);
+                    quiz.getQuestions().add(currentQuestion);
                 }
-            } else if (trimmedLine.startsWith("## ")) {
                 currentQuestion = new Question();
                 currentQuestion.setText(trimmedLine.substring(3).trim());
                 currentQuestion.setQuiz(quiz);
                 currentQuestion.setOptions(new ArrayList<>());
-                questions.add(currentQuestion);
             } else if (trimmedLine.startsWith("- [ ] ") || trimmedLine.startsWith("- [x] ") || 
                        trimmedLine.startsWith("- [] ")) {
                 if (currentQuestion != null) {
@@ -146,12 +206,64 @@ public class QuizServiceImpl implements QuizService {
                 }
             }
         }
-
-        if (quiz.getTitle() == null) {
-            quiz.setTitle("Imported Quiz");
+        
+        if (currentQuestion != null) {
+            questionRepository.save(currentQuestion);
+            quiz.getQuestions().add(currentQuestion);
         }
+    }
 
-        quiz.setQuestions(questions);
-        return createQuiz(courseId, quiz);
+    private void parseGift(Quiz quiz, String content) {
+        String[] blocks = content.split("\n\\s*\n");
+        
+        for (String block : blocks) {
+            String trimmedBlock = block.trim();
+            if (trimmedBlock.isEmpty() || trimmedBlock.startsWith("//")) continue;
+
+            int openBrace = trimmedBlock.indexOf('{');
+            int closeBrace = trimmedBlock.lastIndexOf('}');
+
+            if (openBrace != -1 && closeBrace != -1) {
+                Question question = new Question();
+                String header = trimmedBlock.substring(0, openBrace).trim();
+                
+                if (header.startsWith("::")) {
+                    int secondColons = header.indexOf("::", 2);
+                    if (secondColons != -1) {
+                        header = header.substring(secondColons + 2).trim();
+                    }
+                }
+                
+                question.setText(header);
+                question.setQuiz(quiz);
+                question.setOptions(new ArrayList<>());
+
+                String optionsPart = trimmedBlock.substring(openBrace + 1, closeBrace).trim();
+                String[] optionsArray = optionsPart.split("\n");
+
+                for (String opt : optionsArray) {
+                    String trimmedOpt = opt.trim();
+                    if (trimmedOpt.isEmpty()) continue;
+
+                    QuestionOption option = new QuestionOption();
+                    if (trimmedOpt.startsWith("=")) {
+                        option.setCorrect(true);
+                        option.setText(trimmedOpt.substring(1).trim());
+                    } else if (trimmedOpt.startsWith("~")) {
+                        option.setCorrect(false);
+                        option.setText(trimmedOpt.substring(1).trim());
+                    } else {
+                        continue;
+                    }
+                    option.setQuestion(question);
+                    question.getOptions().add(option);
+                }
+                
+                if (!question.getOptions().isEmpty()) {
+                    questionRepository.save(question);
+                    quiz.getQuestions().add(question);
+                }
+            }
+        }
     }
 }
