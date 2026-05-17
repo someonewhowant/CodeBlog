@@ -7,6 +7,7 @@ import com.example.blog.service.QuizService;
 import com.example.blog.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -19,6 +20,7 @@ import java.util.List;
 @Controller
 @RequestMapping("/teacher")
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class TeacherController {
 
     private final UserService userService;
@@ -45,6 +47,7 @@ public class TeacherController {
     }
 
     @PostMapping("/profile")
+    @Transactional
     public String updateProfile(
             @RequestParam("fullName") String fullName,
             @RequestParam("phoneNumber") String phoneNumber,
@@ -71,6 +74,7 @@ public class TeacherController {
     }
 
     @PostMapping("/courses/add")
+    @Transactional
     public String addCourse(@ModelAttribute Course course,
                             @RequestParam("image") MultipartFile image,
                             Principal principal) throws IOException {
@@ -93,6 +97,7 @@ public class TeacherController {
     }
 
     @PostMapping("/courses/{id}/edit")
+    @Transactional
     public String updateCourse(@PathVariable Long id,
                                @ModelAttribute Course courseDetails,
                                @RequestParam(value = "image", required = false) MultipartFile image,
@@ -111,6 +116,7 @@ public class TeacherController {
     }
 
     @GetMapping("/courses/{id}/delete")
+    @Transactional
     public String deleteCourse(@PathVariable Long id, Principal principal) {
         Course course = courseService.getCourseById(id);
         checkOwnership(course, principal);
@@ -133,6 +139,7 @@ public class TeacherController {
     // --- Module Management ---
 
     @PostMapping("/courses/{id}/modules/add")
+    @Transactional
     public String addModule(@PathVariable Long id,
                             @RequestParam("title") String title,
                             Principal principal) {
@@ -145,6 +152,7 @@ public class TeacherController {
     }
 
     @PostMapping("/courses/{id}/modules/{mid}/edit")
+    @Transactional
     public String updateModule(@PathVariable Long id,
                                @PathVariable Long mid,
                                @RequestParam("title") String title,
@@ -162,6 +170,7 @@ public class TeacherController {
     }
 
     @GetMapping("/courses/{id}/modules/{mid}/delete")
+    @Transactional
     public String deleteModule(@PathVariable Long id, @PathVariable Long mid, Principal principal) {
         Course course = courseService.getCourseById(id);
         checkOwnership(course, principal);
@@ -172,6 +181,7 @@ public class TeacherController {
     // --- Lesson Management ---
 
     @PostMapping("/courses/{id}/modules/{mid}/lessons/add")
+    @Transactional
     public String addLesson(@PathVariable Long id,
                             @PathVariable Long mid,
                             @RequestParam("title") String title,
@@ -207,6 +217,7 @@ public class TeacherController {
     }
 
     @PostMapping("/courses/{id}/modules/{mid}/lessons/{lid}/edit")
+    @Transactional
     public String updateLesson(@PathVariable Long id,
                                @PathVariable Long mid,
                                @PathVariable Long lid,
@@ -225,6 +236,7 @@ public class TeacherController {
     }
 
     @GetMapping("/courses/{id}/modules/{mid}/lessons/{lid}/delete")
+    @Transactional
     public String deleteLesson(@PathVariable Long id, @PathVariable Long mid, @PathVariable Long lid, Principal principal) {
         Course course = courseService.getCourseById(id);
         checkOwnership(course, principal);
@@ -233,7 +245,7 @@ public class TeacherController {
     }
 
     private void checkOwnership(Course course, Principal principal) {
-        if (!course.getTeacher().getUsername().equals(principal.getName())) {
+        if (course.getTeacher() == null || !course.getTeacher().getUsername().equals(principal.getName())) {
             throw new RuntimeException("Access denied: You don't own this course");
         }
     }

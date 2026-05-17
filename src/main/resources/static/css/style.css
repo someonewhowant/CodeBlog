@@ -2825,3 +2825,22 @@ code[class*="language-"] {
   cursor: not-allowed !important;
   pointer-events: none;
 }
+
+.course-cover-preview { height: 100px; }
+.align-center { align-items: center; }
+.align-start { align-items: flex-start; }
+.course-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: var(--space-l); }
+
+.h-full { height: 100%; }
+.w-full { width: 100%; }
+.quiz-select { padding: 4px 8px; font-size: 0.8rem; height: 32px; min-width: 150px; }
+
+/* --- EasyMDE Editor Overrides --- */
+.EasyMDEContainer { background: var(--bg-dark); border-radius: var(--radius); margin-top: 8px; }
+.editor-toolbar { border-color: var(--border-subtle) !important; background: var(--bg-surface) !important; border-radius: var(--radius) var(--radius) 0 0 !important; }
+.editor-toolbar button { color: var(--text-main) !important; }
+.editor-toolbar button:hover, .editor-toolbar button.active { background: var(--bg-dark) !important; border-color: var(--border-active) !important; }
+.CodeMirror { background: var(--bg-dark) !important; color: var(--text-main) !important; border-color: var(--border-subtle) !important; border-radius: 0 0 var(--radius) var(--radius) !important; font-family: var(--font-mono) !important; }
+.editor-preview-active { background: var(--bg-dark) !important; color: var(--text-main) !important; }
+.editor-statusbar { color: var(--text-dim) !important; }
+

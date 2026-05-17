@@ -7,50 +7,41 @@
 </head>
 <body>
     <div layout:fragment="cabinet-content">
-        <div class="flex justify-between items-center mb-xl">
-            <h1 class="text-2xl font-bold">My Courses</h1>
-            <a th:href="@{/teacher/courses/add}" class="btn btn-primary">
-                <i class="bi bi-plus-lg"></i> Create Course
-            </a>
-        </div>
+        <div class="card-glass p-xl">
+            <div class="flex justify-between align-center mb-xl">
+                <h1 class="m-0">My Courses</h1>
+                <a th:href="@{/teacher/courses/add}" class="btn btn-primary">
+                    <i class="bi bi-plus-lg"></i> Create Course
+                </a>
+            </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-xl">
-            <div th:each="course : ${courses}" class="glass rounded-l overflow-hidden border-active flex flex-column h-full">
-                <div class="relative h-200">
-                    <img th:if="${course.imageUrl != null}" th:src="${course.imageUrl}" class="w-full h-full object-cover">
-                    <div th:unless="${course.imageUrl != null}" class="w-full h-full bg-dark-lighter flex items-center justify-center">
-                        <i class="bi bi-book text-4xl text-dim"></i>
+            <div class="course-grid">
+                <div th:each="course : ${courses}" class="course-card-mini flex flex-column h-full">
+                    <div class="mb-m">
+                        <h4 th:text="${course.title}" class="mb-xs">Course Title</h4>
+                        <span class="badge" th:text="${course.level}">Level</span>
                     </div>
-                    <div class="absolute top-m right-m">
-                        <span class="badge badge-orange" th:text="${course.level}">Intermediate</span>
-                    </div>
-                </div>
-                <div class="p-xl flex-1 flex flex-column">
-                    <h3 th:text="${course.title}" class="text-xl font-bold mb-m">Course Title</h3>
-                    <p th:text="${#strings.abbreviate(course.description, 100)}" class="text-dim mb-xl flex-1">Description...</p>
+                    <p class="text-s text-dim flex-1" th:text="${#strings.abbreviate(course.description, 100)}">Description...</p>
                     
-                    <div class="flex items-center justify-between mt-auto pt-m border-t border-dim-faded">
+                    <div class="mt-l flex gap-m py-m border-top align-center justify-between">
                         <div class="flex gap-m">
-                            <a th:href="@{/teacher/courses/{id}/builder(id=${course.id})}" class="btn btn-icon-sm" title="Builder">
-                                <i class="bi bi-diagram-3"></i>
+                            <a th:href="@{/teacher/courses/{id}/builder(id=${course.id})}" class="btn-text" title="Builder">
+                                <i class="bi bi-diagram-3"></i> Builder
                             </a>
-                            <a th:href="@{/teacher/courses/{id}/edit(id=${course.id})}" class="btn btn-icon-sm" title="Settings">
-                                <i class="bi bi-gear"></i>
+                            <a th:href="@{/teacher/courses/{id}/edit(id=${course.id})}" class="btn-text" title="Settings">
+                                <i class="bi bi-gear"></i> Settings
                             </a>
                         </div>
-                        <a th:href="@{/course/{id}(id=${course.id})}" target="_blank" class="text-blue text-sm">
-                            View Public <i class="bi bi-box-arrow-up-right"></i>
+                        <a th:href="@{/course/{id}(id=${course.id})}" target="_blank" class="btn-text text-blue ml-auto">
+                            View <i class="bi bi-box-arrow-up-right"></i>
                         </a>
                     </div>
                 </div>
-            </div>
-        </div>
 
-        <div th:if="${#lists.isEmpty(courses)}" class="glass p-3xl rounded-l text-center mt-xl border-dashed">
-            <i class="bi bi-journals text-4xl text-dim mb-m block"></i>
-            <h3 class="text-xl font-bold mb-m">No courses yet</h3>
-            <p class="text-dim mb-xl">Start by creating your first educational course.</p>
-            <a th:href="@{/teacher/courses/add}" class="btn btn-primary">Create First Course</a>
+                <div th:if="${#lists.isEmpty(courses)}" class="empty-state" style="grid-column: 1 / -1;">
+                    <p>No courses yet. Start by creating your first educational course.</p>
+                </div>
+            </div>
         </div>
     </div>
 </body>

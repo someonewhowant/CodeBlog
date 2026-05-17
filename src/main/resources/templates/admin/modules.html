@@ -23,7 +23,7 @@
                         <th>ORDER</th>
                         <th>MODULE_TITLE</th>
                         <th>QUIZ_ASSOCIATION</th>
-                        <th style="text-align: right;">ACTIONS</th>
+                        <th class="text-right">ACTIONS</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -32,8 +32,8 @@
                         <td th:text="${module.title}">Module Title</td>
                         <td>
                             <form th:action="@{/admin/courses/{courseId}/modules/{moduleId}/quiz(courseId=${course.id}, moduleId=${module.id})}" 
-                                  method="POST" style="display: flex; gap: 8px;">
-                                <select name="quizId" class="form-control" style="padding: 4px 8px; font-size: 0.8rem; height: 32px; min-width: 150px;">
+                                  method="POST" class="flex gap-s">
+                                <select name="quizId" class="form-control quiz-select">
                                     <option value="">-- No Quiz --</option>
                                     <option th:each="q : ${quizzes}" 
                                             th:value="${q.id}" 
@@ -51,7 +51,7 @@
                                 </a>
                             </form>
                         </td>
-                        <td style="text-align: right;">
+                        <td class="text-right">
                             <a th:href="@{/admin/delete-module/{courseId}/{moduleId}(courseId=${course.id}, moduleId=${module.id})}" 
                                class="btn btn-outline btn-delete btn-xs" 
                                onclick="return confirm('rm -rf this_module?')">
@@ -60,7 +60,7 @@
                         </td>
                     </tr>
                     <tr th:if="${#lists.isEmpty(modules)}">
-                        <td colspan="3" style="text-align: center; padding: 40px; color: var(--text-dim);">
+                        <td colspan="3" class="text-center p-xl text-dim">
                             No modules found. Use the form below to upload_module().
                         </td>
                     </tr>
@@ -79,17 +79,17 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="file" class="form-label" style="color: var(--accent-blue);">// FILE: content_import (.md)</label>
+                    <label for="file" class="form-label text-blue">// FILE: content_import (.md)</label>
                     <input type="file" id="file" name="file" accept=".md" class="form-control">
                 </div>
 
                 <div class="form-group">
-                    <label for="content" class="form-label" style="color: var(--accent-purple);">// TEXT: module_content (markdown)</label>
+                    <label for="content" class="form-label text-purple">// TEXT: module_content (markdown)</label>
                     <textarea id="content" name="content" rows="10" placeholder="## Welcome..." class="form-control"></textarea>
                 </div>
 
-                <div style="margin-top: 32px;">
-                    <button type="submit" class="btn btn-primary btn-large" style="width: 100%;">
+                <div class="mt-2xl">
+                    <button type="submit" class="btn btn-primary btn-large w-full">
                         <i class="bi bi-terminal"></i> upload_module()
                     </button>
                 </div>
@@ -113,15 +113,6 @@
                 minHeight: "400px"
             });
         </script>
-        <style>
-            .EasyMDEContainer { background: var(--bg-dark); border-radius: var(--radius); margin-top: 8px; }
-            .editor-toolbar { border-color: var(--border-subtle) !important; background: var(--bg-surface) !important; border-radius: var(--radius) var(--radius) 0 0 !important; }
-            .editor-toolbar button { color: var(--text-main) !important; }
-            .editor-toolbar button:hover, .editor-toolbar button.active { background: var(--bg-dark) !important; border-color: var(--border-active) !important; }
-            .CodeMirror { background: var(--bg-dark) !important; color: var(--text-main) !important; border-color: var(--border-subtle) !important; border-radius: 0 0 var(--radius) var(--radius) !important; font-family: var(--font-mono) !important; }
-            .editor-preview-active { background: var(--bg-dark) !important; color: var(--text-main) !important; }
-            .editor-statusbar { color: var(--text-dim) !important; }
-        </style>
     </th:block>
 </body>
 </html>

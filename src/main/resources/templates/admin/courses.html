@@ -7,23 +7,23 @@
 </head>
 <body>
     <div layout:fragment="cabinet-content">
-        <div class="card-glass" style="padding: 30px;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
-                <h1 style="margin: 0;">Управление курсами</h1>
+        <div class="card-glass p-xl">
+            <div class="flex justify-between align-center mb-xl">
+                <h1 class="m-0">Управление курсами</h1>
                 <a th:href="@{/admin/add-course}" class="btn btn-primary">
                     <i class="bi bi-plus-lg"></i> Новый курс
                 </a>
             </div>
 
-            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px;">
-                <div th:each="course : ${courses}" class="course-card-mini" style="display: flex; flex-direction: column; height: 100%;">
-                    <div style="margin-bottom: 15px;">
-                        <h4 th:text="${course.title}" style="margin-bottom: 5px;">Course Title</h4>
+            <div class="course-grid">
+                <div th:each="course : ${courses}" class="course-card-mini flex flex-column h-full">
+                    <div class="mb-m">
+                        <h4 th:text="${course.title}" class="mb-xs">Course Title</h4>
                         <span class="badge" th:text="${course.level}">Level</span>
                     </div>
-                    <p style="font-size: 14px; opacity: 0.7; flex-grow: 1;" th:text="${#strings.abbreviate(course.description, 100)}">Description</p>
+                    <p class="text-s text-dim flex-1" th:text="${#strings.abbreviate(course.description, 100)}">Description</p>
                     
-                    <div style="margin-top: 20px; display: flex; gap: 10px; border-top: 1px solid var(--border-subtle); padding-top: 15px;">
+                    <div class="mt-l flex gap-m py-m border-top">
                         <a th:href="@{'/admin/courses/' + ${course.id} + '/modules'}" class="btn-text">
                             <i class="bi bi-layers"></i> Модули
                         </a>
@@ -33,7 +33,7 @@
                         <a th:href="@{'/admin/edit-course/' + ${course.id}}" class="btn-text" title="Редактировать">
                             <i class="bi bi-pencil"></i>
                         </a>
-                        <a th:href="@{'/admin/delete-course/' + ${course.id}}" class="btn-text" style="color: #ff4d4d; margin-left: auto;" 
+                        <a th:href="@{'/admin/delete-course/' + ${course.id}}" class="btn-text text-red ml-auto" 
                            onclick="return confirm('Вы уверены? Это удалит все модули и квизы курса.')">
                             <i class="bi bi-trash"></i>
                         </a>

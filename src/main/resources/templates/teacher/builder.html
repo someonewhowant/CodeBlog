@@ -6,29 +6,29 @@
     <title th:text="${title}">Course Builder</title>
     <style>
         .builder-module {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 8px;
-            margin-bottom: 1.5rem;
+            background: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius);
+            margin-bottom: var(--spacing-xl);
             overflow: hidden;
         }
         .builder-module-header {
-            padding: 1rem 1.5rem;
-            background: rgba(255, 255, 255, 0.05);
+            padding: var(--spacing-m) var(--spacing-xl);
+            background: var(--bg-surface-hover);
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            border-bottom: 1px solid var(--border-subtle);
         }
         .builder-module-body {
-            padding: 1rem 1.5rem;
+            padding: var(--spacing-m) var(--spacing-xl);
         }
         .builder-lesson {
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px dashed rgba(255, 255, 255, 0.2);
-            border-radius: 6px;
-            margin-bottom: 0.75rem;
-            padding: 0.75rem 1rem;
+            background: var(--bg-dark);
+            border: 1px dashed var(--border-active);
+            border-radius: var(--radius-sm);
+            margin-bottom: var(--spacing-m);
+            padding: var(--spacing-s) var(--spacing-m);
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -36,46 +36,46 @@
         .lesson-type-badge {
             font-size: 0.7rem;
             padding: 2px 6px;
-            border-radius: 4px;
+            border-radius: var(--radius-sm);
             text-transform: uppercase;
             font-weight: bold;
-            margin-right: 0.5rem;
+            margin-right: var(--spacing-s);
         }
-        .type-lecture { background: rgba(0, 123, 255, 0.2); color: #007bff; }
-        .type-test { background: rgba(255, 193, 7, 0.2); color: #ffc107; }
-        .type-assignment { background: rgba(40, 167, 69, 0.2); color: #28a745; }
+        .type-lecture { background: rgba(0, 123, 255, 0.2); color: var(--accent-blue); }
+        .type-test { background: rgba(255, 193, 7, 0.2); color: var(--accent-orange); }
+        .type-assignment { background: rgba(40, 167, 69, 0.2); color: var(--accent-green); }
         
         .builder-actions {
             display: flex;
-            gap: 0.5rem;
+            gap: var(--spacing-s);
         }
         .add-btn {
             background: transparent;
-            border: 1px dashed rgba(255, 255, 255, 0.3);
-            color: rgba(255, 255, 255, 0.7);
+            border: 1px dashed var(--border-subtle);
+            color: var(--text-dim);
             width: 100%;
-            padding: 0.75rem;
-            border-radius: 6px;
+            padding: var(--spacing-m);
+            border-radius: var(--radius-sm);
             cursor: pointer;
             transition: all 0.2s;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 0.5rem;
+            gap: var(--spacing-s);
         }
         .add-btn:hover {
-            background: rgba(255, 255, 255, 0.05);
-            border-color: rgba(255, 255, 255, 0.5);
-            color: white;
+            background: var(--bg-surface-hover);
+            border-color: var(--border-active);
+            color: var(--text-main);
         }
     </style>
 </head>
 <body>
     <div layout:fragment="cabinet-content">
-        <div class="flex justify-between items-center mb-xl">
+        <div class="flex justify-between align-center mb-xl">
             <div>
-                <h1 class="text-2xl font-bold mb-xs" th:text="${course.title}">Course Title</h1>
-                <p class="text-dim">Hierarchy Builder: Modules & Lessons</p>
+                <h1 class="text-xl m-0" th:text="${course.title}">Course Title</h1>
+                <p class="text-dim mt-xs">Hierarchy Builder: Modules & Lessons</p>
             </div>
             <div class="flex gap-m">
                 <a th:href="@{/teacher/courses}" class="btn btn-outline btn-sm">
@@ -90,10 +90,10 @@
         <div class="builder-container">
             <div th:each="module : ${course.modules}" class="builder-module">
                 <div class="builder-module-header">
-                    <div class="flex items-center gap-m">
+                    <div class="flex align-center gap-m">
                         <i class="bi bi-grip-vertical text-dim"></i>
-                        <span class="font-mono text-xs text-dim" th:text="'MODULE ' + (module.orderIndex + 1)">MODULE 1</span>
-                        <h3 class="text-lg font-bold" th:text="${module.title}">Module Title</h3>
+                        <span class="badge badge-dim font-mono" th:text="'MODULE ' + (module.orderIndex + 1)">MODULE 1</span>
+                        <h3 class="m-0" th:text="${module.title}">Module Title</h3>
                     </div>
                     <div class="builder-actions">
                         <button class="btn btn-icon-sm" title="Edit Module" 
@@ -109,7 +109,7 @@
                 </div>
                 <div class="builder-module-body">
                     <div th:each="lesson : ${module.lessons}" class="builder-lesson">
-                        <div class="flex items-center">
+                        <div class="flex align-center">
                             <span class="lesson-type-badge" 
                                   th:classappend="'type-' + ${#strings.toLowerCase(lesson.type)}" 
                                   th:text="${lesson.type}">LECTURE</span>
@@ -137,7 +137,7 @@
                 </div>
             </div>
 
-            <button class="add-btn py-xl text-lg font-bold" onclick="openAddModuleModal()">
+            <button class="add-btn py-xl text-l font-bold" onclick="openAddModuleModal()">
                 <i class="bi bi-plus-circle"></i> Add New Module
             </button>
         </div>

@@ -15,6 +15,7 @@ import com.example.blog.service.PostService;
 import com.example.blog.service.QuizService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -27,6 +28,7 @@ import java.util.List;
 @Controller
 @RequestMapping("/admin")
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class AdminController {
 
     private final PostService postService;
@@ -70,6 +72,7 @@ public class AdminController {
      * Обработка создания нового поста.
      */
     @PostMapping("/add-post")
+    @Transactional
     public String addPost(@ModelAttribute Post post, 
                           @RequestParam("image") MultipartFile image,
                           @RequestParam(value = "markdownFile", required = false) MultipartFile markdownFile,
@@ -111,6 +114,7 @@ public class AdminController {
      * Обработка обновления поста.
      */
     @PostMapping("/edit-post/{id}")
+    @Transactional
     public String updatePost(@PathVariable Long id, 
                              @ModelAttribute Post post, 
                              @RequestParam("image") MultipartFile image,
@@ -142,6 +146,7 @@ public class AdminController {
      * Удаление поста.
      */
     @GetMapping("/delete-post/{id}")
+    @Transactional
     public String deletePost(@PathVariable Long id) {
         postService.deletePost(id);
         return "redirect:/admin/dashboard";
@@ -161,6 +166,7 @@ public class AdminController {
      * Добавление новой категории.
      */
     @PostMapping("/categories")
+    @Transactional
     public String addCategory(@ModelAttribute Category category) {
         postService.createCategory(category);
         return "redirect:/admin/categories";
@@ -170,6 +176,7 @@ public class AdminController {
      * Удаление категории.
      */
     @GetMapping("/delete-category/{id}")
+    @Transactional
     public String deleteCategory(@PathVariable Long id) {
         postService.deleteCategory(id);
         return "redirect:/admin/categories";
@@ -198,6 +205,7 @@ public class AdminController {
      * Обработка создания курса.
      */
     @PostMapping("/add-course")
+    @Transactional
     public String addCourse(@ModelAttribute Course course, 
                             @RequestParam("image") MultipartFile image,
                             @RequestParam(value = "markdownFile", required = false) MultipartFile markdownFile) throws IOException {
@@ -225,6 +233,7 @@ public class AdminController {
      * Обработка обновления курса.
      */
     @PostMapping("/edit-course/{id}")
+    @Transactional
     public String updateCourse(@PathVariable Long id, 
                                @ModelAttribute Course course, 
                                @RequestParam("image") MultipartFile image,
@@ -243,6 +252,7 @@ public class AdminController {
      * Удаление курса.
      */
     @GetMapping("/delete-course/{id}")
+    @Transactional
     public String deleteCourse(@PathVariable Long id) {
         courseService.deleteCourse(id);
         return "redirect:/admin/courses";
@@ -265,6 +275,7 @@ public class AdminController {
      * Установка квиза для модуля.
      */
     @PostMapping("/courses/{courseId}/modules/{moduleId}/quiz")
+    @Transactional
     public String setModuleQuiz(@PathVariable Long courseId,
                                 @PathVariable Long moduleId,
                                 @RequestParam(value = "quizId", required = false) Long quizId) {
@@ -296,6 +307,7 @@ public class AdminController {
      * Добавление модуля.
      */
     @PostMapping("/courses/{id}/modules")
+    @Transactional
     public String addModule(@PathVariable Long id,
                             @RequestParam("title") String title,
                             @RequestParam(value = "content", required = false) String content,
@@ -341,6 +353,7 @@ public class AdminController {
      * Обработка обновления модуля.
      */
     @PostMapping("/courses/{courseId}/modules/{moduleId}/edit")
+    @Transactional
     public String updateModule(@PathVariable Long courseId,
                                @PathVariable Long moduleId,
                                @RequestParam("title") String title,
@@ -385,6 +398,7 @@ public class AdminController {
      * Удаление модуля.
      */
     @GetMapping("/delete-module/{courseId}/{moduleId}")
+    @Transactional
     public String deleteModule(@PathVariable Long courseId, @PathVariable Long moduleId) {
         courseService.deleteModule(moduleId);
         return "redirect:/admin/courses/" + courseId + "/modules";
@@ -406,6 +420,7 @@ public class AdminController {
      * Добавление квиза.
      */
     @PostMapping("/courses/{id}/quizzes")
+    @Transactional
     public String addQuiz(@PathVariable Long id, 
                           @ModelAttribute Quiz quiz,
                           @RequestParam(value = "file", required = false) MultipartFile file) throws IOException {
@@ -433,6 +448,7 @@ public class AdminController {
      * Удаление квиза.
      */
     @GetMapping("/delete-quiz/{courseId}/{quizId}")
+    @Transactional
     public String deleteQuiz(@PathVariable Long courseId, @PathVariable Long quizId) {
         quizService.deleteQuiz(quizId);
         return "redirect:/admin/courses/" + courseId + "/quizzes";
@@ -453,6 +469,7 @@ public class AdminController {
      * Добавление вопроса.
      */
     @PostMapping("/quizzes/{id}/questions")
+    @Transactional
     public String addQuestion(@PathVariable Long id,
                               @RequestParam(value = "text", required = false) String text,
                               @RequestParam(value = "optionText", required = false) List<String> optionTexts,
@@ -491,6 +508,7 @@ public class AdminController {
      * Удаление вопроса.
      */
     @GetMapping("/delete-question/{quizId}/{questionId}")
+    @Transactional
     public String deleteQuestion(@PathVariable Long quizId, @PathVariable Long questionId) {
         quizService.deleteQuestion(questionId);
         return "redirect:/admin/quizzes/" + quizId + "/questions";
