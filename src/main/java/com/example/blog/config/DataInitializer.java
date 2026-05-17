@@ -7,7 +7,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.List;
 
 @Configuration
 public class DataInitializer {
@@ -19,17 +21,40 @@ public class DataInitializer {
                                       UserRepository userRepository,
                                       CourseRepository courseRepository,
                                       CourseModuleRepository moduleRepository,
+                                      CourseEnrollmentRepository enrollmentRepository,
                                       PasswordEncoder passwordEncoder) {
         return args -> {
-            // Инициализация пользователя
+            // Инициализация пользователей
             if (userRepository.findByUsername("admin").isEmpty()) {
-                User admin = User.builder()
+                userRepository.save(User.builder()
                         .username("admin")
-                        .password(passwordEncoder.encode("admin")) // Пароль: admin
+                        .password(passwordEncoder.encode("admin"))
                         .role(Role.ADMIN)
-                        .build();
-                userRepository.save(admin);
+                        .fullName("Администратор Системы")
+                        .build());
             }
+
+            if (userRepository.findByUsername("student").isEmpty()) {
+                userRepository.save(User.builder()
+                        .username("student")
+                        .password(passwordEncoder.encode("password"))
+                        .role(Role.STUDENT)
+                        .fullName("Иван Иванов")
+                        .phoneNumber("+7 (999) 123-45-67")
+                        .build());
+            }
+
+            if (userRepository.findByUsername("teacher").isEmpty()) {
+                userRepository.save(User.builder()
+                        .username("teacher")
+                        .password(passwordEncoder.encode("password"))
+                        .role(Role.TEACHER)
+                        .fullName("Петр Петров")
+                        .phoneNumber("+7 (888) 765-43-21")
+                        .build());
+            }
+
+            User studentUser = userRepository.findByUsername("student").orElse(null);
 
             // Инициализация категорий
             if (categoryRepository.count() == 0) {
@@ -71,13 +96,6 @@ public class DataInitializer {
                         .category(architecture)
                         .imageUrl("https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&q=80&w=1000")
                         .build());
-
-                postRepository.save(Post.builder()
-                        .title("Building a Scalable Data Pipeline with Kafka")
-                        .body("Apache Kafka has become the de-facto standard for event-driven architectures. Learn how to design a resilient data pipeline that handles millions of events per second with ease.")
-                        .category(categoryRepository.findBySlug("devops").orElse(null))
-                        .imageUrl("https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&q=80&w=1000")
-                        .build());
             }
 
             // Инициализация курсов
@@ -100,13 +118,6 @@ public class DataInitializer {
                         .course(architectureCourse)
                         .build());
 
-                moduleRepository.save(CourseModule.builder()
-                        .title("Database Partitioning Strategies")
-                        .content("Horizontal vs Vertical scaling. Sharding mechanisms and rebalancing.")
-                        .orderIndex(1)
-                        .course(architectureCourse)
-                        .build());
-
                 Course backendCourse = Course.builder()
                         .title("Backend Mastery: Java & Spring Boot")
                         .description("Master the core concepts of Spring Framework and build enterprise-grade applications.")
@@ -117,13 +128,31 @@ public class DataInitializer {
                         .build();
                 
                 courseRepository.save(backendCourse);
+            }
 
-                moduleRepository.save(CourseModule.builder()
-                        .title("Getting Started with Dependency Injection")
-                        .content("Understanding the Inversion of Control principle.")
-                        .orderIndex(0)
-                        .course(backendCourse)
-                        .build());
+            // Инициализация регистраций на курсы
+            if (enrollmentRepository.count() == 0 && studentUser != null) {
+                List<Course> allCourses = courseRepository.findAll();
+                if (!allCourses.isEmpty()) {
+                    enrollmentRepository.save(CourseEnrollment.builder()
+                            .user(studentUser)
+                            .course(allCourses.get(0))
+                            .status(CourseEnrollment.EnrollmentStatus.IN_PROGRESS)
+                            .progress(35)
+                            .enrolledAt(LocalDateTime.now().minusDays(5))
+                            .build());
+
+                    if (allCourses.size() > 1) {
+                        enrollmentRepository.save(CourseEnrollment.builder()
+                                .user(studentUser)
+                                .course(allCourses.get(1))
+                                .status(CourseEnrollment.EnrollmentStatus.COMPLETED)
+                                .progress(100)
+                                .enrolledAt(LocalDateTime.now().minusDays(30))
+                                .completedAt(LocalDateTime.now().minusDays(2))
+                                .build());
+                    }
+                }
             }
         };
     }

@@ -21,6 +21,17 @@
                 <i class="bi bi-search"></i>
                 <span>Search</span>
             </button>
+
+            <!-- User Profile Link -->
+            <div th:if="${currentUser != null}" class="user-profile-nav">
+                <a th:href="${currentUser.role.name() == 'STUDENT' ? '/student/dashboard' : (currentUser.role.name() == 'TEACHER' ? '/teacher/dashboard' : '/admin/dashboard')}" 
+                   class="user-avatar-link">
+                    <img th:src="${currentUser.avatarUrl != null ? currentUser.avatarUrl : '/img/hero-image.webp'}" 
+                         alt="Profile" class="header-avatar">
+                </a>
+            </div>
+            <a th:if="${currentUser == null}" th:href="@{/admin/login}" class="btn btn-outline" style="padding: 6px 12px; font-size: 14px; margin-left: 10px;">Login</a>
+
             <button id="mobileMenuToggle" class="mobile-menu-toggle" aria-label="Toggle navigation">
                 <i class="bi bi-list"></i>
             </button>
