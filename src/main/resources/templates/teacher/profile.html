@@ -8,9 +8,9 @@
 <body>
     <div layout:fragment="cabinet-content">
         <div class="card-glass" style="padding: 30px; max-width: 600px;">
-            <form th:action="@{/student/profile}" method="POST" enctype="multipart/form-data">
+            <form th:action="@{/teacher/profile}" method="POST" enctype="multipart/form-data">
                 <div style="text-align: center; margin-bottom: 30px;">
-                    <div style="width: 120px; height: 120px; border-radius: 50%; overflow: hidden; margin: 0 auto 15px; border: 3px solid var(--accent-blue);">
+                    <div style="width: 120px; height: 120px; border-radius: 50%; overflow: hidden; margin: 0 auto 15px; border: 3px solid var(--accent-orange);">
                         <img th:src="${user.avatarUrl != null ? user.avatarUrl : '/img/hero-image.webp'}" 
                              alt="Avatar" style="width: 100%; height: 100%; object-fit: cover;">
                     </div>
@@ -36,7 +36,7 @@
                 </div>
 
                 <div style="margin-top: 30px;">
-                    <button type="submit" class="btn btn-primary">Сохранить изменения</button>
+                    <button type="submit" class="btn btn-primary" style="background: var(--accent-orange); border-color: var(--accent-orange);">Сохранить изменения</button>
                 </div>
             </form>
         </div>

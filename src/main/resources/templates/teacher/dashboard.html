@@ -1,23 +1,60 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{layouts/main}">
+      layout:decorate="~{layouts/cabinet-layout}">
 <head>
     <title>Teacher Dashboard</title>
 </head>
 <body>
-    <div layout:fragment="content" class="container" style="padding-top: 60px;">
-        <div class="card-glass" style="padding: 40px;">
-            <h1 th:text="${message}">Welcome message</h1>
-            <p style="margin-top: 20px; opacity: 0.8;">
-                Добро пожаловать в личный кабинет преподавателя. Здесь вы сможете создавать курсы и управлять контентом.
-            </p>
-            <div style="margin-top: 40px; display: flex; gap: 16px;">
-                <a th:href="@{/admin/add-course}" class="btn btn-primary">Создать новый курс</a>
-                <form th:action="@{/logout}" method="POST" style="margin: 0;">
-                    <button type="submit" class="btn btn-outline">Выйти</button>
-                </form>
+    <div layout:fragment="cabinet-content">
+        <div class="card-glass" style="padding: 30px; margin-bottom: 30px;">
+            <div style="display: flex; align-items: center; gap: 24px;">
+                <div style="width: 80px; height: 80px; border-radius: 50%; overflow: hidden; border: 2px solid var(--accent-orange);">
+                    <img th:src="${user.avatarUrl != null ? user.avatarUrl : '/img/hero-image.webp'}" 
+                         alt="Avatar" style="width: 100%; height: 100%; object-fit: cover;">
+                </div>
+                <div>
+                    <h1 th:text="${user.fullName != null ? user.fullName : user.username}" style="margin-bottom: 5px;">Username</h1>
+                    <p style="opacity: 0.7; font-family: var(--font-mono); font-size: 14px;">
+                        <span class="badge" style="background: rgba(210, 153, 34, 0.1); color: var(--accent-orange);" th:text="${user.role}">Role</span>
+                    </p>
+                </div>
             </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px;">
+            <!-- Stats Summary -->
+            <div class="card-glass" style="padding: 25px;">
+                <h3 style="margin-bottom: 20px;">Статистика</h3>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                    <div style="text-align: center; padding: 15px; background: rgba(255,255,255,0.03); border-radius: var(--radius);">
+                        <div style="font-size: 24px; font-weight: 700; color: var(--accent-blue);">0</div>
+                        <div style="font-size: 12px; opacity: 0.6;">Курсов</div>
+                    </div>
+                    <div style="text-align: center; padding: 15px; background: rgba(255,255,255,0.03); border-radius: var(--radius);">
+                        <div style="font-size: 24px; font-weight: 700; color: var(--accent-green);">0</div>
+                        <div style="font-size: 12px; opacity: 0.6;">Студентов</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="card-glass" style="padding: 25px;">
+                <h3 style="margin-bottom: 20px;">Быстрые действия</h3>
+                <div style="display: flex; flex-direction: column; gap: 10px;">
+                    <a href="#" class="btn btn-outline disabled" style="text-align: left; justify-content: flex-start;">
+                        <i class="bi bi-plus-circle" style="margin-right: 10px;"></i> Создать курс
+                    </a>
+                    <a href="#" class="btn btn-outline disabled" style="text-align: left; justify-content: flex-start;">
+                        <i class="bi bi-journal-plus" style="margin-right: 10px;"></i> Добавить статью
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="empty-state" style="margin-top: 30px;">
+            <i class="bi bi-bar-chart-line" style="font-size: 48px; opacity: 0.2; display: block; margin-bottom: 15px;"></i>
+            <p>Добро пожаловать в кабинет преподавателя. <br>Скоро здесь появятся инструменты для управления вашими курсами.</p>
         </div>
     </div>
 </body>

@@ -1,80 +1,70 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{layouts/main}">
+      layout:decorate="~{layouts/cabinet-layout}">
 <head>
     <title>Student Dashboard</title>
 </head>
 <body>
-    <div layout:fragment="content" class="container" style="padding-top: 60px;">
-        <div class="card-glass" style="padding: 40px;">
-            <div style="display: flex; align-items: center; gap: 24px; margin-bottom: 30px;">
-                <div style="width: 80px; height: 80px; border-radius: 50%; overflow: hidden; border: 2px solid var(--accent-color);">
+    <div layout:fragment="cabinet-content">
+        <div class="card-glass" style="padding: 30px; margin-bottom: 30px;">
+            <div style="display: flex; align-items: center; gap: 24px;">
+                <div style="width: 80px; height: 80px; border-radius: 50%; overflow: hidden; border: 2px solid var(--accent-blue);">
                     <img th:src="${user.avatarUrl != null ? user.avatarUrl : '/img/hero-image.webp'}" 
                          alt="Avatar" style="width: 100%; height: 100%; object-fit: cover;">
                 </div>
                 <div>
-                    <h1 th:text="${user.fullName != null ? user.fullName : user.username}">Username</h1>
-                    <p style="opacity: 0.7;" th:text="${user.role}">Role</p>
+                    <h1 th:text="${user.fullName != null ? user.fullName : user.username}" style="margin-bottom: 5px;">Username</h1>
+                    <p style="opacity: 0.7; font-family: var(--font-mono); font-size: 14px;">
+                        <span class="badge" th:text="${user.role}">Role</span>
+                    </p>
                 </div>
             </div>
-
-            <p style="margin-top: 20px; opacity: 0.8;">
-                Добро пожаловать в личный кабинет студента. Здесь вы сможете отслеживать свой прогресс и проходить курсы.
-            </p>
-            
-            <div style="margin-top: 40px; display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px;">
-                <!-- В процессе -->
-                <div class="courses-section">
-                    <h2 style="margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">
-                        <i class="bi bi-play-circle" style="color: var(--accent-blue);"></i> 
-                        В процессе обучения
-                    </h2>
-                    
-                    <div th:if="${activeCourses.empty}" style="padding: 20px; background: rgba(255,255,255,0.03); border-radius: var(--radius); border: 1px dashed var(--border-subtle);">
-                        <p style="opacity: 0.6; font-size: 14px;">У вас пока нет активных курсов.</p>
-                    </div>
-
-                    <div th:each="enrollment : ${activeCourses}" class="course-card-mini" style="margin-bottom: 16px; padding: 15px; background: rgba(255,255,255,0.05); border-radius: var(--radius); border: 1px solid var(--border-subtle);">
-                        <h4 th:text="${enrollment.course.title}" style="margin-bottom: 10px;">Course Title</h4>
-                        <div class="progress-container" style="height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; overflow: hidden; margin-bottom: 8px;">
-                            <div class="progress-bar" th:style="'width: ' + ${enrollment.progress} + '%; height: 100%; background: var(--accent-blue);'"></div>
-                        </div>
-                        <div style="display: flex; justify-content: space-between; font-size: 12px; opacity: 0.7;">
-                            <span th:text="${enrollment.progress} + '% пройдено'">35%</span>
-                            <a th:href="@{'/course/' + ${enrollment.course.id}}" style="color: var(--accent-blue); text-decoration: none;">Продолжить</a>
-                        </div>
-                    </div>
+        </div>
+        
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px;">
+            <!-- В процессе -->
+            <div class="courses-section">
+                <h3 style="margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">
+                    <i class="bi bi-play-circle" style="color: var(--accent-blue);"></i> 
+                    В процессе обучения
+                </h3>
+                
+                <div th:if="${activeCourses.empty}" class="empty-state">
+                    <p>У вас пока нет активных курсов.</p>
                 </div>
 
-                <!-- Завершено -->
-                <div class="courses-section">
-                    <h2 style="margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">
-                        <i class="bi bi-check-circle" style="color: var(--accent-green);"></i> 
-                        Пройденные курсы
-                    </h2>
-
-                    <div th:if="${completedCourses.empty}" style="padding: 20px; background: rgba(255,255,255,0.03); border-radius: var(--radius); border: 1px dashed var(--border-subtle);">
-                        <p style="opacity: 0.6; font-size: 14px;">Вы еще не завершили ни одного курса.</p>
+                <div th:each="enrollment : ${activeCourses}" class="course-card-mini">
+                    <h4 th:text="${enrollment.course.title}">Course Title</h4>
+                    <div class="progress-container">
+                        <div class="progress-bar" th:style="'width: ' + ${enrollment.progress} + '%;'"></div>
                     </div>
-
-                    <div th:each="enrollment : ${completedCourses}" class="course-card-mini" style="margin-bottom: 16px; padding: 15px; background: rgba(255,255,255,0.05); border-radius: var(--radius); border: 1px solid var(--border-subtle);">
-                        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 5px;">
-                            <h4 th:text="${enrollment.course.title}" style="margin: 0;">Course Title</h4>
-                            <i class="bi bi-patch-check-fill" style="color: var(--accent-green);"></i>
-                        </div>
-                        <p style="font-size: 12px; opacity: 0.6;" th:text="'Завершено: ' + ${#temporals.format(enrollment.completedAt, 'dd.MM.yyyy')}">01.01.2024</p>
-                        <a th:href="@{'/course/' + ${enrollment.course.id}}" style="display: inline-block; margin-top: 10px; font-size: 12px; color: var(--accent-blue); text-decoration: none;">Повторить материал</a>
+                    <div class="course-card-footer">
+                        <span th:text="${enrollment.progress} + '% пройдено'">35%</span>
+                        <a th:href="@{'/course/' + ${enrollment.course.id}}" class="btn-text">Продолжить</a>
                     </div>
                 </div>
             </div>
 
-            <div style="margin-top: 40px; display: flex; gap: 16px; flex-wrap: wrap;">
-                <a th:href="@{/courses}" class="btn btn-primary">Посмотреть курсы</a>
-                <a th:href="@{/student/profile}" class="btn btn-outline">Настройки профиля</a>
-                <form th:action="@{/logout}" method="POST" style="margin: 0;">
-                    <button type="submit" class="btn btn-outline" style="color: #ff4d4d; border-color: #ff4d4d;">Выйти</button>
-                </form>
+            <!-- Завершено -->
+            <div class="courses-section">
+                <h3 style="margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">
+                    <i class="bi bi-check-circle" style="color: var(--accent-green);"></i> 
+                    Пройденные курсы
+                </h3>
+
+                <div th:if="${completedCourses.empty}" class="empty-state">
+                    <p>Вы еще не завершили ни одного курса.</p>
+                </div>
+
+                <div th:each="enrollment : ${completedCourses}" class="course-card-mini">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 5px;">
+                        <h4 th:text="${enrollment.course.title}" style="margin: 0;">Course Title</h4>
+                        <i class="bi bi-patch-check-fill" style="color: var(--accent-green);"></i>
+                    </div>
+                    <p style="font-size: 12px; opacity: 0.6;" th:text="'Завершено: ' + ${#temporals.format(enrollment.completedAt, 'dd.MM.yyyy')}">01.01.2024</p>
+                    <a th:href="@{'/course/' + ${enrollment.course.id}}" class="btn-text">Повторить материал</a>
+                </div>
             </div>
         </div>
     </div>

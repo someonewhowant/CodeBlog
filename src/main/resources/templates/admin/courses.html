@@ -1,67 +1,49 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{layouts/main}">
+      layout:decorate="~{layouts/cabinet-layout}">
 <head>
     <title>Manage Courses</title>
 </head>
 <body>
-    <div layout:fragment="content" class="container py-l">
-        <div class="admin-header">
-            <h1>root@admin:~/courses$</h1>
-            <div class="admin-actions">
-                <a th:href="@{/admin/dashboard}" class="btn btn-outline btn-orange">
-                    <i class="bi bi-arrow-left"></i> back_to_posts()
-                </a>
+    <div layout:fragment="cabinet-content">
+        <div class="card-glass" style="padding: 30px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+                <h1 style="margin: 0;">Управление курсами</h1>
                 <a th:href="@{/admin/add-course}" class="btn btn-primary">
-                    <i class="bi bi-plus-lg"></i> new_course()
+                    <i class="bi bi-plus-lg"></i> Новый курс
                 </a>
             </div>
-        </div>
-        
-        <div class="admin-table-wrapper">
-            <table class="admin-table">
-                <thead>
-                    <tr>
-                        <th>COURSE_TITLE</th>
-                        <th>LEVEL</th>
-                        <th>DURATION</th>
-                        <th class="text-right">ACTIONS</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr th:each="course : ${courses}">
-                        <td th:text="${course.title}">Title</td>
-                        <td>
-                            <span th:text="${course.level}" class="badge-tag">Level</span>
-                        </td>
-                        <td th:text="${course.duration}">Duration</td>
-                        <td>
-                            <div class="admin-actions justify-end">
-                                <a th:href="@{/admin/courses/{id}/modules(id=${course.id})}" class="btn btn-outline btn-xs btn-blue">
-                                    <i class="bi bi-stack"></i> MODULES
-                                </a>
-                                <a th:href="@{/admin/courses/{id}/quizzes(id=${course.id})}" class="btn btn-outline btn-xs btn-orange">
-                                    <i class="bi bi-question-circle"></i> QUIZZES
-                                </a>
-                                <a th:href="@{/admin/edit-course/{id}(id=${course.id})}" class="btn btn-outline btn-xs">
-                                    <i class="bi bi-pencil"></i> EDIT
-                                </a>
-                                <a th:href="@{/admin/delete-course/{id}(id=${course.id})}" 
-                                   class="btn btn-outline btn-delete btn-xs" 
-                                   onclick="return confirm('rm -rf this_course?')">
-                                    <i class="bi bi-trash3"></i> DELETE
-                                </a>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr th:if="${#lists.isEmpty(courses)}">
-                        <td colspan="4" class="text-center py-2xl text-dim">
-                            No courses found. Run <span class="text-blue">new_course()</span> to get started.
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px;">
+                <div th:each="course : ${courses}" class="course-card-mini" style="display: flex; flex-direction: column; height: 100%;">
+                    <div style="margin-bottom: 15px;">
+                        <h4 th:text="${course.title}" style="margin-bottom: 5px;">Course Title</h4>
+                        <span class="badge" th:text="${course.level}">Level</span>
+                    </div>
+                    <p style="font-size: 14px; opacity: 0.7; flex-grow: 1;" th:text="${#strings.abbreviate(course.description, 100)}">Description</p>
+                    
+                    <div style="margin-top: 20px; display: flex; gap: 10px; border-top: 1px solid var(--border-subtle); padding-top: 15px;">
+                        <a th:href="@{'/admin/courses/' + ${course.id} + '/modules'}" class="btn-text">
+                            <i class="bi bi-layers"></i> Модули
+                        </a>
+                        <a th:href="@{'/admin/courses/' + ${course.id} + '/quizzes'}" class="btn-text">
+                            <i class="bi bi-patch-question"></i> Квизы
+                        </a>
+                        <a th:href="@{'/admin/edit-course/' + ${course.id}}" class="btn-text" title="Редактировать">
+                            <i class="bi bi-pencil"></i>
+                        </a>
+                        <a th:href="@{'/admin/delete-course/' + ${course.id}}" class="btn-text" style="color: #ff4d4d; margin-left: auto;" 
+                           onclick="return confirm('Вы уверены? Это удалит все модули и квизы курса.')">
+                            <i class="bi bi-trash"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div th:if="${courses.empty}" class="empty-state" style="grid-column: 1 / -1;">
+                    <p>Курсов пока нет. Создайте свой первый курс!</p>
+                </div>
+            </div>
         </div>
     </div>
 </body>

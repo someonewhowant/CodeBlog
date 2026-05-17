@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/main}">
+<head>
+    <title th:text="${title}">Cabinet</title>
+</head>
+<body>
+    <div layout:fragment="content" class="dashboard-wrapper">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <button id="sidebarToggle" class="sidebar-toggle-btn">
+                    <i class="bi bi-chevron-left"></i>
+                </button>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <ul th:if="${currentUser != null}">
+                    <!-- Student Menu -->
+                    <th:block th:if="${currentUser.role.name() == 'STUDENT'}">
+                        <li>
+                            <a th:href="@{/student/dashboard}" th:classappend="${currentUri == '/student/dashboard'} ? 'active'">
+                                <i class="bi bi-grid"></i>
+                                <span>Дашборд</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a th:href="@{/courses}" th:classappend="${currentUri == '/courses'} ? 'active'">
+                                <i class="bi bi-book"></i>
+                                <span>Мои курсы</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" class="disabled">
+                                <i class="bi bi-calendar-event"></i>
+                                <span>Календарь</span>
+                            </a>
+                        </li>
+                    </th:block>
+
+                    <!-- Admin Menu -->
+                    <th:block th:if="${currentUser.role.name() == 'ADMIN'}">
+                        <li>
+                            <a th:href="@{/admin/dashboard}" th:classappend="${currentUri == '/admin/dashboard'} ? 'active'">
+                                <i class="bi bi-speedometer2"></i>
+                                <span>Панель</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a th:href="@{/admin/courses}" th:classappend="${currentUri != null and currentUri.startsWith('/admin/courses')} ? 'active'">
+                                <i class="bi bi-mortarboard"></i>
+                                <span>Курсы</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a th:href="@{/admin/categories}" th:classappend="${currentUri == '/admin/categories'} ? 'active'">
+                                <i class="bi bi-tags"></i>
+                                <span>Категории</span>
+                            </a>
+                        </li>
+                    </th:block>
+
+                    <!-- Teacher Menu -->
+                    <th:block th:if="${currentUser.role.name() == 'TEACHER'}">
+                        <li>
+                            <a th:href="@{/teacher/dashboard}" th:classappend="${currentUri == '/teacher/dashboard'} ? 'active'">
+                                <i class="bi bi-grid-1x2"></i>
+                                <span>Дашборд</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" class="disabled">
+                                <i class="bi bi-mortarboard"></i>
+                                <span>Мои курсы</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" class="disabled">
+                                <i class="bi bi-people"></i>
+                                <span>Студенты</span>
+                            </a>
+                        </li>
+                    </th:block>
+
+                    <!-- Shared Menu -->
+                    <li>
+                        <a th:href="${currentUser.role.name() == 'ADMIN' ? '#' : (currentUser.role.name() == 'STUDENT' ? '/student/profile' : '/teacher/profile')}" 
+                           th:classappend="${currentUri != null and (currentUri.endsWith('/profile'))} ? 'active'"
+                           th:class="${currentUser.role.name() == 'ADMIN'} ? 'disabled'">
+                            <i class="bi bi-gear"></i>
+                            <span>Настройки</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="disabled">
+                            <i class="bi bi-question-circle"></i>
+                            <span>Поддержка</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+
+            <div class="sidebar-footer">
+                <form th:action="@{/logout}" method="POST">
+                    <button type="submit" class="logout-link">
+                        <i class="bi bi-box-arrow-left"></i>
+                        <span>Выйти</span>
+                    </button>
+                </form>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <div class="dashboard-content" id="dashboardContent">
+            <div class="content-header">
+                <button id="mobileSidebarToggle" class="mobile-toggle-btn">
+                    <i class="bi bi-list"></i>
+                </button>
+                <h2 th:text="${title}">Page Title</h2>
+            </div>
+
+            <div class="content-body" layout:fragment="cabinet-content">
+                <!-- Specific cabinet content will go here -->
+            </div>
+        </div>
+
+        <!-- Toast Notification System -->
+        <div id="toastContainer" class="toast-container"></div>
+    </div>
+</body>
+</html>

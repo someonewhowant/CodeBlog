@@ -300,3 +300,70 @@ document.addEventListener('DOMContentLoaded', function() {
     enhanceCodeBlocks();
     setTimeout(enhanceCodeBlocks, 500);
 });
+
+// --- Cabinet & Sidebar Logic ---
+document.addEventListener('DOMContentLoaded', () => {
+    const sidebar = document.getElementById('sidebar');
+    const sidebarToggle = document.getElementById('sidebarToggle');
+    const mobileSidebarToggle = document.getElementById('mobileSidebarToggle');
+
+    if (sidebarToggle && sidebar) {
+        sidebarToggle.addEventListener('click', () => {
+            sidebar.classList.toggle('collapsed');
+            localStorage.setItem('sidebarCollapsed', sidebar.classList.contains('collapsed'));
+        });
+
+        // Restore state
+        if (localStorage.getItem('sidebarCollapsed') === 'true') {
+            sidebar.classList.add('collapsed');
+        }
+    }
+
+    if (mobileSidebarToggle && sidebar) {
+        mobileSidebarToggle.addEventListener('click', () => {
+            sidebar.classList.toggle('open');
+        });
+
+        // Close on outside click (mobile)
+        document.addEventListener('click', (e) => {
+            if (sidebar.classList.contains('open') && 
+                !sidebar.contains(e.target) && 
+                !mobileSidebarToggle.contains(e.target)) {
+                sidebar.classList.remove('open');
+            }
+        });
+    }
+});
+
+// --- Toast System ---
+window.showToast = (message, type = 'success') => {
+    const container = document.getElementById('toastContainer');
+    if (!container) return;
+
+    const toast = document.createElement('div');
+    toast.className = 'toast ' + type;
+    
+    const icon = document.createElement('i');
+    icon.className = type === 'success' ? 'bi bi-check-circle-fill' : 'bi bi-exclamation-circle-fill';
+    
+    const text = document.createElement('span');
+    text.textContent = message;
+
+    toast.appendChild(icon);
+    toast.appendChild(text);
+    container.appendChild(toast);
+
+    setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateX(100%)';
+        setTimeout(() => toast.remove(), 300);
+    }, 4000);
+};
+
+// Check for URL parameters to show toasts
+const urlParams = new URLSearchParams(window.location.search);
+if (urlParams.has('success')) {
+    window.showToast('Действие выполнено успешно!');
+} else if (urlParams.has('error')) {
+    window.showToast('Произошла ошибка!', 'error');
+}
