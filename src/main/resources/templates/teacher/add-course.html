@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/cabinet-layout}">
+<head>
+    <title th:text="${title}">Create Course</title>
+</head>
+<body>
+    <div layout:fragment="cabinet-content">
+        <div class="mb-xl">
+            <h1 class="text-2xl font-bold mb-xs">Create New Course</h1>
+            <p class="text-dim">Basic information about your course.</p>
+        </div>
+
+        <form th:action="@{/teacher/courses/add}" method="POST" enctype="multipart/form-data" class="glass p-xl rounded-l border-active max-w-800">
+            <div class="form-group mb-xl">
+                <label>Course Title</label>
+                <input type="text" name="title" class="form-control" required placeholder="e.g. Fullstack Development with Java & Spring">
+            </div>
+
+            <div class="form-group mb-xl">
+                <label>Description</label>
+                <textarea name="description" class="form-control" rows="4" required placeholder="Briefly describe what this course is about..."></textarea>
+            </div>
+
+            <div class="grid grid-cols-2 gap-xl mb-xl">
+                <div class="form-group">
+                    <label>Level</label>
+                    <select name="level" class="form-control" required>
+                        <option value="Beginner">Beginner</option>
+                        <option value="Intermediate">Intermediate</option>
+                        <option value="Advanced">Advanced</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Duration (e.g. 12 Hours)</label>
+                    <input type="text" name="duration" class="form-control" required placeholder="10 Hours">
+                </div>
+            </div>
+
+            <div class="form-group mb-xl">
+                <label>Course Image</label>
+                <input type="file" name="image" class="form-control" accept="image/*">
+            </div>
+
+            <div class="form-group mb-xl">
+                <label>Overview Content (Markdown)</label>
+                <textarea name="content" class="form-control" rows="10" required placeholder="# Welcome to the course..."></textarea>
+            </div>
+
+            <div class="flex justify-end gap-m">
+                <a th:href="@{/teacher/courses}" class="btn btn-outline">Cancel</a>
+                <button type="submit" class="btn btn-primary">Create & Continue to Builder</button>
+            </div>
+        </form>
+    </div>
+</body>
+</html>

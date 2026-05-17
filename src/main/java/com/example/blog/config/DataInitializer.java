@@ -21,6 +21,7 @@ public class DataInitializer {
                                       UserRepository userRepository,
                                       CourseRepository courseRepository,
                                       CourseModuleRepository moduleRepository,
+                                      LessonRepository lessonRepository,
                                       CourseEnrollmentRepository enrollmentRepository,
                                       PasswordEncoder passwordEncoder) {
         return args -> {
@@ -100,6 +101,8 @@ public class DataInitializer {
 
             // Инициализация курсов
             if (courseRepository.count() == 0) {
+                User teacherUser = userRepository.findByUsername("teacher").orElse(null);
+
                 Course architectureCourse = Course.builder()
                         .title("Zero to One: System Architecture")
                         .description("A comprehensive guide to designing scalable, reliable, and maintainable systems from scratch.")
@@ -107,15 +110,24 @@ public class DataInitializer {
                         .level("Advanced")
                         .duration("15 Hours")
                         .imageUrl("https://images.unsplash.com/photo-1508921334112-4c6ef99ce26d?auto=format&fit=crop&q=80&w=1000")
+                        .teacher(teacherUser)
                         .build();
                 
                 courseRepository.save(architectureCourse);
 
-                moduleRepository.save(CourseModule.builder()
+                CourseModule introModule = CourseModule.builder()
                         .title("Introduction to Scalability")
-                        .content("Scalability is the ability of a system to handle a growing amount of work by adding resources.")
                         .orderIndex(0)
                         .course(architectureCourse)
+                        .build();
+                moduleRepository.save(introModule);
+
+                lessonRepository.save(Lesson.builder()
+                        .title("Scalability Principles")
+                        .type(LessonType.LECTURE)
+                        .content("Scalability is the ability of a system to handle a growing amount of work by adding resources.")
+                        .module(introModule)
+                        .orderIndex(0)
                         .build());
 
                 Course backendCourse = Course.builder()
@@ -125,6 +137,7 @@ public class DataInitializer {
                         .level("Beginner")
                         .duration("20 Hours")
                         .imageUrl("https://images.unsplash.com/photo-1587620962725-abab7fe55159?auto=format&fit=crop&q=80&w=1000")
+                        .teacher(teacherUser)
                         .build();
                 
                 courseRepository.save(backendCourse);

@@ -27,6 +27,5 @@ public class User {
     private String avatarUrl;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
     private Role role;
 }

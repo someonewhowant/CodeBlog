@@ -3,6 +3,8 @@ package com.example.blog.controller;
 import com.example.blog.entity.Category;
 import com.example.blog.entity.Course;
 import com.example.blog.entity.CourseModule;
+import com.example.blog.entity.Lesson;
+import com.example.blog.entity.LessonType;
 import com.example.blog.entity.Question;
 import com.example.blog.entity.QuestionOption;
 import com.example.blog.entity.Quiz;
@@ -266,7 +268,27 @@ public class AdminController {
     public String setModuleQuiz(@PathVariable Long courseId,
                                 @PathVariable Long moduleId,
                                 @RequestParam(value = "quizId", required = false) Long quizId) {
-        courseService.setModuleQuiz(moduleId, quizId);
+        // Find or create a TEST lesson for this module
+        CourseModule module = courseService.getModuleById(moduleId);
+        Lesson testLesson = module.getLessons().stream()
+                .filter(l -> l.getType() == LessonType.TEST)
+                .findFirst()
+                .orElse(null);
+
+        if (quizId != null) {
+            if (testLesson == null) {
+                testLesson = Lesson.builder()
+                        .title("Module Quiz")
+                        .type(LessonType.TEST)
+                        .module(module)
+                        .build();
+                testLesson = courseService.addLesson(moduleId, testLesson);
+            }
+            courseService.setLessonQuiz(testLesson.getId(), quizId);
+        } else if (testLesson != null) {
+            courseService.deleteLesson(testLesson.getId());
+        }
+        
         return "redirect:/admin/courses/" + courseId + "/modules";
     }
 
@@ -280,14 +302,25 @@ public class AdminController {
                             @RequestParam(value = "file", required = false) MultipartFile file) throws IOException {
         CourseModule module = new CourseModule();
         module.setTitle(title);
+        module = courseService.addModule(id, module);
         
+        String lessonContent = "";
         if (file != null && !file.isEmpty()) {
-            module.setContent(new String(file.getBytes(), StandardCharsets.UTF_8));
-        } else {
-            module.setContent(content);
+            lessonContent = new String(file.getBytes(), StandardCharsets.UTF_8);
+        } else if (content != null) {
+            lessonContent = content;
+        }
+
+        if (!lessonContent.isEmpty()) {
+            Lesson lesson = Lesson.builder()
+                    .title("Introduction")
+                    .type(LessonType.LECTURE)
+                    .content(lessonContent)
+                    .module(module)
+                    .build();
+            courseService.addLesson(module.getId(), lesson);
         }
         
-        courseService.addModule(id, module);
         return "redirect:/admin/courses/" + id + "/modules";
     }
 
@@ -313,16 +346,38 @@ public class AdminController {
                                @RequestParam("title") String title,
                                @RequestParam(value = "content", required = false) String content,
                                @RequestParam(value = "file", required = false) MultipartFile file) throws IOException {
-        CourseModule module = new CourseModule();
-        module.setTitle(title);
+        CourseModule moduleDetails = new CourseModule();
+        moduleDetails.setTitle(title);
+        courseService.updateModule(moduleId, moduleDetails);
 
+        CourseModule module = courseService.getModuleById(moduleId);
+        String lessonContent = "";
         if (file != null && !file.isEmpty()) {
-            module.setContent(new String(file.getBytes(), StandardCharsets.UTF_8));
-        } else {
-            module.setContent(content);
+            lessonContent = new String(file.getBytes(), StandardCharsets.UTF_8);
+        } else if (content != null) {
+            lessonContent = content;
         }
 
-        courseService.updateModule(moduleId, module);
+        if (!lessonContent.isEmpty()) {
+            Lesson lecture = module.getLessons().stream()
+                    .filter(l -> l.getType() == LessonType.LECTURE)
+                    .findFirst()
+                    .orElse(null);
+            
+            if (lecture == null) {
+                lecture = Lesson.builder()
+                        .title("Lecture")
+                        .type(LessonType.LECTURE)
+                        .content(lessonContent)
+                        .module(module)
+                        .build();
+                courseService.addLesson(moduleId, lecture);
+            } else {
+                lecture.setContent(lessonContent);
+                courseService.updateLesson(lecture.getId(), lecture);
+            }
+        }
+
         return "redirect:/admin/courses/" + courseId + "/modules";
     }
 

@@ -1,10 +1,9 @@
 package com.example.blog.service.impl;
 
-import com.example.blog.entity.Course;
-import com.example.blog.entity.CourseModule;
-import com.example.blog.entity.Quiz;
+import com.example.blog.entity.*;
 import com.example.blog.repository.CourseModuleRepository;
 import com.example.blog.repository.CourseRepository;
+import com.example.blog.repository.LessonRepository;
 import com.example.blog.repository.QuizRepository;
 import com.example.blog.service.CourseService;
 import lombok.RequiredArgsConstructor;
@@ -19,11 +18,17 @@ public class CourseServiceImpl implements CourseService {
 
     private final CourseRepository courseRepository;
     private final CourseModuleRepository moduleRepository;
+    private final LessonRepository lessonRepository;
     private final QuizRepository quizRepository;
 
     @Override
     public List<Course> getAllCourses() {
         return courseRepository.findAll();
+    }
+
+    @Override
+    public List<Course> getCoursesByTeacher(User teacher) {
+        return courseRepository.findByTeacher(teacher);
     }
 
     @Override
@@ -98,24 +103,66 @@ public class CourseServiceImpl implements CourseService {
     public CourseModule updateModule(Long moduleId, CourseModule moduleDetails) {
         CourseModule module = getModuleById(moduleId);
         module.setTitle(moduleDetails.getTitle());
-        module.setContent(moduleDetails.getContent());
-        if (moduleDetails.getOrderIndex() != 0) {
-            module.setOrderIndex(moduleDetails.getOrderIndex());
-        }
+        module.setOrderIndex(moduleDetails.getOrderIndex());
         return moduleRepository.save(module);
     }
 
     @Override
     @Transactional
-    public void setModuleQuiz(Long moduleId, Long quizId) {
+    public Lesson addLesson(Long moduleId, Lesson lesson) {
         CourseModule module = getModuleById(moduleId);
+        lesson.setModule(module);
+
+        if (lesson.getOrderIndex() == 0) {
+            int maxOrder = module.getLessons().stream()
+                    .mapToInt(Lesson::getOrderIndex)
+                    .max()
+                    .orElse(-1);
+            lesson.setOrderIndex(maxOrder + 1);
+        }
+
+        return lessonRepository.save(lesson);
+    }
+
+    @Override
+    @Transactional
+    public void deleteLesson(Long lessonId) {
+        lessonRepository.deleteById(lessonId);
+    }
+
+    @Override
+    public List<Lesson> getLessonsByModuleId(Long moduleId) {
+        return lessonRepository.findByModuleIdOrderByOrderIndexAsc(moduleId);
+    }
+
+    @Override
+    public Lesson getLessonById(Long lessonId) {
+        return lessonRepository.findById(lessonId)
+                .orElseThrow(() -> new RuntimeException("Lesson not found with id: " + lessonId));
+    }
+
+    @Override
+    @Transactional
+    public Lesson updateLesson(Long lessonId, Lesson lessonDetails) {
+        Lesson lesson = getLessonById(lessonId);
+        lesson.setTitle(lessonDetails.getTitle());
+        lesson.setContent(lessonDetails.getContent());
+        lesson.setType(lessonDetails.getType());
+        lesson.setOrderIndex(lessonDetails.getOrderIndex());
+        return lessonRepository.save(lesson);
+    }
+
+    @Override
+    @Transactional
+    public void setLessonQuiz(Long lessonId, Long quizId) {
+        Lesson lesson = getLessonById(lessonId);
         if (quizId != null) {
             Quiz quiz = quizRepository.findById(quizId)
                     .orElseThrow(() -> new RuntimeException("Quiz not found"));
-            module.setQuiz(quiz);
+            lesson.setQuiz(quiz);
         } else {
-            module.setQuiz(null);
+            lesson.setQuiz(null);
         }
-        moduleRepository.save(module);
+        lessonRepository.save(lesson);
     }
 }

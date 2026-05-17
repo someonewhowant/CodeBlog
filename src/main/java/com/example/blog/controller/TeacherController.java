@@ -1,17 +1,20 @@
 package com.example.blog.controller;
 
-import com.example.blog.entity.User;
+import com.example.blog.entity.*;
+import com.example.blog.service.CourseService;
+import com.example.blog.service.FileStorageService;
+import com.example.blog.service.QuizService;
 import com.example.blog.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.security.Principal;
+import java.util.List;
 
 @Controller
 @RequestMapping("/teacher")
@@ -19,13 +22,17 @@ import java.security.Principal;
 public class TeacherController {
 
     private final UserService userService;
+    private final CourseService courseService;
+    private final QuizService quizService;
+    private final FileStorageService fileStorageService;
 
     @GetMapping("/dashboard")
     public String dashboard(Model model, Principal principal) {
         User user = userService.findByUsername(principal.getName()).orElseThrow();
+        List<Course> courses = courseService.getCoursesByTeacher(user);
         model.addAttribute("user", user);
-        model.addAttribute("message", "Вы вошли как Преподаватель");
-        model.addAttribute("title", "Teacher Cabinet");
+        model.addAttribute("courses", courses);
+        model.addAttribute("title", "Teacher Dashboard");
         return "teacher/dashboard";
     }
 
@@ -33,7 +40,7 @@ public class TeacherController {
     public String profile(Model model, Principal principal) {
         User user = userService.findByUsername(principal.getName()).orElseThrow();
         model.addAttribute("user", user);
-        model.addAttribute("title", "Настройки профиля");
+        model.addAttribute("title", "Profile Settings");
         return "teacher/profile";
     }
 
@@ -43,8 +50,191 @@ public class TeacherController {
             @RequestParam("phoneNumber") String phoneNumber,
             @RequestParam(value = "avatar", required = false) MultipartFile avatar,
             Principal principal) {
-        
         userService.updateProfile(principal.getName(), fullName, phoneNumber, avatar);
         return "redirect:/teacher/profile?success";
+    }
+
+    // --- Course Management ---
+
+    @GetMapping("/courses")
+    public String listCourses(Model model, Principal principal) {
+        User user = userService.findByUsername(principal.getName()).orElseThrow();
+        model.addAttribute("courses", courseService.getCoursesByTeacher(user));
+        model.addAttribute("title", "My Courses");
+        return "teacher/courses";
+    }
+
+    @GetMapping("/courses/add")
+    public String addCourseForm(Model model) {
+        model.addAttribute("title", "Create New Course");
+        return "teacher/add-course";
+    }
+
+    @PostMapping("/courses/add")
+    public String addCourse(@ModelAttribute Course course,
+                            @RequestParam("image") MultipartFile image,
+                            Principal principal) throws IOException {
+        User user = userService.findByUsername(principal.getName()).orElseThrow();
+        course.setTeacher(user);
+        if (!image.isEmpty()) {
+            course.setImageUrl(fileStorageService.storeFile(image));
+        }
+        courseService.createCourse(course);
+        return "redirect:/teacher/courses";
+    }
+
+    @GetMapping("/courses/{id}/edit")
+    public String editCourseForm(@PathVariable Long id, Model model, Principal principal) {
+        Course course = courseService.getCourseById(id);
+        checkOwnership(course, principal);
+        model.addAttribute("course", course);
+        model.addAttribute("title", "Edit Course");
+        return "teacher/edit-course";
+    }
+
+    @PostMapping("/courses/{id}/edit")
+    public String updateCourse(@PathVariable Long id,
+                               @ModelAttribute Course courseDetails,
+                               @RequestParam(value = "image", required = false) MultipartFile image,
+                               Principal principal) throws IOException {
+        Course course = courseService.getCourseById(id);
+        checkOwnership(course, principal);
+        
+        if (image != null && !image.isEmpty()) {
+            courseDetails.setImageUrl(fileStorageService.storeFile(image));
+        } else {
+            courseDetails.setImageUrl(course.getImageUrl());
+        }
+        
+        courseService.updateCourse(id, courseDetails);
+        return "redirect:/teacher/courses";
+    }
+
+    @GetMapping("/courses/{id}/delete")
+    public String deleteCourse(@PathVariable Long id, Principal principal) {
+        Course course = courseService.getCourseById(id);
+        checkOwnership(course, principal);
+        courseService.deleteCourse(id);
+        return "redirect:/teacher/courses";
+    }
+
+    // --- Builder Interface ---
+
+    @GetMapping("/courses/{id}/builder")
+    public String courseBuilder(@PathVariable Long id, Model model, Principal principal) {
+        Course course = courseService.getCourseById(id);
+        checkOwnership(course, principal);
+        model.addAttribute("course", course);
+        model.addAttribute("quizzes", quizService.getQuizzesByCourseId(id));
+        model.addAttribute("title", "Course Builder: " + course.getTitle());
+        return "teacher/builder";
+    }
+
+    // --- Module Management ---
+
+    @PostMapping("/courses/{id}/modules/add")
+    public String addModule(@PathVariable Long id,
+                            @RequestParam("title") String title,
+                            Principal principal) {
+        Course course = courseService.getCourseById(id);
+        checkOwnership(course, principal);
+        
+        CourseModule module = CourseModule.builder().title(title).build();
+        courseService.addModule(id, module);
+        return "redirect:/teacher/courses/" + id + "/builder";
+    }
+
+    @PostMapping("/courses/{id}/modules/{mid}/edit")
+    public String updateModule(@PathVariable Long id,
+                               @PathVariable Long mid,
+                               @RequestParam("title") String title,
+                               @RequestParam("orderIndex") int orderIndex,
+                               Principal principal) {
+        Course course = courseService.getCourseById(id);
+        checkOwnership(course, principal);
+        
+        CourseModule moduleDetails = CourseModule.builder()
+                .title(title)
+                .orderIndex(orderIndex)
+                .build();
+        courseService.updateModule(mid, moduleDetails);
+        return "redirect:/teacher/courses/" + id + "/builder";
+    }
+
+    @GetMapping("/courses/{id}/modules/{mid}/delete")
+    public String deleteModule(@PathVariable Long id, @PathVariable Long mid, Principal principal) {
+        Course course = courseService.getCourseById(id);
+        checkOwnership(course, principal);
+        courseService.deleteModule(mid);
+        return "redirect:/teacher/courses/" + id + "/builder";
+    }
+
+    // --- Lesson Management ---
+
+    @PostMapping("/courses/{id}/modules/{mid}/lessons/add")
+    public String addLesson(@PathVariable Long id,
+                            @PathVariable Long mid,
+                            @RequestParam("title") String title,
+                            @RequestParam("type") LessonType type,
+                            Principal principal) {
+        Course course = courseService.getCourseById(id);
+        checkOwnership(course, principal);
+        
+        Lesson lesson = Lesson.builder()
+                .title(title)
+                .type(type)
+                .build();
+        courseService.addLesson(mid, lesson);
+        return "redirect:/teacher/courses/" + id + "/builder";
+    }
+
+    @GetMapping("/courses/{id}/modules/{mid}/lessons/{lid}/edit")
+    public String editLessonForm(@PathVariable Long id,
+                                 @PathVariable Long mid,
+                                 @PathVariable Long lid,
+                                 Model model,
+                                 Principal principal) {
+        Course course = courseService.getCourseById(id);
+        checkOwnership(course, principal);
+        
+        Lesson lesson = courseService.getLessonById(lid);
+        model.addAttribute("course", course);
+        model.addAttribute("module", courseService.getModuleById(mid));
+        model.addAttribute("lesson", lesson);
+        model.addAttribute("quizzes", quizService.getQuizzesByCourseId(id));
+        model.addAttribute("title", "Edit Lesson: " + lesson.getTitle());
+        return "teacher/edit-lesson";
+    }
+
+    @PostMapping("/courses/{id}/modules/{mid}/lessons/{lid}/edit")
+    public String updateLesson(@PathVariable Long id,
+                               @PathVariable Long mid,
+                               @PathVariable Long lid,
+                               @ModelAttribute Lesson lessonDetails,
+                               @RequestParam(value = "quizId", required = false) Long quizId,
+                               Principal principal) {
+        Course course = courseService.getCourseById(id);
+        checkOwnership(course, principal);
+        
+        courseService.updateLesson(lid, lessonDetails);
+        if (lessonDetails.getType() == LessonType.TEST) {
+            courseService.setLessonQuiz(lid, quizId);
+        }
+        
+        return "redirect:/teacher/courses/" + id + "/builder";
+    }
+
+    @GetMapping("/courses/{id}/modules/{mid}/lessons/{lid}/delete")
+    public String deleteLesson(@PathVariable Long id, @PathVariable Long mid, @PathVariable Long lid, Principal principal) {
+        Course course = courseService.getCourseById(id);
+        checkOwnership(course, principal);
+        courseService.deleteLesson(lid);
+        return "redirect:/teacher/courses/" + id + "/builder";
+    }
+
+    private void checkOwnership(Course course, Principal principal) {
+        if (!course.getTeacher().getUsername().equals(principal.getName())) {
+            throw new RuntimeException("Access denied: You don't own this course");
+        }
     }
 }

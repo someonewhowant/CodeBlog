@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/cabinet-layout}">
+<head>
+    <title th:text="${title}">Edit Lesson</title>
+</head>
+<body>
+    <div layout:fragment="cabinet-content">
+        <div class="mb-xl">
+            <h1 class="text-2xl font-bold mb-xs">Edit Lesson</h1>
+            <p class="text-dim" th:text="${module.title} + ' > ' + ${lesson.title}">Module > Lesson</p>
+        </div>
+
+        <form th:action="@{/teacher/courses/{id}/modules/{mid}/lessons/{lid}/edit(id=${course.id}, mid=${module.id}, lid=${lesson.id})}" 
+              method="POST" class="glass p-xl rounded-l border-active">
+            
+            <div class="grid grid-cols-2 gap-xl mb-xl">
+                <div class="form-group">
+                    <label>Lesson Title</label>
+                    <input type="text" name="title" th:value="${lesson.title}" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label>Order Index</label>
+                    <input type="number" name="orderIndex" th:value="${lesson.orderIndex}" class="form-control" required>
+                </div>
+            </div>
+
+            <div class="form-group mb-xl">
+                <label>Lesson Type</label>
+                <select name="type" class="form-control" required>
+                    <option value="LECTURE" th:selected="${lesson.type.name() == 'LECTURE'}">Lecture (Markdown Content)</option>
+                    <option value="TEST" th:selected="${lesson.type.name() == 'TEST'}">Test (Quiz)</option>
+                    <option value="ASSIGNMENT" th:selected="${lesson.type.name() == 'ASSIGNMENT'}">Assignment</option>
+                </select>
+            </div>
+
+            <div id="lectureContent" class="form-group mb-xl" th:style="${lesson.type.name() == 'LECTURE' ? '' : 'display:none'}">
+                <label>Lesson Content (Markdown)</label>
+                <textarea name="content" th:text="${lesson.content}" class="form-control" rows="15" placeholder="# Introduction..."></textarea>
+            </div>
+
+            <div id="quizSelection" class="form-group mb-xl" th:style="${lesson.type.name() == 'TEST' ? '' : 'display:none'}">
+                <label>Select Quiz</label>
+                <select name="quizId" class="form-control">
+                    <option value="">-- Select Quiz --</option>
+                    <option th:each="q : ${quizzes}" 
+                            th:value="${q.id}" 
+                            th:text="${q.title}"
+                            th:selected="${lesson.quiz != null and lesson.quiz.id == q.id}"></option>
+                </select>
+                <p class="text-xs text-dim mt-xs">Quizzes must be created first in the course quizzes section.</p>
+            </div>
+
+            <div class="flex justify-end gap-m">
+                <a th:href="@{/teacher/courses/{id}/builder(id=${course.id})}" class="btn btn-outline">Cancel</a>
+                <button type="submit" class="btn btn-primary">Save Lesson</button>
+            </div>
+        </form>
+    </div>
+
+    <th:block layout:fragment="scripts">
+        <script>
+            document.querySelector('select[name="type"]').addEventListener('change', function() {
+                const lectureContent = document.getElementById('lectureContent');
+                const quizSelection = document.getElementById('quizSelection');
+                
+                if (this.value === 'LECTURE' || this.value === 'ASSIGNMENT') {
+                    lectureContent.style.display = 'block';
+                    quizSelection.style.display = 'none';
+                } else if (this.value === 'TEST') {
+                    lectureContent.style.display = 'none';
+                    quizSelection.style.display = 'block';
+                }
+            });
+        </script>
+    </th:block>
+</body>
+</html>

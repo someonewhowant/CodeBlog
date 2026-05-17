@@ -168,16 +168,31 @@ public class MainController {
     }
 
     /**
-     * Страница конкретного модуля курса.
+     * Страница конкретного модуля курса (по умолчанию первая лекция).
      */
     @GetMapping("/course/{courseId}/module/{moduleId}")
     public String moduleDetail(@PathVariable Long courseId, 
                                @PathVariable Long moduleId, 
+                               @RequestParam(required = false) Long lessonId,
                                Principal principal,
                                Model model) {
         Course course = courseService.getCourseById(courseId);
         CourseModule module = courseService.getModuleById(moduleId);
+        List<Lesson> lessons = module.getLessons();
         
+        if (lessons.isEmpty()) {
+            model.addAttribute("course", course);
+            model.addAttribute("module", module);
+            model.addAttribute("htmlContent", "<p>This module has no lessons yet.</p>");
+            model.addAttribute("isOverview", false);
+            model.addAttribute("isLocked", false);
+            return "course-detail";
+        }
+
+        Lesson currentLesson = (lessonId != null) 
+                ? lessons.stream().filter(l -> l.getId().equals(lessonId)).findFirst().orElse(lessons.get(0))
+                : lessons.get(0);
+
         List<CourseModule> modules = course.getModules();
         CourseModule nextModule = null;
         CourseModule prevModule = null;
@@ -189,13 +204,18 @@ public class MainController {
             if (modules.get(i).getId().equals(moduleId)) {
                 if (i > 0) {
                     prevModule = modules.get(i - 1);
-                    // Check if previous module had a quiz and if it was passed
-                    if (prevModule.getQuiz() != null && principal != null) {
+                    // Check if previous module had a TEST lesson and if it was passed
+                    Lesson prevTest = prevModule.getLessons().stream()
+                            .filter(l -> l.getType() == LessonType.TEST && l.getQuiz() != null)
+                            .findFirst()
+                            .orElse(null);
+                    
+                    if (prevTest != null && principal != null) {
                         User user = userRepository.findByUsername(principal.getName())
                                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
-                        if (!quizService.isQuizPassed(user.getId(), prevModule.getQuiz().getId())) {
+                        if (!quizService.isQuizPassed(user.getId(), prevTest.getQuiz().getId())) {
                             isLocked = true;
-                            lockReason = "You must score at least 3 points in the quiz for module: " + prevModule.getTitle();
+                            lockReason = "You must pass the quiz in: " + prevModule.getTitle();
                         }
                     }
                 }
@@ -204,30 +224,45 @@ public class MainController {
             }
         }
         
+        Lesson nextLesson = null;
+        Lesson prevLesson = null;
+        for (int i = 0; i < lessons.size(); i++) {
+            if (lessons.get(i).getId().equals(currentLesson.getId())) {
+                if (i > 0) prevLesson = lessons.get(i - 1);
+                if (i < lessons.size() - 1) nextLesson = lessons.get(i + 1);
+                break;
+            }
+        }
+
         boolean isNextLocked = false;
         boolean isCurrentQuizPassed = false;
-        if (module.getQuiz() != null && principal != null) {
+        if (currentLesson.getType() == LessonType.TEST && currentLesson.getQuiz() != null && principal != null) {
             User user = userRepository.findByUsername(principal.getName()).orElse(null);
             if (user != null) {
-                isCurrentQuizPassed = quizService.isQuizPassed(user.getId(), module.getQuiz().getId());
+                isCurrentQuizPassed = quizService.isQuizPassed(user.getId(), currentLesson.getQuiz().getId());
                 if (!isCurrentQuizPassed) {
                     isNextLocked = true;
                 }
             }
         }
         
-        String htmlContent = markdownService.convertToHtml(module.getContent());
+        String htmlContent = (currentLesson.getContent() != null) 
+                ? markdownService.convertToHtml(currentLesson.getContent())
+                : "";
         
         model.addAttribute("course", course);
         model.addAttribute("module", module);
+        model.addAttribute("lesson", currentLesson);
         model.addAttribute("htmlContent", htmlContent);
         model.addAttribute("nextModule", nextModule);
         model.addAttribute("prevModule", prevModule);
+        model.addAttribute("nextLesson", nextLesson);
+        model.addAttribute("prevLesson", prevLesson);
         model.addAttribute("isLocked", isLocked);
         model.addAttribute("isNextLocked", isNextLocked);
         model.addAttribute("isCurrentQuizPassed", isCurrentQuizPassed);
         model.addAttribute("lockReason", lockReason);
-        model.addAttribute("title", module.getTitle() + " - " + course.getTitle());
+        model.addAttribute("title", currentLesson.getTitle() + " - " + course.getTitle());
         model.addAttribute("isOverview", false);
         
         return "course-detail";
@@ -238,11 +273,11 @@ public class MainController {
      */
     @GetMapping("/quiz/{id}")
     public String takeQuiz(@PathVariable Long id, 
-                           @RequestParam(required = false) Long moduleId,
+                           @RequestParam(required = false) Long lessonId,
                            Model model) {
         Quiz quiz = quizService.getQuizById(id);
         model.addAttribute("quiz", quiz);
-        model.addAttribute("moduleId", moduleId);
+        model.addAttribute("lessonId", lessonId);
         model.addAttribute("title", "Quiz: " + quiz.getTitle());
         return "quiz";
     }
@@ -252,7 +287,7 @@ public class MainController {
      */
     @PostMapping("/quiz/{id}/submit")
     public String submitQuiz(@PathVariable Long id, 
-                             @RequestParam(required = false) Long moduleId,
+                             @RequestParam(required = false) Long lessonId,
                              @RequestParam Map<String, String> params, 
                              Principal principal,
                              Model model) {
@@ -299,25 +334,26 @@ public class MainController {
             model.addAttribute("isPassed", isPassed);
         }
         
-        if (isPassed && moduleId != null) {
-            CourseModule module = courseService.getModuleById(moduleId);
-            Course course = module.getCourse();
-            List<CourseModule> modules = course.getModules();
-            CourseModule nextModule = null;
-            for (int i = 0; i < modules.size(); i++) {
-                if (modules.get(i).getId().equals(moduleId)) {
-                    if (i < modules.size() - 1) {
-                        nextModule = modules.get(i + 1);
+        if (isPassed && lessonId != null) {
+            Lesson currentLesson = courseService.getLessonById(lessonId);
+            CourseModule module = currentLesson.getModule();
+            List<Lesson> lessons = module.getLessons();
+            Lesson nextLesson = null;
+            for (int i = 0; i < lessons.size(); i++) {
+                if (lessons.get(i).getId().equals(lessonId)) {
+                    if (i < lessons.size() - 1) {
+                        nextLesson = lessons.get(i + 1);
                     }
                     break;
                 }
             }
-            model.addAttribute("nextModule", nextModule);
-            model.addAttribute("courseId", course.getId());
+            model.addAttribute("nextLesson", nextLesson);
+            model.addAttribute("moduleId", module.getId());
+            model.addAttribute("courseId", module.getCourse().getId());
         }
         
         model.addAttribute("quiz", quiz);
-        model.addAttribute("moduleId", moduleId);
+        model.addAttribute("lessonId", lessonId);
         model.addAttribute("score", correctAnswers);
         model.addAttribute("total", totalQuestions);
         model.addAttribute("results", results);

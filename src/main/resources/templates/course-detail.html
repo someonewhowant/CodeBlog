@@ -32,21 +32,23 @@
                                     <i class="bi bi-info-circle"></i> Overview
                                 </a>
                             </li>
-                            <li th:each="m : ${course.modules}" 
-                                class="course-map__item" 
-                                th:classappend="${!isOverview and m.id == module.id} ? 'active' : ''">
-                                <a th:href="@{/course/{courseId}/module/{moduleId}(courseId=${course.id}, moduleId=${m.id})}">
-                                    <div class="flex flex-column">
-                                        <div class="flex items-center gap-m">
-                                            <i class="bi" th:classappend="${m.quiz != null} ? 'bi-patch-question' : 'bi-journal-text'"></i>
-                                            <span th:text="${m.title}">Module Title</span>
-                                            <i th:if="${m.orderIndex > 0 and module != null and m.orderIndex > module.orderIndex}" class="bi bi-lock-fill sidebar-lock"></i>
-                                        </div>
-                                        <div class="module-status" th:if="${m.quiz != null}">
-                                            <span class="module-status--quiz"><i class="bi bi-lightning-fill"></i> QUIZ_REQUIRED</span>
-                                        </div>
-                                    </div>
-                                </a>
+                            <li th:each="m : ${course.modules}" class="course-map__module">
+                                <div class="module-header" th:classappend="${!isOverview and m.id == module.id} ? 'active' : ''">
+                                    <i class="bi bi-folder2-open"></i>
+                                    <span th:text="${m.title}">Module Title</span>
+                                </div>
+                                <ul class="module-lessons">
+                                    <li th:each="l : ${m.lessons}" 
+                                        class="course-map__item lesson-item" 
+                                        th:classappend="${!isOverview and lesson != null and l.id == lesson.id} ? 'active' : ''">
+                                        <a th:href="@{/course/{courseId}/module/{moduleId}(courseId=${course.id}, moduleId=${m.id}, lessonId=${l.id})}">
+                                            <div class="flex items-center gap-m">
+                                                <i class="bi" th:classappend="${l.type.name() == 'TEST'} ? 'bi-patch-question' : (${l.type.name() == 'ASSIGNMENT'} ? 'bi-file-earmark-text' : 'bi-journal-text')"></i>
+                                                <span th:text="${l.title}">Lesson Title</span>
+                                            </div>
+                                        </a>
+                                    </li>
+                                </ul>
                             </li>
                         </ul>
                         
@@ -61,8 +63,8 @@
                 <main class="course-main">
                     <article class="post">
                         <header class="post-header">
-                            <div class="post-category" th:text="${isOverview ? course.level : 'MODULE ' + (module.orderIndex + 1)}">LEVEL / MODULE X</div>
-                            <h1 class="post-title" th:text="${isOverview ? course.title : module.title}">Title</h1>
+                            <div class="post-category" th:text="${isOverview ? course.level : 'LESSON ' + (lesson.orderIndex + 1)}">LEVEL / LESSON X</div>
+                            <h1 class="post-title" th:text="${isOverview ? course.title : lesson.title}">Title</h1>
                             <div class="post-meta" th:if="${isOverview}">
                                 <span><i class="bi bi-clock"></i> <span th:text="${course.duration}">12 Hours</span></span>
                                 <span><i class="bi bi-calendar3"></i> <span th:text="${#temporals.format(course.createdAt, 'dd MMMM yyyy')}">Date</span></span>
@@ -78,34 +80,29 @@
                             <div class="locked-icon-wrapper">
                                 <i class="bi bi-lock-fill"></i>
                             </div>
-                            <h2 class="locked-title">// MODULE_LOCKED</h2>
+                            <h2 class="locked-title">// CONTENT_LOCKED</h2>
                             <p class="locked-reason" th:text="${lockReason}">Reason for the lock...</p>
-                            <a th:if="${prevModule != null and prevModule.quiz != null}" 
-                               th:href="@{/quiz/{id}(id=${prevModule.quiz.id}, moduleId=${prevModule.id})}" 
-                               class="btn btn-primary btn-orange">
-                                <i class="bi bi-play-fill"></i> Take Required Quiz
-                            </a>
                         </div>
 
                         <div class="post-content" th:if="${not isLocked}" th:utext="${htmlContent}">
                             Content goes here...
                         </div>
 
-                        <!-- Module Quiz Link -->
+                        <!-- Lesson Quiz Link -->
                         <div class="module-quiz-section reveal-on-scroll mt-3xl p-xl glass rounded-l border-active relative overflow-hidden" 
-                             th:if="${not isOverview and not isLocked and module.quiz != null}"
+                             th:if="${not isOverview and not isLocked and lesson.type.name() == 'TEST' and lesson.quiz != null}"
                              th:classappend="${isCurrentQuizPassed} ? 'border-green-faded' : ''">
                             <div class="quiz-bg-icon">
                                 <i class="bi bi-patch-question"></i>
                             </div>
-                            <h3 class="font-mono mb-xl text-blue text-xs tracking-widest" th:text="${isCurrentQuizPassed} ? '// MODULE_QUIZ_COMPLETED' : '// MODULE_QUIZ'">// MODULE_QUIZ</h3>
+                            <h3 class="font-mono mb-xl text-blue text-xs tracking-widest" th:text="${isCurrentQuizPassed} ? '// ASSESSMENT_COMPLETED' : '// ASSESSMENT'">// ASSESSMENT</h3>
                             <div class="flex items-center justify-between relative z-10">
                                 <div>
-                                    <h4 th:text="${module.quiz.title}" class="text-xl mb-xs font-bold">Quiz Title</h4>
-                                    <p th:if="${not isCurrentQuizPassed}" class="text-dim max-w-400 leading-relaxed">Complete this assessment with at least <span class="text-orange font-bold">3 points</span> to finalize this module and unlock the next one.</p>
-                                    <p th:if="${isCurrentQuizPassed}" class="text-green max-w-400 leading-relaxed"><i class="bi bi-check-circle-fill"></i> You have successfully passed this assessment! You can retake it to improve your score.</p>
+                                    <h4 th:text="${lesson.quiz.title}" class="text-xl mb-xs font-bold">Quiz Title</h4>
+                                    <p th:if="${not isCurrentQuizPassed}" class="text-dim max-w-400 leading-relaxed">Complete this assessment to finalize this lesson.</p>
+                                    <p th:if="${isCurrentQuizPassed}" class="text-green max-w-400 leading-relaxed"><i class="bi bi-check-circle-fill"></i> You have successfully passed this assessment!</p>
                                 </div>
-                                <a th:href="@{/quiz/{id}(id=${module.quiz.id}, moduleId=${module.id})}" 
+                                <a th:href="@{/quiz/{id}(id=${lesson.quiz.id}, lessonId=${lesson.id})}" 
                                    class="btn btn-primary btn-large"
                                    th:classappend="${isCurrentQuizPassed} ? 'btn-outline' : ''">
                                     <i class="bi" th:classappend="${isCurrentQuizPassed} ? 'bi-arrow-clockwise' : 'bi-play-fill'"></i> 
@@ -114,32 +111,50 @@
                             </div>
                         </div>
 
-                        <!-- Module Navigation -->
+                        <!-- Navigation -->
                         <div class="course-navigation mt-3xl">
-                            <a th:if="${prevModule}" 
-                               th:href="@{/course/{courseId}/module/{moduleId}(courseId=${course.id}, moduleId=${prevModule.id})}" 
+                            <!-- Prev Lesson -->
+                            <a th:if="${prevLesson}" 
+                               th:href="@{/course/{courseId}/module/{moduleId}(courseId=${course.id}, moduleId=${module.id}, lessonId=${prevLesson.id})}" 
                                class="nav-btn">
-                                <span class="nav-btn__label"><i class="bi bi-arrow-left"></i> Previous</span>
+                                <span class="nav-btn__label"><i class="bi bi-arrow-left"></i> Previous Lesson</span>
+                                <span class="nav-btn__title" th:text="${prevLesson.title}">Previous</span>
+                            </a>
+                            <!-- Prev Module Last Lesson -->
+                            <a th:if="${not prevLesson and prevModule and not #lists.isEmpty(prevModule.lessons)}" 
+                               th:href="@{/course/{courseId}/module/{moduleId}(courseId=${course.id}, moduleId=${prevModule.id}, lessonId=${prevModule.lessons[prevModule.lessons.size()-1].id})}" 
+                               class="nav-btn">
+                                <span class="nav-btn__label"><i class="bi bi-arrow-left"></i> Previous Module</span>
                                 <span class="nav-btn__title" th:text="${prevModule.title}">Previous Module</span>
                             </a>
-                            <div th:unless="${prevModule}" style="flex: 1;"></div>
                             
-                            <th:block th:if="${nextModule}">
+                            <div th:if="${not prevLesson and not prevModule}" style="flex: 1;"></div>
+                            
+                            <!-- Next Lesson -->
+                            <th:block th:if="${nextLesson}">
                                 <a th:if="${not isNextLocked}" 
-                                   th:href="@{/course/{courseId}/module/{moduleId}(courseId=${course.id}, moduleId=${nextModule.id})}" 
+                                   th:href="@{/course/{courseId}/module/{moduleId}(courseId=${course.id}, moduleId=${module.id}, lessonId=${nextLesson.id})}" 
                                    class="nav-btn nav-btn--next">
-                                    <span class="nav-btn__label">Next <i class="bi bi-arrow-right"></i></span>
-                                    <span class="nav-btn__title" th:text="${nextModule.title}">Next Module</span>
+                                    <span class="nav-btn__label">Next Lesson <i class="bi bi-arrow-right"></i></span>
+                                    <span class="nav-btn__title" th:text="${nextLesson.title}">Next</span>
                                 </a>
                                 <a th:if="${isNextLocked}" 
-                                   th:href="@{/quiz/{id}(id=${module.quiz.id}, moduleId=${module.id})}" 
+                                   th:href="@{/quiz/{id}(id=${lesson.quiz.id}, lessonId=${lesson.id})}" 
                                    class="nav-btn nav-btn--next btn-orange-faded">
-                                    <span class="nav-btn__label text-orange">Next: Quiz <i class="bi bi-patch-question"></i></span>
-                                    <span class="nav-btn__title" th:text="${module.quiz.title}">Quiz Title</span>
+                                    <span class="nav-btn__label text-orange">Take Assessment <i class="bi bi-patch-question"></i></span>
+                                    <span class="nav-btn__title" th:text="${lesson.quiz.title}">Quiz Title</span>
+                                </a>
+                            </th:block>
+                            <!-- Next Module First Lesson -->
+                            <th:block th:if="${not nextLesson and nextModule}">
+                                <a th:href="@{/course/{courseId}/module/{moduleId}(courseId=${course.id}, moduleId=${nextModule.id})}" 
+                                   class="nav-btn nav-btn--next">
+                                    <span class="nav-btn__label">Next Module <i class="bi bi-arrow-right"></i></span>
+                                    <span class="nav-btn__title" th:text="${nextModule.title}">Next Module</span>
                                 </a>
                             </th:block>
                             
-                            <a th:unless="${nextModule}" 
+                            <a th:if="${not nextLesson and not nextModule}" 
                                th:href="@{/courses}" 
                                class="nav-btn nav-btn--next">
                                 <span class="nav-btn__label">Finish <i class="bi bi-check2-circle"></i></span>

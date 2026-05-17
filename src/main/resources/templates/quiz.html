@@ -18,7 +18,7 @@
 
             <div class="reading-container">
                 <!-- Premium Quiz Form -->
-                <form th:if="${submitted == null}" th:action="@{/quiz/{id}/submit(id=${quiz.id})}" method="POST">
+                <form th:if="${submitted == null}" th:action="@{/quiz/{id}/submit(id=${quiz.id}, lessonId=${lessonId})}" method="POST">
                     <div th:each="question, qStat : ${quiz.questions}" class="quiz-question-modern reveal-on-scroll">
                         <div class="flex gap-xl mb-xl">
                             <span class="text-accent-mono text-blue font-bold text-xl" th:text="${#numbers.formatInteger(qStat.count, 2)}">01</span>
@@ -66,22 +66,22 @@
                         </p>
                         
                         <div class="mt-2xl flex justify-center gap-xl">
-                            <a th:if="${moduleId != null}" th:href="@{/course/{courseId}/module/{mId}(courseId=${quiz.course.id}, mId=${moduleId})}" class="btn btn-outline">
-                                <i class="bi bi-arrow-left"></i> Back to Module
+                            <a th:if="${lessonId != null}" th:href="@{/course/{courseId}/module/{mId}(courseId=${quiz.course.id}, mId=${moduleId}, lessonId=${lessonId})}" class="btn btn-outline">
+                                <i class="bi bi-arrow-left"></i> Back to Lesson
                             </a>
-                            <a th:unless="${moduleId != null}" th:href="@{/course/{id}(id=${quiz.course.id})}" class="btn btn-outline">
+                            <a th:unless="${lessonId != null}" th:href="@{/course/{id}(id=${quiz.course.id})}" class="btn btn-outline">
                                 <i class="bi bi-arrow-left"></i> Course Map
                             </a>
                             
-                            <a th:if="${not isPassed}" th:href="@{/quiz/{id}(id=${quiz.id}, moduleId=${moduleId})}" class="btn btn-primary btn-orange py-m px-xl">
+                            <a th:if="${not isPassed}" th:href="@{/quiz/{id}(id=${quiz.id}, lessonId=${lessonId})}" class="btn btn-primary btn-orange py-m px-xl">
                                 <i class="bi bi-arrow-clockwise"></i> Retake Assessment
                             </a>
                             
-                            <a th:if="${isPassed and nextModule != null}" th:href="@{/course/{courseId}/module/{mId}(courseId=${courseId}, mId=${nextModule.id})}" class="btn btn-primary btn-green py-m px-xl">
-                                Continue to Next Module <i class="bi bi-arrow-right"></i>
+                            <a th:if="${isPassed and nextLesson != null}" th:href="@{/course/{courseId}/module/{mId}(courseId=${courseId}, mId=${moduleId}, lessonId=${nextLesson.id})}" class="btn btn-primary btn-green py-m px-xl">
+                                Continue to Next Lesson <i class="bi bi-arrow-right"></i>
                             </a>
-                            <a th:if="${isPassed and nextModule == null and moduleId != null}" th:href="@{/course/{id}(id=${quiz.course.id})}" class="btn btn-primary btn-green py-m px-xl">
-                                Finish Course <i class="bi bi-check2-circle"></i>
+                            <a th:if="${isPassed and nextLesson == null and lessonId != null}" th:href="@{/course/{id}(id=${quiz.course.id})}" class="btn btn-primary btn-green py-m px-xl">
+                                Finish Lesson & Back to Course <i class="bi bi-check2-circle"></i>
                             </a>
                         </div>
                     </div>
