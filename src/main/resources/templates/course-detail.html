@@ -114,21 +114,21 @@
                         <!-- Navigation -->
                         <div class="course-navigation mt-3xl">
                             <!-- Prev Lesson -->
-                            <a th:if="${prevLesson}" 
+                            <a th:if="${prevLesson != null}" 
                                th:href="@{/course/{courseId}/module/{moduleId}(courseId=${course.id}, moduleId=${module.id}, lessonId=${prevLesson.id})}" 
                                class="nav-btn">
                                 <span class="nav-btn__label"><i class="bi bi-arrow-left"></i> Previous Lesson</span>
                                 <span class="nav-btn__title" th:text="${prevLesson.title}">Previous</span>
                             </a>
                             <!-- Prev Module Last Lesson -->
-                            <a th:if="${not prevLesson and prevModule and not #lists.isEmpty(prevModule.lessons)}" 
+                            <a th:if="${prevLesson == null and prevModule != null and not #lists.isEmpty(prevModule.lessons)}" 
                                th:href="@{/course/{courseId}/module/{moduleId}(courseId=${course.id}, moduleId=${prevModule.id}, lessonId=${prevModule.lessons[prevModule.lessons.size()-1].id})}" 
                                class="nav-btn">
                                 <span class="nav-btn__label"><i class="bi bi-arrow-left"></i> Previous Module</span>
                                 <span class="nav-btn__title" th:text="${prevModule.title}">Previous Module</span>
                             </a>
                             
-                            <div th:if="${not prevLesson and not prevModule}" style="flex: 1;"></div>
+                            <div th:if="${prevLesson == null and prevModule == null}" style="flex: 1;"></div>
                             
                             <!-- Next Lesson -->
                             <th:block th:if="${nextLesson}">

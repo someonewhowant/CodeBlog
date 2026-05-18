@@ -40,9 +40,6 @@
                    th:classappend="${currentCategory == cat.slug} ? 'active'">
                     <th:block th:replace="~{::categoryIcon(${cat.slug})}"></th:block>
                     <span th:text="${cat.name}">Category</span>
-                    <span th:if="${cat.posts != null and not #sets.isEmpty(cat.posts)}" 
-                          class="category-count" 
-                          th:text="${#sets.size(cat.posts)}">0</span>
                 </a>
             </li>
         </ul>

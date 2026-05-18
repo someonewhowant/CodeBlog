@@ -20,3 +20,10 @@ spring:
     multipart:
       max-file-size: 10MB
       max-request-size: 10MB
+  web:
+    resources:
+      cache:
+        period: 31536000
+        cachecontrol:
+          max-age: 31536000
+          cache-public: true
